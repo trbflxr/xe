@@ -13,7 +13,7 @@ namespace xe {
   using scoped_ptr = std::unique_ptr<T>;
 
   template<typename T, typename... Args>
-  scoped_ptr<T> make_scope(Args &&... args) {
+  scoped_ptr<T> make_scoped(Args &&... args) {
     return scoped_ptr<T>(new T(std::forward<Args>(args)...));
   }
 

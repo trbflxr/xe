@@ -13,9 +13,9 @@ namespace xe {
 
   class ReferenceCounter : NonCopyable {
   public:
-    inline uint count() const { return count_; }
+    inline uint count() const noexcept { return count_; }
 
-    inline void ref() { ++count_; }
+    inline void ref() noexcept { ++count_; }
 
     inline void unref() {
       assert(count_ > 0);
@@ -25,13 +25,13 @@ namespace xe {
       }
     }
 
-    inline void unrefNoDelete() {
+    inline void unrefNoDelete() noexcept {
       assert(count_ > 0);
       --count_;
     }
 
   protected:
-    inline ReferenceCounter() : count_(0) { }
+    inline ReferenceCounter() noexcept : count_(0) { }
 
   private:
     uint count_;

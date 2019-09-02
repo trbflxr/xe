@@ -6,7 +6,9 @@
 #define XE_VECTOR_HPP
 
 #include <vector>
+#pragma warning(push, 0)
 #include <tbb/cache_aligned_allocator.h>
+#pragma warning(pop)
 
 namespace xe {
 

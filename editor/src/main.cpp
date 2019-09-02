@@ -3,27 +3,50 @@
 //
 
 #include <cstdio>
-#include <memory>
 #include <xe/scoped_array.hpp>
+#include <xe/vector.hpp>
 #include <xe/common.hpp>
+#include <xe/string.hpp>
+#include <unordered_map>
 
 int main() {
   xe::init();
 
   printf("hello\n");
 
-  xe::scoped_array<std::string> a;
+  xe::scoped_array<xe::string> a;
   a.alloc(10);
   a.memSet("pidorass");
 
   a[0] = "1";
   a[1] = "2";
 
-  printf("size: %llu\n", a.size());
-  printf("size in bytes: %llu\n", a.sizeInBytes());
+  printf("size: %zu\n", a.size());
+  printf("size in bytes: %zu\n", a.sizeInBytes());
 
   for (const auto &i : a) {
     printf("%s, ", i.c_str());
   }
 
+  xe::string str = "peedorass";
+  const char *pos = xe::string::findChar(str.c_str(), 'e');
+  printf("\n\npos:%s\n", pos);
+
+  std::unordered_map<xe::string, xe::string> map;
+  map["0"] = "peedorass0";
+  map["1"] = "peedorass1";
+  map["2"] = "peedorass2";
+
+  for (const auto &v : map) {
+    printf("first: %s, second: %s\n", v.first.c_str(), v.second.c_str());
+  }
+
+  xe::vector<uint> uvec;
+  uvec.emplace_back(0);
+  uvec.emplace_back(1);
+  uvec.emplace_back(2);
+
+  for (const auto &i : uvec) {
+    printf("%u\n", i);
+  }
 }

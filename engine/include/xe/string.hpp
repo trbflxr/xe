@@ -11,6 +11,8 @@
 #include <xe/vector.hpp>
 #include <xe/xeint.hpp>
 
+#pragma warning(disable : 4251) //export std::string
+
 namespace xe {
 
   class XE_API string {
@@ -71,12 +73,12 @@ namespace xe {
     vector<string> split(char delimiter) const;
     vector<string> split(const string &delimiters) const;
 
-    static const char XE_API *findToken(const char *str, const string &token);
-    static const char XE_API *findChar(const char *str, char ch);
-    static string XE_API getWord(const char *str, const char **outPosition);
-    static string  XE_API getStatement(const char *str, const char **outPosition = nullptr);
+    static const char *findToken(const char *str, const string &token);
+    static const char *findChar(const char *str, char ch);
+    static string getWord(const char *str, const char **outPosition);
+    static string getStatement(const char *str, const char **outPosition = nullptr);
 
-    static vector<string> XE_API tokenize(const string &str);
+    static vector<string> tokenize(const string &str);
 
   private:
     friend bool XE_API operator==(const string &left, const string &right);
@@ -100,11 +102,17 @@ namespace xe {
 
 namespace std {
 
+#if defined(__MINGW64__)
   template<>
   struct hash<xe::string> : public __hash_base<size_t, xe::string> {
     size_t operator()(const xe::string &s) const noexcept { return std::_Hash_impl::hash(s.data(), s.size()); }
   };
-
+#elif defined(_MSC_VER)
+  template<>
+  struct hash<xe::string> {
+    size_t operator()(const xe::string &s) const noexcept { return _Hash_array_representation(s.c_str(), s.size()); }
+  };
+#endif
 }
 
 #endif //XE_STRING_HPP

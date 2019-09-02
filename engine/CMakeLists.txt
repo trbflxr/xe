@@ -8,14 +8,14 @@ option(XE_BUILD_SHARED_LIB "Build shared lib" ON)
 option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
 
-set(XE_DEBUG_FLAGS "-DXE_DEBUG -DXE_DEBUG_TRACING -Wall" CACHE STRING "xe_debug flags")
+set(XE_DEBUG_FLAGS "-DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
 set(XE_RELEASE_FLAGS "-Ofast -DNDEBUG" CACHE STRING "xe_release flags")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 
 set(XE_DEFINES
-        -DXE_STATIC)
+    -DXE_STATIC)
 
 #status
 message(STATUS "XE Configuration:")
@@ -28,20 +28,21 @@ message(STATUS "  CMAKE_CXX_FLAGS_DEBUG:   " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "  CMAKE_CXX_FLAGS_RELEASE: " ${CMAKE_CXX_FLAGS_RELEASE})
 
 set(XE_INCLUDE_DIRS
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        CACHE STRING "XE include dirs" FORCE)
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    CACHE STRING "XE include dirs" FORCE)
 
 #external libs
-add_subdirectory(external/tbb)
-include_directories(external/tbb/include)
-
-add_subdirectory(external/fmt)
-include_directories(external/fmt/include)
-
 add_subdirectory(external/glad)
 include_directories(external/glad/include)
 
-include_directories(external/minitrace)
+add_subdirectory(external/tbb)
+include_directories(external/tbb/include)
+
+add_subdirectory(external/minitrace)
+include_directories(external/minitrace/include)
+
+add_subdirectory(external/spdlog)
+include_directories(external/spdlog/include)
 
 #includes
 include_directories(${XE_INCLUDE_DIRS})
@@ -49,9 +50,8 @@ include_directories(src)
 
 #engine sources
 file(GLOB ENGINE_SRC
-        external/minitrace/*.cpp
-        src/*.cpp
-        src/utils/*.cpp)
+    src/*.cpp
+    src/utils/*.cpp)
 
 #win32 sources
 file(GLOB ENGINE_WIN32_SRC)
@@ -59,36 +59,55 @@ file(GLOB ENGINE_WIN32_SRC)
 #opengl sources
 file(GLOB ENGINE_GL_SRC)
 
-#total platform files
-file(GLOB PLATFORM_SRC)
-
 if (XE_PLATFORM_WIN32)
-    list(APPEND PLATFORM_SRC ${ENGINE_WIN32_SRC})
+  list(APPEND ENGINE_SRC ${ENGINE_WIN32_SRC})
 endif ()
 
 if (XE_PLATFORM_GL)
-    list(APPEND PLATFORM_SRC ${ENGINE_GL_SRC})
+  list(APPEND ENGINE_SRC ${ENGINE_GL_SRC})
 endif ()
+
+
+macro(add_msvc_pch pch_header pch_source sources)
+  if (MSVC)
+    GET_FILENAME_COMPONENT(PrecompiledBasename ${pch_header} NAME_WE)
+    set(pch_bin "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
+    set(src ${${sources}})
+
+    set_source_files_properties(${pch_source}
+        PROPERTIES COMPILE_FLAGS "/Yc\"${pch_header}\" /Fp\"${pch_bin}\""
+        OBJECT_OUTPUTS "${pch_bin}")
+    set_source_files_properties(${src}
+        PROPERTIES COMPILE_FLAGS "/Yu\"${pch_header}\" /FI\"${pch_header}\" /Fp\"${pch_bin}\""
+        OBJECT_DEPENDS "${pch_bin}")
+    # Add precompiled header to sources
+    list(APPEND ${sources} ${pch_source})
+  endif ()
+endmacro()
+
+add_msvc_pch("xepch.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/xepch/xepch.cpp" ENGINE_SRC)
+
 
 #xe lib
 if (XE_BUILD_SHARED_LIB)
-    add_library(xe SHARED ${PLATFORM_SRC} ${ENGINE_SRC})
+  add_library(xe SHARED ${ENGINE_SRC})
 else ()
-    add_library(xe STATIC ${PLATFORM_SRC} ${ENGINE_SRC})
+  add_library(xe STATIC ${ENGINE_SRC})
 endif ()
 
 target_compile_definitions(xe PUBLIC ${XE_DEFINES})
 
 target_link_libraries(xe
-        tbb
-        fmt)
+    tbb_static
+    spdlog
+    minitrace)
 
 #link opengl libs
 if (XE_PLATFORM_GL)
-    target_link_libraries(xe glad)
+  target_link_libraries(xe glad)
 endif ()
 
 #link win32 libs
 if (XE_PLATFORM_WIN32)
-    target_link_libraries(xe winmm)
+  target_link_libraries(xe winmm)
 endif ()

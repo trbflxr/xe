@@ -14,3 +14,4 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_library(glad STATIC ${SRC})
 
 target_link_libraries(glad ${OPENGL_LIBRARIES})
+target_compile_options(glad PRIVATE "/w")

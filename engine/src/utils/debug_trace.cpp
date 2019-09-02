@@ -2,8 +2,11 @@
 // Created by FLXR on 9/2/2019.
 //
 
+#include "xepch.hpp"
 #include <xe/utils/debug_trace.hpp>
-#include <minitrace.h>
+#pragma warning(push, 0)
+#include <minitrace/minitrace.h>
+#pragma warning(pop)
 
 namespace xe::detail {
 

@@ -2,12 +2,13 @@
 // Created by FLXR on 9/2/2019.
 //
 
+#include "xepch.hpp"
 #include <cstring>
 #include <xe/string.hpp>
 #ifdef XE_PLATFORM_WINDOWS
   #define WIN32_LEAN_AND_MEAN
   #define WIN32_EXTRA_LEAN
-  #include <windows.h>
+  #include <Windows.h>
 #endif
 
 namespace xe {

@@ -62,7 +62,7 @@
   #elif defined(__SSE2__) || defined(SIMD_CPU_ARCH_x86_64)
     #define SIMD_SUPPORTED_LEVEL SIMD_LEVEL_x86_SSE2
   #elif defined(__SSE__)
-#define SIMD_SUPPORTED_LEVEL SIMD_LEVEL_x86_SSE
+    #define SIMD_SUPPORTED_LEVEL SIMD_LEVEL_x86_SSE
   #elif defined(_M_IX86_FP)
     #define SIMD_SUPPORTED_LEVEL _M_IX86_FP
   #else

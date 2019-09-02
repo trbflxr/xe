@@ -1,6 +1,23 @@
 cmake_minimum_required(VERSION 3.1)
 project(engine)
 
+macro(add_msvc_pch pch_header pch_source sources)
+  if (MSVC)
+    GET_FILENAME_COMPONENT(PrecompiledBasename ${pch_header} NAME_WE)
+    set(pch_bin "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
+    set(src ${${sources}})
+
+    set_source_files_properties(${pch_source}
+        PROPERTIES COMPILE_FLAGS "/Yc\"${pch_header}\" /Fp\"${pch_bin}\""
+        OBJECT_OUTPUTS "${pch_bin}")
+    set_source_files_properties(${src}
+        PROPERTIES COMPILE_FLAGS "/Yu\"${pch_header}\" /FI\"${pch_header}\" /Fp\"${pch_bin}\""
+        OBJECT_DEPENDS "${pch_bin}")
+    # Add precompiled header to sources
+    list(APPEND ${sources} ${pch_source})
+  endif ()
+endmacro()
+
 set(CMAKE_CXX_STANDARD 17)
 
 #options
@@ -8,8 +25,8 @@ option(XE_BUILD_SHARED_LIB "Build shared lib" ON)
 option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
 
-set(XE_DEBUG_FLAGS "-DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
-set(XE_RELEASE_FLAGS "-Ofast -DNDEBUG" CACHE STRING "xe_release flags")
+set(XE_DEBUG_FLAGS "-Od -DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
+set(XE_RELEASE_FLAGS "-Ox -DNDEBUG" CACHE STRING "xe_release flags")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
@@ -67,26 +84,8 @@ if (XE_PLATFORM_GL)
   list(APPEND ENGINE_SRC ${ENGINE_GL_SRC})
 endif ()
 
-
-macro(add_msvc_pch pch_header pch_source sources)
-  if (MSVC)
-    GET_FILENAME_COMPONENT(PrecompiledBasename ${pch_header} NAME_WE)
-    set(pch_bin "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
-    set(src ${${sources}})
-
-    set_source_files_properties(${pch_source}
-        PROPERTIES COMPILE_FLAGS "/Yc\"${pch_header}\" /Fp\"${pch_bin}\""
-        OBJECT_OUTPUTS "${pch_bin}")
-    set_source_files_properties(${src}
-        PROPERTIES COMPILE_FLAGS "/Yu\"${pch_header}\" /FI\"${pch_header}\" /Fp\"${pch_bin}\""
-        OBJECT_DEPENDS "${pch_bin}")
-    # Add precompiled header to sources
-    list(APPEND ${sources} ${pch_source})
-  endif ()
-endmacro()
-
+#add pch
 add_msvc_pch("xepch.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/xepch/xepch.cpp" ENGINE_SRC)
-
 
 #xe lib
 if (XE_BUILD_SHARED_LIB)

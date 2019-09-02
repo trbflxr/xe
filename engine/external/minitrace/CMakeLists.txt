@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(minitrace)
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ox")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/minitrace)
 

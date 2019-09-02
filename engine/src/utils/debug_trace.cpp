@@ -4,9 +4,7 @@
 
 #include "xepch.hpp"
 #include <xe/utils/debug_trace.hpp>
-#pragma warning(push, 0)
 #include <minitrace/minitrace.h>
-#pragma warning(pop)
 
 namespace xe::detail {
 

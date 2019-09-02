@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(glad)
 
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Ofast")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Ox")
 
 find_package(OpenGL REQUIRED)
 

@@ -10,5 +10,6 @@
 #include <xe/vector.hpp>
 
 #include <xe/utils/debug_trace.hpp>
+#include <xe/utils/logger.hpp>
 
 #endif //XE_XEPCH_HPP

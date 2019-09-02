@@ -5,9 +5,11 @@
 #ifndef XE_NONCOPYABLE_HPP
 #define XE_NONCOPYABLE_HPP
 
+#include <xe/common.hpp>
+
 namespace xe {
 
-  struct NonCopyable {
+  struct XE_API NonCopyable {
     NonCopyable(NonCopyable &) = delete;
     NonCopyable(NonCopyable &&) = delete;
     NonCopyable &operator=(NonCopyable &) = delete;

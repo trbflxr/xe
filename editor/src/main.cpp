@@ -5,8 +5,11 @@
 #include <cstdio>
 #include <memory>
 #include <xe/scoped_array.hpp>
+#include <xe/common.hpp>
 
 int main() {
+  xe::init();
+
   printf("hello\n");
 
   xe::scoped_array<std::string> a;

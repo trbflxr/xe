@@ -8,8 +8,8 @@ option(XE_BUILD_SHARED_LIB "Build shared lib" ON)
 option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
 
-set(XE_DEBUG_FLAGS "-DXE_DEBUG -Wall" CACHE STRING "xe_debug defines, compile options")
-set(XE_RELEASE_FLAGS "-Ofast -DNDEBUG" CACHE STRING "xe_release defines, compile options")
+set(XE_DEBUG_FLAGS "-DXE_DEBUG -DXE_DEBUG_TRACING -Wall" CACHE STRING "xe_debug flags")
+set(XE_RELEASE_FLAGS "-Ofast -DNDEBUG" CACHE STRING "xe_release flags")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
@@ -32,11 +32,16 @@ set(XE_INCLUDE_DIRS
         CACHE STRING "XE include dirs" FORCE)
 
 #external libs
+add_subdirectory(external/tbb)
+include_directories(external/tbb/include)
+
 add_subdirectory(external/fmt)
 include_directories(external/fmt/include)
 
 add_subdirectory(external/glad)
 include_directories(external/glad/include)
+
+include_directories(external/minitrace)
 
 #includes
 include_directories(${XE_INCLUDE_DIRS})
@@ -44,7 +49,9 @@ include_directories(src)
 
 #engine sources
 file(GLOB ENGINE_SRC
-        src/*.cpp)
+        external/minitrace/*.cpp
+        src/*.cpp
+        src/utils/*.cpp)
 
 #win32 sources
 file(GLOB ENGINE_WIN32_SRC)
@@ -73,6 +80,7 @@ endif ()
 target_compile_definitions(xe PUBLIC ${XE_DEFINES})
 
 target_link_libraries(xe
+        tbb
         fmt)
 
 #link opengl libs

@@ -1,0 +1,7 @@
+{"traceEvents":[
+{"cat":"","pid":29672,"tid":18324,"ts":0,"ph":"M","name":"thread_name","args":{"name":"main thread"}},
+{"cat":"xe","pid":29672,"tid":18324,"ts":2,"ph":"B","name":"dummy","args":{}},
+{"cat":"xe","pid":29672,"tid":18324,"ts":100195,"ph":"E","name":"dummy","args":{}},
+{"cat":"xe","pid":29672,"tid":18324,"ts":100195,"ph":"B","name":"dummy1","args":{}},
+{"cat":"xe","pid":29672,"tid":18324,"ts":1100866,"ph":"E","name":"dummy1","args":{}}
+]}

@@ -6,7 +6,6 @@
 #define XE_SLEEP_HPP
 
 #include <xe/common.hpp>
-#include <xe/xeint.hpp>
 
 namespace xe {
 

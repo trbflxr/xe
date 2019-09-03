@@ -8,7 +8,6 @@
 
 #include <cstring>
 #include <xe/common.hpp>
-#include <xe/xeint.hpp>
 #include <xe/math/mathfunc.hpp>
 
 #if defined(SIMD_CPU_ARCH_x86) || defined(SIMD_CPU_ARCH_x86_64)

@@ -7,7 +7,6 @@
 
 #include <xe/common.hpp>
 #include <xe/string.hpp>
-#include <xe/xeint.hpp>
 
 namespace xe {
 

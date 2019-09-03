@@ -5,7 +5,6 @@
 #ifndef XE_TIMER_HPP
 #define XE_TIMER_HPP
 
-#include <xe/xeint.hpp>
 #include <xe/common.hpp>
 #include <xe/core/object.hpp>
 #include <xe/core/timestep.hpp>

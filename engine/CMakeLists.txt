@@ -35,6 +35,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 set(XE_DEFINES
     -DXE_STATIC)
 
+if (XE_PLATFORM_GL)
+  set(XE_DEFINES "${XE_DEFINES} -DXE_PLATFORM_GL")
+endif ()
+
 if (XE_USE_GENERIC_FS)
   set(XE_DEFINES "${XE_DEFINES} -DXE_GENERIC_FS")
 endif ()
@@ -57,6 +61,9 @@ set(XE_INCLUDE_DIRS
 add_subdirectory(external/glad)
 include_directories(external/glad/include)
 
+add_subdirectory(external/glfw)
+include_directories(external/glfw/include)
+
 add_subdirectory(external/tbb)
 include_directories(external/tbb/include)
 
@@ -74,6 +81,7 @@ include_directories(src)
 file(GLOB ENGINE_SRC
     src/*.cpp
     src/core/*.cpp
+    src/graphics/*.cpp
     src/math/*.cpp
     src/utils/*.cpp)
 
@@ -82,7 +90,8 @@ file(GLOB ENGINE_WIN32_SRC
     src/core/win32/*.cpp)
 
 #opengl sources
-file(GLOB ENGINE_GL_SRC)
+file(GLOB ENGINE_GL_SRC
+    src/graphics/opengl/*.cpp)
 
 if (XE_PLATFORM_WIN32)
   list(APPEND ENGINE_SRC ${ENGINE_WIN32_SRC})
@@ -111,7 +120,9 @@ target_link_libraries(xe
 
 #link opengl libs
 if (XE_PLATFORM_GL)
-  target_link_libraries(xe glad)
+  target_link_libraries(xe
+      glad
+      glfw)
 endif ()
 
 #link win32 libs

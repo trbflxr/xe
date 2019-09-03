@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstring>
 #include <algorithm>
-#include <xe/xeint.hpp>
+#include <xe/common.hpp>
 #include <xe/utils/noncopyable.hpp>
 
 namespace xe {

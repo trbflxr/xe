@@ -9,7 +9,6 @@
 #include <string>
 #include <xe/common.hpp>
 #include <xe/vector.hpp>
-#include <xe/xeint.hpp>
 
 #pragma warning(disable : 4251) //export std::string
 

@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <xe/utils/logger.hpp>
 #include <xe/math/math.hpp>
+#include <xe/core/vfs.hpp>
+#include <xe/core/filesystem.hpp>
 
 int main() {
   xe::init();

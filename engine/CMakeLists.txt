@@ -24,6 +24,7 @@ set(CMAKE_CXX_STANDARD 17)
 option(XE_BUILD_SHARED_LIB "Build shared lib" ON)
 option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
+option(XE_USE_GENERIC_FS "Use generic filesystem" OFF)
 
 set(XE_DEBUG_FLAGS "-Od -DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
 set(XE_RELEASE_FLAGS "-Ox -DNDEBUG" CACHE STRING "xe_release flags")
@@ -33,6 +34,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 
 set(XE_DEFINES
     -DXE_STATIC)
+
+if (XE_USE_GENERIC_FS)
+  set(XE_DEFINES "${XE_DEFINES} -DXE_GENERIC_FS")
+endif ()
 
 #status
 message(STATUS "XE Configuration:")
@@ -68,11 +73,13 @@ include_directories(src)
 #engine sources
 file(GLOB ENGINE_SRC
     src/*.cpp
+    src/core/*.cpp
     src/math/*.cpp
     src/utils/*.cpp)
 
 #win32 sources
-file(GLOB ENGINE_WIN32_SRC)
+file(GLOB ENGINE_WIN32_SRC
+    src/core/win32/*.cpp)
 
 #opengl sources
 file(GLOB ENGINE_GL_SRC)

@@ -5,9 +5,13 @@
 #ifndef XE_XEPCH_HPP
 #define XE_XEPCH_HPP
 
+#include <algorithm>
+#include <utility>
+
 #include <xe/memory.hpp>
 #include <xe/string.hpp>
 #include <xe/vector.hpp>
+#include <xe/unordered_map.hpp>
 
 #include <xe/math/math.hpp>
 

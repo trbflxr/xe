@@ -53,6 +53,11 @@ namespace xe {
 
     inline float operator[](uint index) const { return data_[index]; }
 
+    template<typename OStream>
+    inline friend OStream &operator<<(OStream &os, const quat &q) {
+      return os << "quat(" << q[0] << ", " << q[1] << ", " << q[2] << ", " << q[3] << ")";
+    }
+
     inline quat operator+(const quat &other) const;
     inline quat operator+=(const quat &other);
     inline quat operator-(const quat &other) const;

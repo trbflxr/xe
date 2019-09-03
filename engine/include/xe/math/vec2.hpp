@@ -66,6 +66,9 @@ namespace xe {
     inline Vector toVector(float z, float w) const { return toVector(vec2(z, w)); }
     inline Vector toVector(vec2 other) const { return Vector::make(x, y, other.x, other.y); }
 
+    template<typename OStream>
+    inline friend OStream &operator<<(OStream &os, const vec2 &v) { return os << "vec2(" << v.x << ", " << v.y << ")"; }
+
     inline vec2 operator+(const vec2 &other) const;
     inline vec2 operator-(const vec2 &other) const;
     inline vec2 operator*(const vec2 &other) const;

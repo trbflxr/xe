@@ -71,7 +71,7 @@ namespace xe {
     char &operator[](size_t index);
 
     template<typename OStream>
-    friend OStream &operator<<(OStream &os, const string &s) { return os << s.c_str(); }
+    inline friend OStream &operator<<(OStream &os, const string &s) { return os << s.c_str(); }
 
     vector<string> split(char delimiter) const;
     vector<string> split(const string &delimiters) const;

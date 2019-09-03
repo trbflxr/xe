@@ -51,6 +51,14 @@ namespace xe {
 
     Vector operator[](uint index) const { return _data[index]; }
 
+    template<typename OStream>
+    inline friend OStream &operator<<(OStream &os, const mat4 &q) {
+      return os << "\nmat4({" << q[0][0] << ", " << q[0][1] << ", " << q[0][2] << ", " << q[0][3] << "}\n"
+                << "     {" << q[1][0] << ", " << q[1][1] << ", " << q[1][2] << ", " << q[1][3] << "}\n"
+                << "     {" << q[2][0] << ", " << q[2][1] << ", " << q[2][2] << ", " << q[2][3] << "}\n"
+                << "     {" << q[3][0] << ", " << q[3][1] << ", " << q[3][2] << ", " << q[3][3] << "})";
+    }
+
     inline mat4 operator+(const mat4 &other) const;
     inline mat4 &operator+=(const mat4 &other);
     inline mat4 operator*(const mat4 &other) const;

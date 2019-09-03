@@ -9,6 +9,7 @@
 #include <xe/string.hpp>
 #include <unordered_map>
 #include <xe/utils/logger.hpp>
+#include <xe/math/math.hpp>
 
 int main() {
   xe::init();
@@ -64,5 +65,21 @@ int main() {
   XE_INFO("{:<30}", "left aligned");
   XE_INFO("{:<30}", "залупа");
   XE_INFO("{}", str0);
+
+  xe::vec3 v0(1, 1, 1);
+  xe::vec3 v1(1, 1, 1);
+  xe::vec3 v3 = v0 + v1;
+
+  xe::vec2 vec20(1, 2);
+  xe::vec4 vec40(1, 2, 3, 4);
+  xe::quat q(1, 2, 3, 4);
+
+  xe::mat4 c = xe::mat4::ortho(0, 800, 0, 600, 1, 1000);
+
+  XE_TRACE("{}", vec20);
+  XE_TRACE("{}", v3);
+  XE_TRACE("{}", vec40);
+  XE_TRACE("{}", q);
+  XE_TRACE("{}", c);
 
 }

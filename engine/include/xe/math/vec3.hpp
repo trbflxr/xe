@@ -77,6 +77,11 @@ namespace xe {
 
     inline float operator[](uint index) const { return data_[index]; }
 
+    template<typename OStream>
+    inline friend OStream &operator<<(OStream &os, const vec3 &v) {
+      return os << "vec3(" << v[0] << ", " << v[1] << ", " << v[2] << ")";
+    }
+
     inline vec3 operator+(const vec3 &other) const;
     inline vec3 operator-(const vec3 &other) const;
     inline vec3 operator*(const vec3 &other) const;

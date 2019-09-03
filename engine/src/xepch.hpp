@@ -9,6 +9,8 @@
 #include <xe/string.hpp>
 #include <xe/vector.hpp>
 
+#include <xe/math/math.hpp>
+
 #include <xe/utils/debug_trace.hpp>
 #include <xe/utils/logger.hpp>
 

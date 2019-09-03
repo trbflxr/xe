@@ -68,6 +68,7 @@ include_directories(src)
 #engine sources
 file(GLOB ENGINE_SRC
     src/*.cpp
+    src/math/*.cpp
     src/utils/*.cpp)
 
 #win32 sources

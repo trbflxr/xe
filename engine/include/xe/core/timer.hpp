@@ -7,13 +7,15 @@
 
 #include <xe/xeint.hpp>
 #include <xe/common.hpp>
+#include <xe/core/object.hpp>
 #include <xe/core/timestep.hpp>
 
 namespace xe {
 
   struct TimerMembers;
 
-  class XE_API Timer {
+  class XE_API Timer : public Object {
+  XE_OBJECT(Timer, Object);
   public:
     Timer();
 

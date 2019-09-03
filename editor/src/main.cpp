@@ -93,4 +93,6 @@ int main() {
   XE_TRACE("ts: {}, ts millis: {}, size: {}", ts, ts.mills(), sizeof(xe::Timestep));
 
 
+  XE_TRACE("{}, {}, {}, {}", timer.id(), timer.name(), timer.type(), timer.baseType());
+
 }

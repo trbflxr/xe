@@ -15,6 +15,7 @@ namespace xe {
 
   Timer::Timer() :
       _members(new(_reserved) TimerMembers()) {
+    setName("Timer");
 
     LARGE_INTEGER frequency;
     QueryPerformanceFrequency(&frequency);

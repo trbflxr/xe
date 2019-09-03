@@ -4,9 +4,6 @@
 
 
 #include "xepch.hpp"
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_EXTRA_LEAN
-#include <Windows.h>
 #include <xe/core/filesystem.hpp>
 
 namespace xe {

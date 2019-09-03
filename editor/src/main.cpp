@@ -12,9 +12,13 @@
 #include <xe/math/math.hpp>
 #include <xe/core/vfs.hpp>
 #include <xe/core/filesystem.hpp>
+#include <xe/core/timer.hpp>
+#include <xe/core/sleep.hpp>
 
 int main() {
   xe::init();
+
+  xe::Timer timer;
 
   printf("hello\n");
 
@@ -83,5 +87,10 @@ int main() {
   XE_TRACE("{}", vec40);
   XE_TRACE("{}", q);
   XE_TRACE("{}", c);
+
+  xe::Timestep ts = timer.elapsed();
+
+  XE_TRACE("ts: {}, ts millis: {}, size: {}", ts, ts.mills(), sizeof(xe::Timestep));
+
 
 }

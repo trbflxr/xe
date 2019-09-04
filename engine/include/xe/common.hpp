@@ -135,8 +135,24 @@ namespace xe {
     } gpu_;
   };
 
-  void XE_API init();
-  void XE_API shutdown();
+  enum class IndexFormat {
+    Uint8,
+    Uint16,
+    Uint32
+  };
+
+  enum class Usage {
+    Static,
+    Dynamic,
+    Stream
+  };
+
+  enum class BufferType {
+    Invalid,
+    Vertex,
+    Index,
+    Uniform
+  };
 
 }
 

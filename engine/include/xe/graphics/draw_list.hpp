@@ -9,6 +9,9 @@
 #include <xe/vector.hpp>
 #include <xe/core/object.hpp>
 #include <xe/graphics/color.hpp>
+#include <xe/graphics/gpu_resources.hpp>
+
+#pragma warning(disable : 4114) //same type qualifier used more than once
 
 namespace xe {
 
@@ -45,15 +48,34 @@ namespace xe {
       PROPERTY(bool, clearStencil, false);
     };
 
+    struct FillBufferData {
+      typedef FillBufferData Self;
+      PROPERTY(const char*, name, "");
+      PROPERTY(gpu::Buffer, buffer, { });
+      PROPERTY(uint, offset, 0);
+      PROPERTY(uint, size, 0);
+      PROPERTY_PTR(void, data);
+    };
+
+    struct RenderData {
+      typedef RenderData Self;
+      PROPERTY(gpu::Buffer, indexBuffer, { });
+      PROPERTY(uint32, offset, 0);
+      PROPERTY(uint32, count, 0);
+      PROPERTY(uint32, instances, 1);
+      PROPERTY(IndexFormat, type, IndexFormat::Uint16);
+    };
+
 #undef PROPERTY
 #undef PROPERTY_PTR
 #undef PROP_ARRAY
 
     ClearData &clearCommand();
+    FillBufferData &fillBufferCommand();
+    RenderData &renderCommand();
 
   private:
     vector<ref_ptr<Command>> commands_;
-
   };
 
 }

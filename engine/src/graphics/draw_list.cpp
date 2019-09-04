@@ -32,4 +32,20 @@ namespace xe {
     return cmd->data_;
   }
 
+  DrawList::FillBufferData &DrawList::fillBufferCommand() {
+    FillBufferCommand *cmd = new FillBufferCommand();
+    ref_ptr<FillBufferCommand> c;
+    c.reset(cmd);
+    commands_.push_back(c);
+    return cmd->data_;
+  }
+
+  DrawList::RenderData &DrawList::renderCommand() {
+    RenderCommand *cmd = new RenderCommand();
+    ref_ptr<RenderCommand> c;
+    c.reset(cmd);
+    commands_.push_back(c);
+    return cmd->data_;
+  }
+
 }

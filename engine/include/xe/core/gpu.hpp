@@ -25,6 +25,8 @@ namespace xe {
 
     inline void setParams(const Params::GPU &params) { params_ = params; }
 
+    gpu::Buffer createBuffer(const gpu::Buffer::Info &info);
+
     inline uint maxBuffers() const { return params_.maxBuffers; }
     inline uint maxTextures() const { return params_.maxTextures; }
     inline uint maxMaterials() const { return params_.maxMaterials; }
@@ -66,6 +68,8 @@ namespace xe {
     } threadSync_;
 
   private:
+    RenderContext *ctx_;
+
     uint usedBuffers_;
     uint usedTextures_;
     uint usedMaterials_;

@@ -17,4 +17,14 @@ namespace xe {
     gpu::clear(data_);
   }
 
+  void FillBufferCommand::execute() {
+    XE_TRACE_SCOPE("XE", "Fill Buffer");
+    gpu::fillBuffer(data_);
+  }
+
+  void RenderCommand::execute() {
+    XE_TRACE_SCOPE("XE", "Render");
+    gpu::render(data_);
+  }
+
 }

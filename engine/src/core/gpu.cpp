@@ -5,6 +5,7 @@
 #include "xepch.hpp"
 #include <xe/core/gpu.hpp>
 #include <xe/graphics/window.hpp>
+#include <xe/graphics/render_context.hpp>
 
 namespace xe {
 
@@ -18,14 +19,18 @@ namespace xe {
     setName("GPU");
     window_ = make_ref<Window>();
 
+    ctx_ = new RenderContext();
+
     logicFrame_ = make_scoped<DrawList>();
   }
 
   GPU::~GPU() {
-
+    delete ctx_;
   }
 
   void GPU::init() {
+    ctx_->init(params_);
+
     threadSync_.thread = std::thread(&xe::GPU::run, this);
     XE_CORE_INFO("[GPU] Launched rendering thread");
     std::unique_lock<std::mutex> lock(threadSync_.mxL);
@@ -105,6 +110,33 @@ namespace xe {
   void GPU::stop() {
     threadSync_.thread.join();
     XE_CORE_INFO("[GPU] Joined rendering thread");
+  }
+
+  template<class T>
+  static uint acquireResource(scoped_array<T> *pool) {
+    uint tryCount = 10;
+    while (tryCount--) {
+      for (uint i = 0; i < pool->size(); ++i) {
+        if ((*pool)[i].acquire()) {
+          const uint version = (*pool)[i].version;
+          const uint result = i | (version << 20);
+          return result;
+        }
+      }
+    }
+    XE_CORE_ERROR("[GPU] Assigned id 0 to resource instance");
+    return 0;
+  }
+
+  gpu::Buffer GPU::createBuffer(const gpu::Buffer::Info &info) {
+    const uint id = acquireResource(&ctx_->buffers_);
+    const uint loc = RenderContext::index(id);
+    gpu::BufferInstance &inst = ctx_->buffers_[loc];
+    inst.info = info;
+
+    ++usedBuffers_;
+
+    return gpu::Buffer(ctx_, id);
   }
 
 }

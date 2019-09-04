@@ -20,6 +20,20 @@ namespace xe {
     DrawList::ClearData data_;
   };
 
+  struct FillBufferCommand : DrawList::Command {
+    friend class DisplayList;
+    void execute() override;
+
+    DrawList::FillBufferData data_;
+  };
+
+  struct RenderCommand : DrawList::Command {
+    friend class DisplayList;
+    void execute() override;
+
+    DrawList::RenderData data_;
+  };
+
 }
 
 #endif //XE_DRAW_LIST_COMMAND_HPP

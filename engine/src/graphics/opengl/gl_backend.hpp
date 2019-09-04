@@ -45,6 +45,8 @@ namespace xe::gpu {
   void destroyBackEnd(BackEnd **backEnd);
 
   void clear(const DrawList::ClearData &d);
+  void fillBuffer(DrawList::FillBufferData &d);
+  void render(DrawList::RenderData &d);
 }
 
 #endif //XE_GL_BACKEND_HPP

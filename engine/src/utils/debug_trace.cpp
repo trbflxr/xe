@@ -3,6 +3,7 @@
 //
 
 #include "xepch.hpp"
+#define MTR_ENABLED
 #include "external/minitrace/minitrace.hpp"
 #include <xe/utils/debug_trace.hpp>
 

@@ -15,7 +15,7 @@ namespace xe {
 
   class XE_API Window : public Object {
   XE_OBJECT(Window, Object);
-    friend class RenderDevice;
+    friend class GPU;
     friend class Engine;
   public:
     Window();
@@ -27,13 +27,14 @@ namespace xe {
     void setIcon(uint width, uint height, byte *pixels);
     void setSwapInterval(bool enabled);
 
-    bool shouldClose() const;
+    bool isExisting() const;
     double uptime() const;
 
     inline Params::Window params() const { return params_; }
+    inline void setParams(const Params::Window &params) { params_ = params; }
 
   protected:
-    void init(const Params::Window &params);
+    void init();
     void pollEvents();
     void swap();
     void stop();

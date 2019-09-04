@@ -8,20 +8,92 @@
 namespace xe {
 
   Engine::Engine() {
-    Params::Window wp = {800, 600,
-                         "test",
-                         true,
-                         0, 0, nullptr};
+    setName("Engine");
 
-    window_ = make_ref<Window>();
-    window_->init(wp);
+    gpu_ = make_ref<GPU>();
   }
 
-  void Engine::dummy() {
-    while (!window_->shouldClose()) {
-      window_->pollEvents();
-      window_->swap();
+  Engine::~Engine() {
+
+  }
+
+  Engine &Engine::ref() {
+    static scoped_ptr<Engine> e;
+    if (!e) {
+      e.reset(new Engine());
     }
+    return *e;
+  }
+
+  void Engine::setParams(const Params &params) {
+    params_ = params;
+    gpu_->setParams(params_.gpu_);
+    gpu_->window_->setParams(params_.window_);
+  }
+
+  bool Engine::init() {
+    XE_TRACE_BEGIN("XE", "Engine systems init");
+    XE_CORE_INFO("[ENGINE] Initializing engine systems");
+
+    gpu_->init();
+
+    XE_TRACE_END("XE", "Engine systems init");
+    return true;
+  }
+
+  void Engine::start() {
+    startSystems();
+  }
+
+  void Engine::preUpdate() {
+
+  }
+
+  void Engine::update(Timestep ts) {
+
+  }
+
+  void Engine::postUpdate() {
+
+  }
+
+  void Engine::renderPreUpdate() {
+    gpu_->prepareRender();
+  }
+
+  void Engine::renderUpdate() {
+
+  }
+
+  void Engine::renderPostUpdate() {
+    gpu_->execute();
+  }
+
+  void Engine::stop() {
+    gpu_->stop();
+    stopSystems();
+  }
+
+  void Engine::startSystems() {
+    XE_TRACE_BEGIN("XE", "Engine systems start");
+    XE_CORE_INFO("[ENGINE] Engine start");
+
+    XE_TRACE_END("XE", "Engine systems start");
+  }
+
+  void Engine::stopSystems() {
+    XE_TRACE_BEGIN("XE", "Engine systems stop");
+    XE_CORE_INFO("[ENGINE] Engine stop");
+
+    XE_TRACE_END("XE", "Engine systems stop");
+  }
+
+  bool Engine::isExisting() const {
+    return gpu_->isExisting();
+  }
+
+  void Engine::submitDrawList(DrawList &&dl) {
+    gpu_->appendCommands(std::move(dl));
   }
 
 }

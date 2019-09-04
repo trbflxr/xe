@@ -113,6 +113,8 @@ typedef uint32 size_t;
 
 namespace xe {
 
+  static constexpr size_t cMaxTextureUnits = 16;
+
   struct Params {
     struct Window {
       uint width;
@@ -123,7 +125,14 @@ namespace xe {
       uint iconWidth;
       uint iconHeight;
       byte *iconPixels = nullptr;
-    };
+    } window_;
+
+    struct GPU {
+      uint maxBuffers;
+      uint maxTextures;
+      uint maxMaterials;
+      uint maxFramebuffers;
+    } gpu_;
   };
 
   void XE_API init();

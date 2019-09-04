@@ -32,7 +32,7 @@ namespace xe::window {
     setIcon(data);
     setSwapInterval(data);
 
-    XE_CORE_TRACE("Window initialized successful");
+    XE_CORE_INFO("Window initialized successful");
   }
 
   void swap(detail::WindowData *data) {
@@ -51,7 +51,7 @@ namespace xe::window {
     return glfwGetTime();
   }
 
-  bool shouldClose(detail::WindowData *data) {
+  bool isExisting(detail::WindowData *data) {
     return glfwWindowShouldClose(data->window);
   }
 

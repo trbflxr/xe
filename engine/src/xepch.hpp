@@ -8,6 +8,8 @@
 #include <cassert>
 
 #include <atomic>
+#include <thread>
+#include <mutex>
 #include <algorithm>
 #include <utility>
 

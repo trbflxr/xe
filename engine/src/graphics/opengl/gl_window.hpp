@@ -16,7 +16,7 @@ namespace xe::window {
 
   double uptime(detail::WindowData *data);
 
-  bool shouldClose(detail::WindowData *data);
+  bool isExisting(detail::WindowData *data);
   void forceExit(detail::WindowData *data);
 
   void setTitle(detail::WindowData *data);

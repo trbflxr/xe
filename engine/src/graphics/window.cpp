@@ -24,8 +24,7 @@ namespace xe {
     delete data_;
   }
 
-  void Window::init(const Params::Window &params) {
-    params_ = params;
+  void Window::init() {
     data_->width = params_.width;
     data_->height = params_.height;
     data_->title = params_.title;
@@ -37,8 +36,8 @@ namespace xe {
     window::init(data_);
   }
 
-  bool Window::shouldClose() const {
-    return window::shouldClose(data_);
+  bool Window::isExisting() const {
+    return window::isExisting(data_);
   }
 
   void Window::forceExit() {

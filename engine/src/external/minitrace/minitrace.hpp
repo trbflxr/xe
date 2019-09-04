@@ -30,7 +30,6 @@
 // By default, will collect up to 1000000 events, then you must flush.
 // It's recommended that you simply call mtr_flush on a background thread
 // occasionally. It's safe...ish.
-#define MTR_ENABLED
 #define INTERNAL_MINITRACE_BUFFER_SIZE 1000000
 
 #ifdef __cplusplus

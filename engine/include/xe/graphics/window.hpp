@@ -6,6 +6,7 @@
 #define XE_WINDOW_HPP
 
 #include <xe/core/object.hpp>
+#include <xe/core/timestep.hpp>
 
 namespace xe {
 
@@ -28,7 +29,7 @@ namespace xe {
     void setSwapInterval(bool enabled);
 
     bool isExisting() const;
-    double uptime() const;
+    Timestep uptime() const;
 
     inline Params::Window params() const { return params_; }
     inline void setParams(const Params::Window &params) { params_ = params; }

@@ -26,7 +26,7 @@ option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
 option(XE_USE_GENERIC_FS "Use generic filesystem" OFF)
 
-set(XE_DEBUG_FLAGS "-Od -DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
+set(XE_DEBUG_FLAGS "-Od -DXE_DEBUG -DXE_DEBUG_TRACING -DMTR_ENABLED" CACHE STRING "xe_debug flags")
 set(XE_RELEASE_FLAGS "-Ox -DNDEBUG" CACHE STRING "xe_release flags")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
@@ -67,9 +67,6 @@ include_directories(external/glfw/include)
 add_subdirectory(external/tbb)
 include_directories(external/tbb/include)
 
-add_subdirectory(external/minitrace)
-include_directories(external/minitrace/include)
-
 add_subdirectory(external/spdlog)
 include_directories(external/spdlog/include)
 
@@ -81,6 +78,7 @@ include_directories(src)
 file(GLOB ENGINE_SRC
     src/*.cpp
     src/core/*.cpp
+    src/external/minitrace/*.cpp
     src/graphics/*.cpp
     src/math/*.cpp
     src/utils/*.cpp)
@@ -115,8 +113,7 @@ target_compile_definitions(xe PUBLIC ${XE_DEFINES})
 
 target_link_libraries(xe
     tbb_static
-    spdlog
-    minitrace)
+    spdlog)
 
 #link opengl libs
 if (XE_PLATFORM_GL)

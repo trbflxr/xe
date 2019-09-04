@@ -8,9 +8,6 @@
 #include <xe/common.hpp>
 
 #ifdef XE_DEBUG_TRACING
-  #ifndef MTR_ENABLED
-    #define MTR_ENABLED
-  #endif
   #define XE_TRACE_INIT(file)              xe::detail::traceInit(file)
   #define XE_TRACE_SHUTDOWN()              xe::detail::traceShutdown()
   #define XE_TRACE_SCOPE(category, name)   xe::detail::traceScope(category, name)

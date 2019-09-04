@@ -3,8 +3,8 @@
 //
 
 #include "xepch.hpp"
+#include "external/minitrace/minitrace.hpp"
 #include <xe/utils/debug_trace.hpp>
-#include <minitrace/minitrace.h>
 
 namespace xe::detail {
 

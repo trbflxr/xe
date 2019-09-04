@@ -47,7 +47,7 @@ namespace xe {
   void Window::pollEvents() {
     XE_TRACE_BEGIN("XE", "Window poll events");
     window::pollEvents(data_);
-    XE_TRACE_BEGIN("XE", "Window poll events");
+    XE_TRACE_END("XE", "Window poll events");
   }
 
   void Window::swap() {
@@ -60,8 +60,8 @@ namespace xe {
     window::stop(data_);
   }
 
-  double Window::uptime() const {
-    return window::uptime(data_);
+  Timestep Window::uptime() const {
+    return Timestep(static_cast<float>(window::uptime(data_)));
   }
 
   void Window::setTitle(const string &title) {

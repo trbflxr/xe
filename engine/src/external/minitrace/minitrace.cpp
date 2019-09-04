@@ -10,7 +10,7 @@
 #include <string.h>
 
 #ifdef _WIN32
-//#pragma warning (disable:4996)
+#pragma warning (disable:4996)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #define __thread __declspec(thread)
@@ -26,7 +26,7 @@
 #include <unistd.h>
 #endif
 
-#include "include/minitrace/minitrace.h"
+#include "minitrace.hpp"
 
 #ifdef __GNUC__
 #define ATTR_NORETURN __attribute__((noreturn))
@@ -61,7 +61,7 @@ static int is_tracing = 0;
 static int64_t time_offset;
 static int first_line = 1;
 static FILE *f;
-static int cur_thread_id;	// Thread local storage
+static __thread int cur_thread_id;	// Thread local storage
 static int cur_process_id;
 static pthread_mutex_t mutex;
 
@@ -299,7 +299,7 @@ void mtr_flush() {
 		}
 #endif
 
-		len = snprintf(linebuf, ARRAY_SIZE(linebuf), "%s{\"cat\":\"%s\",\"pid\":%i,\"tid\":%i,\"ts\":%lli,\"ph\":\"%c\",\"name\":\"%s\",\"args\":{%s}%s}",
+		len = snprintf(linebuf, ARRAY_SIZE(linebuf), "%s{\"cat\":\"%s\",\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64 ",\"ph\":\"%c\",\"name\":\"%s\",\"args\":{%s}%s}",
 				first_line ? "" : ",\n",
 				cat, raw->pid, raw->tid, raw->ts - time_offset, raw->ph, raw->name, arg_buf, id_buf);
 		fwrite(linebuf, 1, len, f);

@@ -26,6 +26,8 @@ namespace xe {
     inline void setParams(const Params::GPU &params) { params_ = params; }
 
     gpu::Buffer createBuffer(const gpu::Buffer::Info &info);
+    gpu::Texture createTexture(const gpu::Texture::Info &info);
+    gpu::Material createMaterial(const gpu::Material::Info &info);
 
     inline uint maxBuffers() const { return params_.maxBuffers; }
     inline uint maxTextures() const { return params_.maxTextures; }

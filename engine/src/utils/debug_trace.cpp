@@ -18,10 +18,6 @@ namespace xe::detail {
     mtr_shutdown();
   }
 
-  void traceScope(const char *category, const char *name) {
-    MTR_SCOPE(category, name);
-  }
-
   void traceBegin(const char *category, const char *name) {
     MTR_BEGIN(category, name);
   }

@@ -27,15 +27,15 @@ namespace xe {
 
     static Color lerp(const Color &a, const Color &b, float alpha);
 
-    static const Color Transparent;
-    static const Color Black;
-    static const Color White;
-    static const Color Red;
-    static const Color Green;
-    static const Color Blue;
-    static const Color Yellow;
-    static const Color Magenta;
-    static const Color Cyan;
+    static Color Transparent();
+    static Color Black();
+    static Color White();
+    static Color Red();
+    static Color Green();
+    static Color Blue();
+    static Color Yellow();
+    static Color Magenta();
+    static Color Cyan();
 
     inline Color operator+(const Color& o) const { return Color(r + o.r, g + o.g, b + o.b, a + o.a); }
     inline Color& operator+=(const Color& o) { r += o.r; g += o.g; b += o.b; a += o.a; return *this; }

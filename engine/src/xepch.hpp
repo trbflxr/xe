@@ -6,6 +6,7 @@
 #define XE_XEPCH_HPP
 
 #include <cassert>
+#include <cstring>
 
 #include <atomic>
 #include <thread>

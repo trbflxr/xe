@@ -40,6 +40,22 @@ namespace xe {
     return cmd->data_;
   }
 
+  DrawList::FillTextureData &DrawList::fillTextureCommand() {
+    FillTextureCommand *cmd = new FillTextureCommand();
+    ref_ptr<FillTextureCommand> c;
+    c.reset(cmd);
+    commands_.push_back(c);
+    return cmd->data_;
+  }
+
+  DrawList::SetupMaterialData &DrawList::setupMaterialCommand() {
+    SetupMaterialCommand *cmd = new SetupMaterialCommand();
+    ref_ptr<SetupMaterialCommand> c;
+    c.reset(cmd);
+    commands_.push_back(c);
+    return cmd->data_;
+  }
+
   DrawList::RenderData &DrawList::renderCommand() {
     RenderCommand *cmd = new RenderCommand();
     ref_ptr<RenderCommand> c;

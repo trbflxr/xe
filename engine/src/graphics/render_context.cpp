@@ -24,12 +24,14 @@ namespace xe {
     gpu::initBackEnd(&backEnd_, params);
 
     buffers_.alloc(params.maxBuffers);
+    textures_.alloc(params.maxTextures);
+    materials_.alloc(params.maxMaterials);
 
     XE_CORE_INFO("[GPU / RenderContext] Initialized RenderContext with params:\n"
                  "\t- maxBuffers\t\t({})\n"
                  "\t- maxTextures\t\t({})\n"
                  "\t- maxMaterials\t\t({})\n"
-                 "\t- maxFramebuffers\t({})\n",
+                 "\t- maxFramebuffers\t({})",
                  params.maxBuffers, params.maxTextures, params.maxMaterials, params.maxFramebuffers);
   }
 

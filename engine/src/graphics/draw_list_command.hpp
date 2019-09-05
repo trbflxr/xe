@@ -14,21 +14,35 @@ namespace xe {
   };
 
   struct ClearCommand : DrawList::Command {
-    friend class DisplayList;
+    friend class DrawList;
     void execute() override;
 
     DrawList::ClearData data_;
   };
 
   struct FillBufferCommand : DrawList::Command {
-    friend class DisplayList;
+    friend class DrawList;
     void execute() override;
 
     DrawList::FillBufferData data_;
   };
 
-  struct RenderCommand : DrawList::Command {
+  struct FillTextureCommand : DrawList::Command {
     friend class DisplayList;
+    void execute() override;
+
+    DrawList::FillTextureData data_;
+  };
+
+  struct SetupMaterialCommand : DrawList::Command {
+    friend class DisplayList;
+    void execute() override;
+
+    DrawList::SetupMaterialData data_;
+  };
+
+  struct RenderCommand : DrawList::Command {
+    friend class DrawList;
     void execute() override;
 
     DrawList::RenderData data_;

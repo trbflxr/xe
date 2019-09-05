@@ -15,24 +15,24 @@ namespace xe::gpu {
   XE_OBJECT(BackEnd, Object);
 
     struct Buffer {
-      uint buffer;
+      uint buffer = 0;
     };
 
     struct Texture {
-      uint texture;
-      uint format;
-      uint internalFormat;
-      uint type;
-      uint target;
+      uint texture = 0;
+      uint format = 0;
+      uint internalFormat = 0;
+      uint type = 0;
+      uint target = 0;
     };
 
     struct Material {
-      uint program;
+      uint program = 0;
       int32 textureUniformsLoc[cMaxTextureUnits] = { };
     };
 
     struct Framebuffer {
-      uint framebuffer;
+      uint framebuffer = 0;
     };
 
     scoped_array<Buffer> buffers;
@@ -46,6 +46,8 @@ namespace xe::gpu {
 
   void clear(const DrawList::ClearData &d);
   void fillBuffer(DrawList::FillBufferData &d);
+  void fillTexture(DrawList::FillTextureData &d);
+  void setupMaterial(DrawList::SetupMaterialData &d);
   void render(DrawList::RenderData &d);
 }
 

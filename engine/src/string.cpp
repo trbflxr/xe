@@ -3,7 +3,6 @@
 //
 
 #include "xepch.hpp"
-#include <cstring>
 #include <xe/string.hpp>
 
 namespace xe {
@@ -178,6 +177,28 @@ namespace xe {
 
     const uint length = end - str + 1;
     return std::string(str, length);
+  }
+
+  string string::getFileName(const string &str, bool includeExt, const char *delims) {
+    string fileName = str;
+    const size_t lastSlash = fileName.base_.find_last_of(delims);
+    if (std::string::npos != lastSlash) {
+      fileName.base_.erase(0, lastSlash + 1);
+    }
+
+    if (!includeExt) {
+      const size_t period = fileName.base_.rfind('.');
+      if (std::string::npos != period) {
+        fileName.erase(period, fileName.size() - period);
+      }
+    }
+    return fileName;
+  }
+
+  string string::getFileExt(const string &str) {
+    const char *dot = strrchr(str.c_str(), '.');
+    if (!dot || dot == str) return "";
+    return string(dot + 1);
   }
 
   vector<string> string::tokenize(const string &str) {

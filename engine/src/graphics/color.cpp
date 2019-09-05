@@ -6,19 +6,6 @@
 
 namespace xe {
 
-#define COLOR(name, r, g, b) \
-  const Color Color::name (r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-
-  const Color Color::Transparent = Color(0.0f, 0.0f, 0.0f, 0.0f);
-  COLOR(Black, 0, 0, 0);
-  COLOR(White, 255, 255, 255);
-  COLOR(Red, 255, 0, 0);
-  COLOR(Green, 0, 255, 0);
-  COLOR(Blue, 0, 0, 255);
-  COLOR(Yellow, 255, 255, 0);
-  COLOR(Magenta, 255, 0, 255);
-  COLOR(Cyan, 0, 255, 255);
-
   Color::Color() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) { }
   Color::Color(const Color &o) : r(o.r), g(o.g), b(o.b), a(o.a) { }
   Color::Color(const vec4 &rgba) : r(rgba[0]), g(rgba[1]), b(rgba[2]), a(rgba[3]) { }
@@ -55,5 +42,23 @@ namespace xe {
     c += a;
     return c;
   }
+
+#define COLOR(name, r, g, b) \
+  static Color name (r / 255.0f, g / 255.0f, b / 255.0f, 1.0f); \
+  return name;
+
+  Color Color::Transparent() {
+    static Color transparent = Color(0.0f, 0.0f, 0.0f, 0.0f);
+    return transparent;
+  }
+
+  Color Color::Black() { COLOR(Black, 0, 0, 0); }
+  Color Color::White() { COLOR(White, 255, 255, 255); }
+  Color Color::Red() { COLOR(Red, 255, 0, 0); }
+  Color Color::Green() { COLOR(Green, 0, 255, 0); }
+  Color Color::Blue() { COLOR(Blue, 0, 0, 255); }
+  Color Color::Yellow() { COLOR(Yellow, 255, 255, 0); }
+  Color Color::Magenta() { COLOR(Magenta, 255, 0, 255); }
+  Color Color::Cyan() { COLOR(Cyan, 0, 255, 255); }
 
 }

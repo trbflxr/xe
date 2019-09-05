@@ -139,4 +139,94 @@ namespace xe {
     return gpu::Buffer(ctx_, id);
   }
 
+  gpu::Texture GPU::createTexture(const gpu::Texture::Info &info) {
+    if (info.format == TexelsFormat::None) {
+      XE_CORE_ERROR("[GPU] Could not create texture: texels format not found");
+      return gpu::Texture();
+    }
+
+    const uint id = acquireResource(&ctx_->textures_);
+    const uint loc = RenderContext::index(id);
+    gpu::TextureInstance &inst = ctx_->textures_[loc];
+    inst.info = info;
+
+    switch (info.format) {
+      case TexelsFormat::R8: inst.bpp = 1;
+        break;
+      case TexelsFormat::Rg8: inst.bpp = 2;
+        break;
+      case TexelsFormat::Rgb8: inst.bpp = 3;
+        break;
+      case TexelsFormat::Rgba8: inst.bpp = 4;
+        break;
+      case TexelsFormat::Depth16: inst.bpp = 2;
+        break;
+      case TexelsFormat::DepthStencil16: inst.bpp = 4;
+        break;
+      default: break;
+    }
+
+    ++usedTextures_;
+
+    return gpu::Texture{ctx_, id};
+  }
+
+  static size_t computeVertexSize(uint format) {
+    const uint type = (format & VertexFormat::TypeMask) >> VertexFormat::TypeShift;
+    uint result = (format & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
+    switch (type) {
+      // 1
+      case VertexFormat::Int8: break;
+      case VertexFormat::Uint8: break;
+        // 2
+      case VertexFormat::Int16:
+      case VertexFormat::Uint16: result *= 2;
+        break;
+        // 4
+      case VertexFormat::Int32:
+      case VertexFormat::Uint32:
+      case VertexFormat::Float: result *= 4;
+        break;
+      default: return 0;
+    }
+    return result;
+  }
+
+  gpu::Material GPU::createMaterial(const gpu::Material::Info &info) {
+    const uint id = acquireResource(&ctx_->materials_);
+    const uint loc = RenderContext::index(id);
+    gpu::MaterialInstance &inst = ctx_->materials_[loc];
+    inst.info = info;
+
+    inst.fragShader = info.shader.frag;
+    inst.vertShader = info.shader.vert;
+
+    inst.info.shader.frag = inst.fragShader.c_str();
+    inst.info.shader.vert = inst.vertShader.c_str();
+
+    // Compute strides/offsets
+    size_t stride[cMaxVertexAttribs] = { };
+    for (size_t i = 0; i < cMaxVertexAttribs; ++i) {
+      const char *name = info.attribs[i].name;
+      if (name) {
+        inst.attributes[i] = name;
+        inst.info.attribs[i].name = inst.attributes[i].c_str();
+      }
+      if (!inst.info.attribs[i].offset) {
+        inst.info.attribs[i].offset = stride[inst.info.attribs[i].bufferIndex];
+      }
+      stride[inst.info.attribs[i].bufferIndex] += computeVertexSize(inst.info.attribs[i].format);
+    }
+
+    for (auto &a : inst.info.attribs) {
+      if (!a.stride) {
+        a.stride = stride[a.bufferIndex];
+      }
+    }
+
+    ++usedMaterials_;
+
+    return gpu::Material{ctx_, id};
+  }
+
 }

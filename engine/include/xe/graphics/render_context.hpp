@@ -15,12 +15,16 @@ namespace xe {
   namespace gpu {
     struct BackEnd;
     void fillBuffer(DrawList::FillBufferData &d);
+    void fillTexture(DrawList::FillTextureData &d);
+    void setupMaterial(DrawList::SetupMaterialData &d);
     void render(DrawList::RenderData &d);
   }
 
   class XE_API RenderContext {
     friend class GPU;
     friend void gpu::fillBuffer(DrawList::FillBufferData &d);
+    friend void gpu::fillTexture(DrawList::FillTextureData &d);
+    friend void gpu::setupMaterial(DrawList::SetupMaterialData &d);
     friend void gpu::render(DrawList::RenderData &d);
   public:
     RenderContext();
@@ -57,6 +61,10 @@ namespace xe {
     gpu::BackEnd *backEnd_;
 
     scoped_array<gpu::BufferInstance> buffers_;
+    scoped_array<gpu::TextureInstance> textures_;
+    scoped_array<gpu::MaterialInstance> materials_;
+
+    DrawList::SetupMaterialData mainMaterial_;
 
   };
 

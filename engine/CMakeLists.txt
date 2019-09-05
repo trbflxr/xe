@@ -70,6 +70,8 @@ include_directories(external/tbb/include)
 add_subdirectory(external/spdlog)
 include_directories(external/spdlog/include)
 
+include_directories(external/stb)
+
 #includes
 include_directories(${XE_INCLUDE_DIRS})
 include_directories(src)

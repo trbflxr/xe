@@ -80,6 +80,9 @@ namespace xe {
     static string getWord(const char *str, const char **outPosition);
     static string getStatement(const char *str, const char **outPosition = nullptr);
 
+    static string getFileName(const string &str, bool includeExt = true, const char *delims = "\\/");
+    static string getFileExt(const string &str);
+
     static vector<string> tokenize(const string &str);
 
   private:

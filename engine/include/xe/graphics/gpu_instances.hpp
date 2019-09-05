@@ -16,7 +16,7 @@ namespace xe::gpu {
 
     bool acquire() {
       uint v = (version + 1);
-      if (!v){
+      if (!v) {
         v = 1;
       }
       uint e = 0;
@@ -34,6 +34,19 @@ namespace xe::gpu {
 
   struct BufferInstance : public InstanceBase {
     Buffer::Info info;
+  };
+
+  struct TextureInstance : public InstanceBase {
+    Texture::Info info;
+    size_t bpp;
+    uint id;
+  };
+
+  struct MaterialInstance : public InstanceBase {
+    Material::Info info;
+    string vertShader;
+    string fragShader;
+    string attributes[cMaxVertexAttribs];
   };
 
 }

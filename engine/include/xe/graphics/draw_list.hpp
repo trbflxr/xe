@@ -57,6 +57,34 @@ namespace xe {
       PROPERTY_PTR(void, data);
     };
 
+    struct FillTextureData {
+      typedef FillTextureData Self;
+      PROPERTY(gpu::Texture, texture, { });
+      PROPERTY(uint16, offsetX, 0);
+      PROPERTY(uint16, offsetY, 0);
+      PROPERTY(uint16, offsetZ, 0);
+      PROPERTY(uint16, width, 0);
+      PROPERTY(uint16, height, 0);
+      PROPERTY(uint16, depth, 0);
+      PROPERTY(bool, buildMipmap, false);
+      PROPERTY_PTR(void, data0);
+      PROPERTY_PTR(void, data1);
+      PROPERTY_PTR(void, data2);
+      PROPERTY_PTR(void, data3);
+      PROPERTY_PTR(void, data4);
+      PROPERTY_PTR(void, data5);
+    };
+
+    struct SetupMaterialData {
+      typedef SetupMaterialData Self;
+      PROPERTY(gpu::Material, material, { });
+      PROP_ARRAY(gpu::Texture, cMaxTextureUnits, texture);
+      PROP_ARRAY(gpu::Buffer, cMaxVertexAttribs, buffer);
+      PROP_ARRAY(gpu::Buffer, cMaxUniformBuffers + 1, uniformBuffer);
+      PROPERTY(vec4, scissor, vec4(0.0f));
+      PROPERTY(mat4, modelMatrix, mat4());
+    };
+
     struct RenderData {
       typedef RenderData Self;
       PROPERTY(gpu::Buffer, indexBuffer, { });
@@ -72,6 +100,8 @@ namespace xe {
 
     ClearData &clearCommand();
     FillBufferData &fillBufferCommand();
+    FillTextureData &fillTextureCommand();
+    SetupMaterialData &setupMaterialCommand();
     RenderData &renderCommand();
 
   private:

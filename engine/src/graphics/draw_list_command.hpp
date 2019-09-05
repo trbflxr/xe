@@ -13,6 +13,13 @@ namespace xe {
     virtual void execute() = 0;
   };
 
+  struct SetupViewCommand : DrawList::Command {
+    friend class DrawList;
+    void execute() override;
+
+    DrawList::ViewData data_;
+  };
+
   struct ClearCommand : DrawList::Command {
     friend class DrawList;
     void execute() override;
@@ -28,14 +35,14 @@ namespace xe {
   };
 
   struct FillTextureCommand : DrawList::Command {
-    friend class DisplayList;
+    friend class DrawList;
     void execute() override;
 
     DrawList::FillTextureData data_;
   };
 
   struct SetupMaterialCommand : DrawList::Command {
-    friend class DisplayList;
+    friend class DrawList;
     void execute() override;
 
     DrawList::SetupMaterialData data_;

@@ -76,6 +76,7 @@ protected:
 
     matInfo.textures[0] = TextureType::T2D;
 
+
     gpu::Texture::Info texInfo;
     texData_ = gpu::Texture::loadFromFile("assets/textures/test.png", texInfo);
     texInfo.magFilter = TextureMagFilter::Linear;
@@ -102,13 +103,14 @@ protected:
 
   void renderUpdate() override {
     DrawList frame;
+    frame.setupViewCommand()
+        .set_viewport({0, 0, 800, 600});
     frame.clearCommand()
         .set_color(Color(0xFFA6A6A6));
     frame.setupMaterialCommand()
         .set_material(material_)
         .set_buffer(0, vbo_)
-        .set_texture(0, texture_)
-        .set_modelMatrix(mat4::scale(0.5f));
+        .set_texture(0, texture_);
     frame.renderCommand()
         .set_indexBuffer(ibo_)
         .set_count(sizeof(indexData) / sizeof(uint16))

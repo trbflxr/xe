@@ -38,7 +38,7 @@ namespace xe {
     };
 
     struct XE_API Texture : public Resource {
-      Texture(RenderContext *ctx = nullptr, uint32 id = 0) : Resource{ctx, ResourceType::Texture, id} { }
+      Texture(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Texture, id} { }
       struct Info {
         uint16 width = 1;
         uint16 height = 1;
@@ -58,7 +58,7 @@ namespace xe {
     };
 
     struct Material : public Resource {
-      Material(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Material, id} { }
+      Material(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Material, id} { }
       struct Info {
         struct Shader {
           string vert;
@@ -83,6 +83,22 @@ namespace xe {
         bool rgbaWrite = true;
         bool depthWrite = true;
       };
+    };
+
+    struct XE_API Framebuffer : public Resource {
+      Framebuffer(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Framebuffer, id} { }
+      struct Info {
+        Texture::Info colorAttachmentInfo[cMaxFramebufferColorAttachments];
+        Texture::Info depthStencilAttachmentInfo;
+        uint16 colorAttachmentsSize;
+        vec2 size;
+      };
+
+      Texture colorAttachment(uint16 index = 0) const;
+      Texture depthStencilAttachment() const;
+
+      void setColorAttachment(Texture t, uint16 index = 0);
+      void setDepthStencilAttachment(Texture t);
     };
 
   }

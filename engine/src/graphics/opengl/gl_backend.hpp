@@ -11,9 +11,9 @@
 
 namespace xe::gpu {
 
-  struct BackEnd : public Object {
+  class XE_API BackEnd : public Object {
   XE_OBJECT(BackEnd, Object);
-
+  public:
     struct Buffer {
       uint buffer = 0;
     };
@@ -35,20 +35,23 @@ namespace xe::gpu {
       uint framebuffer = 0;
     };
 
+  public:
+    static void initBackEnd(BackEnd **backEnd, const Params::GPU &params);
+    static void destroyBackEnd(BackEnd **backEnd);
+
+    static void clear(const DrawList::ClearData &d);
+    static void setupView(DrawList::ViewData &d);
+    static void fillBuffer(DrawList::FillBufferData &d);
+    static void fillTexture(DrawList::FillTextureData &d);
+    static void setupMaterial(DrawList::SetupMaterialData &d);
+    static void render(DrawList::RenderData &d);
+
+  public:
     scoped_array<Buffer> buffers;
     scoped_array<Texture> textures;
     scoped_array<Material> materials;
     scoped_array<Framebuffer> framebuffers;
   };
-
-  void initBackEnd(BackEnd **backEnd, const Params::GPU &params);
-  void destroyBackEnd(BackEnd **backEnd);
-
-  void clear(const DrawList::ClearData &d);
-  void fillBuffer(DrawList::FillBufferData &d);
-  void fillTexture(DrawList::FillTextureData &d);
-  void setupMaterial(DrawList::SetupMaterialData &d);
-  void render(DrawList::RenderData &d);
 }
 
 #endif //XE_GL_BACKEND_HPP

@@ -3,12 +3,12 @@
 //
 
 #include "xepch.hpp"
+#include <xe/graphics/render_context.hpp>
 #ifdef XE_PLATFORM_GL
   #include "graphics/opengl/gl_backend.hpp"
 #else
   #error only gl currently supported
 #endif
-#include <xe/graphics/render_context.hpp>
 
 namespace xe {
 
@@ -17,15 +17,16 @@ namespace xe {
   }
 
   RenderContext::~RenderContext() {
-    gpu::destroyBackEnd(&backEnd_);
+    gpu::BackEnd::destroyBackEnd(&backEnd_);
   }
 
   void RenderContext::init(const Params::GPU &params) {
-    gpu::initBackEnd(&backEnd_, params);
+    gpu::BackEnd::initBackEnd(&backEnd_, params);
 
     buffers_.alloc(params.maxBuffers);
     textures_.alloc(params.maxTextures);
     materials_.alloc(params.maxMaterials);
+    framebuffers_.alloc(params.maxFramebuffers);
 
     XE_CORE_INFO("[GPU / RenderContext] Initialized RenderContext with params:\n"
                  "\t- maxBuffers\t\t({})\n"

@@ -5,8 +5,6 @@
 #include "xepch.hpp"
 #include "draw_list_command.hpp"
 #include <xe/graphics/draw_list.hpp>
-#include <xe/utils/logger.hpp>
-#include <xe/utils/debug_trace.hpp>
 
 namespace xe {
 
@@ -24,9 +22,17 @@ namespace xe {
     XE_TRACE_END("XE", "Draw list update");
   }
 
+  DrawList::ViewData &DrawList::setupViewCommand() {
+    SetupViewCommand *cmd = new SetupViewCommand();
+    ref_ptr<SetupViewCommand> c;
+    c.reset(cmd);
+    commands_.push_back(c);
+    return cmd->data_;
+  }
+
   DrawList::ClearData &DrawList::clearCommand() {
     ClearCommand *cmd = new ClearCommand();
-    ref_ptr<Command> c;
+    ref_ptr<ClearCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;

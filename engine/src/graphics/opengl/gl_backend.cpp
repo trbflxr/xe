@@ -98,7 +98,10 @@ namespace xe::gpu {
       case CompareFunc::GreaterEqual: return GL_GEQUAL;
       case CompareFunc::Greater: return GL_GREATER;
       case CompareFunc::Always: return GL_ALWAYS;
-      default: return GL_FALSE; //error
+      default: {
+        XE_CORE_ERROR("[GL Error] Invalid compare func");
+        return 0;
+      }
     }
   }
 
@@ -120,6 +123,21 @@ namespace xe::gpu {
     }
   }
 
+  static uint toGL(CubemapTarget e) {
+    switch (e) {
+      case CubemapTarget::PositiveX: return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+      case CubemapTarget::NegativeX: return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+      case CubemapTarget::PositiveY: return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+      case CubemapTarget::NegativeY: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+      case CubemapTarget::PositiveZ: return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+      case CubemapTarget::NegativeZ: return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+      default: {
+        XE_CORE_ERROR("[GL Error] Invalid cubemap target");
+        return 0;
+      }
+    }
+  }
+
   static uint vertexTypeToGL(uint format) {
     format = format & VertexFormat::TypeMask;
     switch (format) {
@@ -130,7 +148,10 @@ namespace xe::gpu {
       case VertexFormat::Uint16: return GL_UNSIGNED_SHORT;
       case VertexFormat::Int32: return GL_INT;
       case VertexFormat::Uint32: return GL_UNSIGNED_INT;
-      default: return GL_FALSE; //error
+      default: {
+        XE_CORE_ERROR("[GL Error] Invalid vertex format");
+        return 0;
+      }
     }
   }
 
@@ -146,7 +167,8 @@ namespace xe::gpu {
 #define GLCHECK_STR(A) GLCHECK_STR_STR(A)
 #define GLCHECK(...) {__VA_ARGS__; checkGLError(__FILE__  ":" GLCHECK_STR(__LINE__) "\n\t-> " #__VA_ARGS__);}
 
-  void initBackEnd(BackEnd **b, const Params::GPU &params) {
+  //todo: refactor
+  void BackEnd::initBackEnd(BackEnd **b, const Params::GPU &params) {
     *b = new BackEnd();
 
     (*b)->buffers.alloc(params.maxBuffers);
@@ -158,54 +180,9 @@ namespace xe::gpu {
 //    glEnable(GL_DEPTH_TEST);
   }
 
-  void destroyBackEnd(BackEnd **b) {
+  void BackEnd::destroyBackEnd(BackEnd **b) {
     delete *b;
     *b = nullptr;
-  }
-
-  void clear(const DrawList::ClearData &d) {
-    uint mask = 0;
-    if (d.clearColor) {
-      GLCHECK(glClearColor(d.color.r, d.color.g, d.color.b, d.color.a));
-      mask |= GL_COLOR_BUFFER_BIT;
-      GLCHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
-    }
-    if (d.clearDepth) {
-      GLCHECK(glClearDepth(d.depth));
-      mask |= GL_DEPTH_BUFFER_BIT;
-      GLCHECK(glDepthMask(GL_TRUE));
-    }
-    if (d.clearStencil) {
-      GLCHECK(glClearStencil(d.stencil));
-      mask |= GL_STENCIL_BUFFER_BIT;
-    }
-    GLCHECK(glClear(mask));
-  }
-
-  void fillBuffer(DrawList::FillBufferData &d) {
-    auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backEnd_->buffers);
-    uint id = b.second->buffer;
-    const uint target = toGL(b.first->info.type_);
-
-    if (!id) {
-      GLCHECK(glGenBuffers(1, &id));
-      GLCHECK(glBindBuffer(target, id));
-      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage_)));
-      b.second->buffer = id;
-    }
-
-    GLCHECK(glBindBuffer(target, id));
-
-    if (b.first->info.size_ != d.size) {
-      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage_)));
-      b.first->info.size_ = d.size;
-    }
-
-    GLCHECK(glBufferSubData(target, d.offset, d.size, d.data));
-
-    if (target == GL_UNIFORM_BUFFER) {
-      GLCHECK(glBindBufferBase(target, id, id));
-    }
   }
 
   static void initTextureParams(uint target, const Texture::Info &info) {
@@ -346,7 +323,169 @@ namespace xe::gpu {
     }
   }
 
-  void fillTexture(DrawList::FillTextureData &d) {
+  static void SetupFramebufferTexture(std::pair<TextureInstance *, BackEnd::Texture *> t, uint mipLevel, uint16 i) {
+    switch (t.second->target) {
+      case GL_TEXTURE_2D: {
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
+                                       GL_TEXTURE_2D, t.second->texture, mipLevel));
+        break;
+      }
+      case GL_TEXTURE_CUBE_MAP: {
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
+                                       GL_TEXTURE_CUBE_MAP_POSITIVE_X, t.second->texture, mipLevel));
+
+        GLCHECK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
+        break;
+      }
+      default: {
+        XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D or Cubemap (color {}})", i);
+        break;
+      }
+    }
+  }
+
+  static void SetupFramebufferDepth(std::pair<TextureInstance *, BackEnd::Texture *> t, uint mipLevel) {
+    if (t.second->target != GL_TEXTURE_2D) {
+      XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D (depth/stencil)");
+      return;
+    }
+    switch (t.first->info.format) {
+      case TexelsFormat::Depth16:
+      case TexelsFormat::Depth24: {
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                       GL_TEXTURE_2D, t.second->texture, mipLevel));
+        break;
+      }
+      case TexelsFormat::DepthStencil16:
+      case TexelsFormat::DepthStencil24: {
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                       GL_TEXTURE_2D, t.second->texture, mipLevel));
+        break;
+      }
+      default: {
+        XE_CORE_ERROR("[GL Error] Invalid texels-format for a depth/stencil texture");
+      }
+    }
+  }
+
+  void BackEnd::setupView(DrawList::ViewData &d) {
+    if (d.framebuffer.id != 0) {
+      auto fb = RenderContext::getResource(d.framebuffer.id, &d.framebuffer.ctx->framebuffers_,
+                                           &d.framebuffer.ctx->backEnd_->framebuffers);
+      uint fbId = fb.second->framebuffer;
+      if (!fbId) {
+        GLCHECK(glGenFramebuffers(1, &fbId));
+        fb.second->framebuffer = fbId;
+      }
+
+      GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbId));
+
+      if (d.resolution.x == 0) {
+        d.resolution.x = static_cast<uint16>(d.viewport.width);
+      }
+
+      if (d.resolution.y == 0) {
+        d.resolution.y = static_cast<uint16>(d.viewport.height);
+      }
+
+      bool resize = false;
+      if (fb.first->info.size.x != d.resolution.x || fb.first->info.size.y != d.resolution.y) {
+        resize = true;
+        fb.first->info.size = d.resolution;
+      }
+
+      if (d.cubemapTarget != CubemapTarget::Invalid) {
+        for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+          auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
+                                                &fb.first->colorAttachments[i].ctx->textures_,
+                                                &fb.first->colorAttachments[i].ctx->backEnd_->textures);
+          initTexture(tex);
+          if (tex.second->target == GL_TEXTURE_CUBE_MAP) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, toGL(d.cubemapTarget),
+                                   tex.second->texture, d.mipLevel);
+          }
+        }
+      } else {
+        for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+          auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
+                                                &fb.first->colorAttachments[i].ctx->textures_,
+                                                &fb.first->colorAttachments[i].ctx->backEnd_->textures);
+          if (resize) {
+            tex.first->info.width = static_cast<uint16>(d.resolution.x);
+            tex.first->info.height = static_cast<uint16>( d.resolution.y);
+          }
+          initTexture(tex, resize);
+          SetupFramebufferTexture(tex, d.mipLevel, i);
+        }
+
+        if (RenderContext::checkValidResource(fb.first->depthAttachment.id, &d.framebuffer.ctx->textures_)) {
+          auto tex = RenderContext::getResource(fb.first->depthAttachment.id,
+                                                &fb.first->depthAttachment.ctx->textures_,
+                                                &fb.first->depthAttachment.ctx->backEnd_->textures);
+          if (resize) {
+            tex.first->info.width = static_cast<uint16>(d.resolution.x);
+            tex.first->info.height = static_cast<uint16>( d.resolution.y);
+          }
+          initTexture(tex, resize);
+          SetupFramebufferDepth(tex, d.mipLevel);
+        }
+      }
+    } else {
+      GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    }
+
+    if (d.viewport.width != 0 && d.viewport.height != 0) {
+      GLCHECK(glViewport(d.viewport.x, d.viewport.y, d.viewport.width, d.viewport.height));
+    }
+    GLCHECK(glDisable(GL_SCISSOR_TEST));
+  }
+
+  void BackEnd::clear(const DrawList::ClearData &d) {
+    uint mask = 0;
+    if (d.clearColor) {
+      GLCHECK(glClearColor(d.color.r, d.color.g, d.color.b, d.color.a));
+      mask |= GL_COLOR_BUFFER_BIT;
+      GLCHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+    }
+    if (d.clearDepth) {
+      GLCHECK(glClearDepth(d.depth));
+      mask |= GL_DEPTH_BUFFER_BIT;
+      GLCHECK(glDepthMask(GL_TRUE));
+    }
+    if (d.clearStencil) {
+      GLCHECK(glClearStencil(d.stencil));
+      mask |= GL_STENCIL_BUFFER_BIT;
+    }
+    GLCHECK(glClear(mask));
+  }
+
+  void BackEnd::fillBuffer(DrawList::FillBufferData &d) {
+    auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backEnd_->buffers);
+    uint id = b.second->buffer;
+    const uint target = toGL(b.first->info.type_);
+
+    if (!id) {
+      GLCHECK(glGenBuffers(1, &id));
+      GLCHECK(glBindBuffer(target, id));
+      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage_)));
+      b.second->buffer = id;
+    }
+
+    GLCHECK(glBindBuffer(target, id));
+
+    if (b.first->info.size_ != d.size) {
+      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage_)));
+      b.first->info.size_ = d.size;
+    }
+
+    GLCHECK(glBufferSubData(target, d.offset, d.size, d.data));
+
+    if (target == GL_UNIFORM_BUFFER) {
+      GLCHECK(glBindBufferBase(target, id, id));
+    }
+  }
+
+  void BackEnd::fillTexture(DrawList::FillTextureData &d) {
     auto t = RenderContext::getResource(d.texture.id, &d.texture.ctx->textures_, &d.texture.ctx->backEnd_->textures);
 
     bool sizeChanged = false;
@@ -427,7 +566,7 @@ namespace xe::gpu {
     return shader;
   }
 
-  void setupMaterial(DrawList::SetupMaterialData &d) {
+  void BackEnd::setupMaterial(DrawList::SetupMaterialData &d) {
     bool mainMaterialChanged = d.material.id != d.material.ctx->mainMaterial_.material.id;
     d.material.ctx->mainMaterial_ = d;
     auto mat = RenderContext::getResource(d.material.ctx->mainMaterial_.material.id, &d.material.ctx->materials_,
@@ -571,7 +710,7 @@ namespace xe::gpu {
     }
   }
 
-  void render(DrawList::RenderData &d) {
+  void BackEnd::render(DrawList::RenderData &d) {
     auto buf = RenderContext::getResource(d.indexBuffer.id, &d.indexBuffer.ctx->buffers_,
                                           &d.indexBuffer.ctx->backEnd_->buffers);
 

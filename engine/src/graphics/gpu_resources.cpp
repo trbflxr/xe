@@ -4,6 +4,7 @@
 
 #include "xepch.hpp"
 #include <xe/graphics/gpu_resources.hpp>
+#include <xe/graphics/render_context.hpp>
 #ifndef STB_IMAGE_IMPLEMENTATION
   #define STB_IMAGE_IMPLEMENTATION
 #endif
@@ -88,6 +89,42 @@ namespace xe::gpu {
 
     assert(false);
     return xe::vector<void *>();
+  }
+
+  Texture Framebuffer::colorAttachment(uint16 index) const {
+    if (!ctx) {
+      return Texture();
+    }
+    RenderContext::checkValidResource(id, &ctx->framebuffers_);
+    const uint loc = RenderContext::index(id);
+    return ctx->framebuffers_[loc].colorAttachments[index];
+  }
+
+  Texture Framebuffer::depthStencilAttachment() const {
+    if (!ctx) {
+      return Texture();
+    }
+    RenderContext::checkValidResource(id, &ctx->framebuffers_);
+    const uint loc = RenderContext::index(id);
+    return ctx->framebuffers_[loc].depthAttachment;
+  }
+
+  void Framebuffer::setColorAttachment(Texture t, uint16 index) {
+    if (!ctx) {
+      return;
+    }
+    RenderContext::checkValidResource(id, &ctx->framebuffers_);
+    const uint loc = RenderContext::index(id);
+    ctx->framebuffers_[loc].colorAttachments[index] = t;
+  }
+
+  void Framebuffer::setDepthStencilAttachment(Texture t) {
+    if (!ctx) {
+      return;
+    }
+    RenderContext::checkValidResource(id, &ctx->framebuffers_);
+    const uint loc = RenderContext::index(id);
+    ctx->framebuffers_[loc].depthAttachment = t;
   }
 
 }

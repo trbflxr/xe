@@ -115,7 +115,7 @@ namespace xe {
 
   static constexpr size_t cMaxTextureUnits = 16;
   static constexpr size_t cMaxVertexAttribs = 16;
-  static constexpr size_t cMaxFramebufferColorTextures = 16;
+  static constexpr size_t cMaxFramebufferColorAttachments = 16;
 
   static constexpr size_t cMaxUniformBuffers = 16;
 
@@ -152,6 +152,16 @@ namespace xe {
     Vertex,
     Index,
     Uniform
+  };
+
+  enum class CubemapTarget {
+    PositiveX,
+    NegativeX,
+    PositiveY,
+    NegativeY,
+    PositiveZ,
+    NegativeZ,
+    Invalid
   };
 
   enum class TexelsFormat {

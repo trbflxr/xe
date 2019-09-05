@@ -49,6 +49,12 @@ namespace xe::gpu {
     string attributes[cMaxVertexAttribs];
   };
 
+  struct FramebufferInstance : public InstanceBase {
+    Framebuffer::Info info;
+    Texture colorAttachments[cMaxFramebufferColorAttachments];
+    Texture depthAttachment;
+  };
+
 }
 
 #endif //XE_GPU_INSTANCES_HPP

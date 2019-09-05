@@ -38,6 +38,23 @@ namespace xe {
   Self& set_##name(size_t i, const type &c) { name[i] = c; return *this; }\
   Self& set_v_##name(std::vector<type> c) { for (uint32 i = 0; i < c.size(); ++i) { set_##name(i, c[i]); } return *this; }
 
+    struct ViewData {
+      typedef ViewData Self;
+      struct Viewport {
+        uint x;
+        uint y;
+        uint width;
+        uint height;
+      };
+      PROPERTY(Viewport, viewport, { });
+      PROPERTY(mat4, viewMatrix, mat4());
+      PROPERTY(mat4, projectionMatrix, mat4());
+      PROPERTY(gpu::Framebuffer, framebuffer, { });
+      PROPERTY(CubemapTarget, cubemapTarget, CubemapTarget::Invalid);
+      PROPERTY(vec2, resolution, vec2());
+      PROPERTY(uint, mipLevel, 0);
+    };
+
     struct ClearData {
       typedef ClearData Self;
       PROPERTY(Color, color, { 0.0f, 0.0f, 0.0f, 1.0f });
@@ -98,6 +115,7 @@ namespace xe {
 #undef PROPERTY_PTR
 #undef PROP_ARRAY
 
+    ViewData &setupViewCommand();
     ClearData &clearCommand();
     FillBufferData &fillBufferCommand();
     FillTextureData &fillTextureCommand();

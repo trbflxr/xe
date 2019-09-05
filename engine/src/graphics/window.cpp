@@ -16,7 +16,7 @@ namespace xe {
 
   Window::Window() {
     setName("Window");
-    data_ = new detail::WindowData();
+    data_ = new Data();
     data_->title = "XE Window";
   }
 
@@ -33,52 +33,52 @@ namespace xe {
     data_->icon.height = params_.iconHeight;
     data_->icon.pixels = params_.iconPixels;
 
-    window::init(data_);
+    WindowBackend::init(data_);
   }
 
   bool Window::isExisting() const {
-    return window::isExisting(data_);
+    return WindowBackend::isExisting(data_);
   }
 
   void Window::forceExit() {
-    window::forceExit(data_);
+    WindowBackend::forceExit(data_);
   }
 
   void Window::pollEvents() {
     XE_TRACE_BEGIN("XE", "Window poll events");
-    window::pollEvents(data_);
+    WindowBackend::pollEvents(data_);
     XE_TRACE_END("XE", "Window poll events");
   }
 
   void Window::swap() {
     XE_TRACE_BEGIN("XE", "Window swap");
-    window::swap(data_);
+    WindowBackend::swap(data_);
     XE_TRACE_END("XE", "Window swap");
   }
 
   void Window::stop() {
-    window::stop(data_);
+    WindowBackend::stop(data_);
   }
 
   Timestep Window::uptime() const {
-    return Timestep(static_cast<float>(window::uptime(data_)));
+    return Timestep(static_cast<float>(WindowBackend::uptime(data_)));
   }
 
   void Window::setTitle(const string &title) {
     data_->title = title;
-    window::setTitle(data_);
+    WindowBackend::setTitle(data_);
   }
 
   void Window::setIcon(uint width, uint height, byte *pixels) {
     data_->icon.width = width;
     data_->icon.height = height;
     data_->icon.pixels = pixels;
-    window::setIcon(data_);
+    WindowBackend::setIcon(data_);
   }
 
   void Window::setSwapInterval(bool enabled) {
     data_->swapInterval = enabled;
-    window::setSwapInterval(data_);
+    WindowBackend::setSwapInterval(data_);
   }
 
 }

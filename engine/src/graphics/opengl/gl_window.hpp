@@ -7,21 +7,23 @@
 
 #include "gl_window_data.hpp"
 
-namespace xe::window {
+namespace xe {
 
-  void init(detail::WindowData *data);
-  void swap(detail::WindowData *data);
-  void pollEvents(detail::WindowData *data);
-  void stop(detail::WindowData *data);
+  struct WindowBackend {
+    static void init(Window::Data *data);
+    static void swap(Window::Data *data);
+    static void pollEvents(Window::Data *data);
+    static void stop(Window::Data *data);
 
-  double uptime(detail::WindowData *data);
+    static double uptime(Window::Data *data);
 
-  bool isExisting(detail::WindowData *data);
-  void forceExit(detail::WindowData *data);
+    static bool isExisting(Window::Data *data);
+    static void forceExit(Window::Data *data);
 
-  void setTitle(detail::WindowData *data);
-  void setIcon(detail::WindowData *data);
-  void setSwapInterval(detail::WindowData *data);
+    static void setTitle(Window::Data *data);
+    static void setIcon(Window::Data *data);
+    static void setSwapInterval(Window::Data *data);
+  };
 
 }
 

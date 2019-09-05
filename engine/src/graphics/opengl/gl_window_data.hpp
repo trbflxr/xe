@@ -10,11 +10,11 @@
 #include <GLFW/glfw3.h>
 #include <xe/graphics/window.hpp>
 
-namespace xe::detail {
+namespace xe {
 
-  struct WindowData {
+  struct Window::Data {
     GLFWwindow *window;
-    GLFWcursor *mouseCursor;
+    GLFWcursor *mouseCursor; //todo: implement
     GLFWimage icon;
 
     string title;

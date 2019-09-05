@@ -6,9 +6,9 @@
 #include "gl_window.hpp"
 #include <xe/utils/logger.hpp>
 
-namespace xe::window {
+namespace xe {
 
-  void init(detail::WindowData *data) {
+  void WindowBackend::init(Window::Data *data) {
     if (!glfwInit()) {
       XE_CORE_CRITICAL("Window failed at startup");
       return;
@@ -35,42 +35,42 @@ namespace xe::window {
     XE_CORE_INFO("Window initialized successful");
   }
 
-  void swap(detail::WindowData *data) {
+  void WindowBackend::swap(Window::Data *data) {
     glfwSwapBuffers(data->window);
   }
 
-  void pollEvents(detail::WindowData *data) {
+  void WindowBackend::pollEvents(Window::Data *data) {
     glfwPollEvents();
   }
 
-  void stop(detail::WindowData *data) {
+  void WindowBackend::stop(Window::Data *data) {
     glfwTerminate();
   }
 
-  double uptime(detail::WindowData *data) {
+  double WindowBackend::uptime(Window::Data *data) {
     return glfwGetTime();
   }
 
-  bool isExisting(detail::WindowData *data) {
+  bool WindowBackend::isExisting(Window::Data *data) {
     return glfwWindowShouldClose(data->window);
   }
 
-  void forceExit(detail::WindowData *data) {
+  void WindowBackend::forceExit(Window::Data *data) {
     glfwSetWindowShouldClose(data->window, GLFW_TRUE);
   }
 
-  void setTitle(detail::WindowData *data) {
+  void WindowBackend::setTitle(Window::Data *data) {
     glfwSetWindowTitle(data->window, data->title.c_str());
   }
 
-  void setIcon(detail::WindowData *data) {
+  void WindowBackend::setIcon(Window::Data *data) {
     if (!data->icon.pixels || !data->icon.width || !data->icon.height) {
       return;
     }
     glfwSetWindowIcon(data->window, 1, &data->icon);
   }
 
-  void setSwapInterval(detail::WindowData *data) {
+  void WindowBackend::setSwapInterval(Window::Data *data) {
     glfwSwapInterval(data->swapInterval);
   }
 

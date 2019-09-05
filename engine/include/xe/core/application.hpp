@@ -60,7 +60,7 @@ namespace xe {
 }
 
 #define XE_DEFINE_ENTRY_POINT(className) \
-int32 main(int argc, char** argv) { \
+int32 main(int32 argc, char** argv) { \
   className app; \
   return app.run(argc, argv); \
 }

@@ -10,15 +10,13 @@
 
 namespace xe {
 
-  namespace detail {
-    struct WindowData;
-  }
-
   class XE_API Window : public Object {
   XE_OBJECT(Window, Object);
     friend class GPU;
     friend class Engine;
   public:
+    struct Data;
+
     Window();
     ~Window() override;
 
@@ -41,7 +39,7 @@ namespace xe {
     void stop();
 
   protected:
-    detail::WindowData *data_;
+    Data *data_;
     Params::Window params_{ };
   };
 

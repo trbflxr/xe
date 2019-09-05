@@ -2,8 +2,8 @@
 // Created by FLXR on 9/3/2019.
 //
 
-#ifndef XE_DRAW_LIST_HPP
-#define XE_DRAW_LIST_HPP
+#ifndef XE_DISPLAY_LIST_HPP
+#define XE_DISPLAY_LIST_HPP
 
 #include <xe/memory.hpp>
 #include <xe/vector.hpp>
@@ -15,13 +15,13 @@
 
 namespace xe {
 
-  class XE_API DrawList : public Object {
-  XE_OBJECT(DrawList, Object);
+  class XE_API DisplayList : public Object {
+  XE_OBJECT(DisplayList, Object);
     friend class GPU;
   public:
     struct Command;
 
-    explicit DrawList();
+    explicit DisplayList();
 
     void update();
 
@@ -128,4 +128,4 @@ namespace xe {
 
 }
 
-#endif //XE_DRAW_LIST_HPP
+#endif //XE_DISPLAY_LIST_HPP

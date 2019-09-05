@@ -21,7 +21,7 @@ namespace xe {
 
     ctx_ = new RenderContext();
 
-    logicFrame_ = make_scoped<DrawList>();
+    logicFrame_ = make_scoped<DisplayList>();
   }
 
   GPU::~GPU() {
@@ -97,7 +97,7 @@ namespace xe {
     XE_CORE_TRACE("[GPU] GPU Synchronization (logic ready)");
   }
 
-  void GPU::appendCommands(DrawList &&dl) {
+  void GPU::appendCommands(DisplayList &&dl) {
     if (logicFrame_->commands_.empty()) {
       logicFrame_->commands_ = std::move(dl.commands_);
     } else {
@@ -113,10 +113,10 @@ namespace xe {
   }
 
   template<class T>
-  static uint acquireResource(scoped_array<T> *pool) {
+  static uint acquireResource(memory<T> *pool) {
     uint tryCount = 10;
     while (tryCount--) {
-      for (uint i = 0; i < pool->size(); ++i) {
+      for (uint i = 0; i < pool->size; ++i) {
         if ((*pool)[i].acquire()) {
           const uint version = (*pool)[i].version;
           const uint result = i | (version << 20);

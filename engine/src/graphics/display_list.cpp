@@ -3,18 +3,18 @@
 //
 
 #include "xepch.hpp"
-#include "draw_list_command.hpp"
-#include <xe/graphics/draw_list.hpp>
+#include "display_list_command.hpp"
+#include <xe/graphics/display_list.hpp>
 
 namespace xe {
 
-  DrawList::DrawList() {
-    setName("DrawList");
+  DisplayList::DisplayList() {
+    setName("DisplayList");
   }
 
-  void DrawList::update() {
+  void DisplayList::update() {
     XE_TRACE_BEGIN("XE", "Draw list update");
-    XE_CORE_TRACE("[DrawList] Executing DrawList (Commands {})", commands_.size());
+    XE_CORE_TRACE("[DisplayList] Executing DisplayList (Commands {})", commands_.size());
     for (auto &&cmd : commands_) {
       cmd->execute();
     }
@@ -22,7 +22,7 @@ namespace xe {
     XE_TRACE_END("XE", "Draw list update");
   }
 
-  DrawList::ViewData &DrawList::setupViewCommand() {
+  DisplayList::ViewData &DisplayList::setupViewCommand() {
     SetupViewCommand *cmd = new SetupViewCommand();
     ref_ptr<SetupViewCommand> c;
     c.reset(cmd);
@@ -30,7 +30,7 @@ namespace xe {
     return cmd->data_;
   }
 
-  DrawList::ClearData &DrawList::clearCommand() {
+  DisplayList::ClearData &DisplayList::clearCommand() {
     ClearCommand *cmd = new ClearCommand();
     ref_ptr<ClearCommand> c;
     c.reset(cmd);
@@ -38,7 +38,7 @@ namespace xe {
     return cmd->data_;
   }
 
-  DrawList::FillBufferData &DrawList::fillBufferCommand() {
+  DisplayList::FillBufferData &DisplayList::fillBufferCommand() {
     FillBufferCommand *cmd = new FillBufferCommand();
     ref_ptr<FillBufferCommand> c;
     c.reset(cmd);
@@ -46,7 +46,7 @@ namespace xe {
     return cmd->data_;
   }
 
-  DrawList::FillTextureData &DrawList::fillTextureCommand() {
+  DisplayList::FillTextureData &DisplayList::fillTextureCommand() {
     FillTextureCommand *cmd = new FillTextureCommand();
     ref_ptr<FillTextureCommand> c;
     c.reset(cmd);
@@ -54,7 +54,7 @@ namespace xe {
     return cmd->data_;
   }
 
-  DrawList::SetupMaterialData &DrawList::setupMaterialCommand() {
+  DisplayList::SetupMaterialData &DisplayList::setupMaterialCommand() {
     SetupMaterialCommand *cmd = new SetupMaterialCommand();
     ref_ptr<SetupMaterialCommand> c;
     c.reset(cmd);
@@ -62,7 +62,7 @@ namespace xe {
     return cmd->data_;
   }
 
-  DrawList::RenderData &DrawList::renderCommand() {
+  DisplayList::RenderData &DisplayList::renderCommand() {
     RenderCommand *cmd = new RenderCommand();
     ref_ptr<RenderCommand> c;
     c.reset(cmd);

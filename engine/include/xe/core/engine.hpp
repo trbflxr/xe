@@ -24,7 +24,7 @@ namespace xe {
 
     bool isExisting() const;
 
-    void submitDrawList(DrawList &&dl);
+    void submitDrawList(DisplayList &&dl);
 
     inline Window &window() { return *gpu_->window_; }
     inline GPU &gpu() { return *gpu_; }

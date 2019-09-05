@@ -6,8 +6,8 @@
 #define XE_RENDER_CONTEXT_HPP
 
 #include <xe/common.hpp>
-#include <xe/scoped_array.hpp>
-#include <xe/graphics/draw_list.hpp>
+#include <xe/memory.hpp>
+#include <xe/graphics/display_list.hpp>
 #include <xe/graphics/gpu_instances.hpp>
 #include <xe/utils/logger.hpp>
 
@@ -32,7 +32,7 @@ namespace xe {
     static std::pair<uint, uint> indexAndVersion(uint id);
 
     template<class T>
-    static bool checkValidResource(uint id, const scoped_array<T> *pool) {
+    static bool checkValidResource(uint id, const memory<T> *pool) {
       auto pv = indexAndVersion(id);
       uint loc = pv.first;
       uint version = pv.second;
@@ -44,7 +44,7 @@ namespace xe {
 
   private:
     template<class T, class B>
-    static std::pair<T *, B *> getResource(uint id, scoped_array<T> *instanceArray, scoped_array<B> *backendArray) {
+    static std::pair<T *, B *> getResource(uint id, memory<T> *instanceArray, memory<B> *backendArray) {
       if (checkValidResource(id, instanceArray)) {
         uint i = index(id);
         return {&(*instanceArray)[i], &(*backendArray)[i]};
@@ -56,12 +56,12 @@ namespace xe {
   private:
     gpu::BackEnd *backEnd_;
 
-    scoped_array<gpu::BufferInstance> buffers_;
-    scoped_array<gpu::TextureInstance> textures_;
-    scoped_array<gpu::MaterialInstance> materials_;
-    scoped_array<gpu::FramebufferInstance> framebuffers_;
+    memory<gpu::BufferInstance> buffers_;
+    memory<gpu::TextureInstance> textures_;
+    memory<gpu::MaterialInstance> materials_;
+    memory<gpu::FramebufferInstance> framebuffers_;
 
-    DrawList::SetupMaterialData mainMaterial_;
+    DisplayList::SetupMaterialData mainMaterial_;
   };
 
 }

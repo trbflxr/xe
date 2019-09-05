@@ -5,9 +5,9 @@
 #ifndef XE_GL_BACKEND_HPP
 #define XE_GL_BACKEND_HPP
 
-#include <xe/scoped_array.hpp>
+#include <xe/memory.hpp>
 #include <xe/core/object.hpp>
-#include <xe/graphics/draw_list.hpp>
+#include <xe/graphics/display_list.hpp>
 
 namespace xe::gpu {
 
@@ -39,18 +39,18 @@ namespace xe::gpu {
     static void initBackEnd(BackEnd **backEnd, const Params::GPU &params);
     static void destroyBackEnd(BackEnd **backEnd);
 
-    static void clear(const DrawList::ClearData &d);
-    static void setupView(DrawList::ViewData &d);
-    static void fillBuffer(DrawList::FillBufferData &d);
-    static void fillTexture(DrawList::FillTextureData &d);
-    static void setupMaterial(DrawList::SetupMaterialData &d);
-    static void render(DrawList::RenderData &d);
+    static void clear(const DisplayList::ClearData &d);
+    static void setupView(DisplayList::ViewData &d);
+    static void fillBuffer(DisplayList::FillBufferData &d);
+    static void fillTexture(DisplayList::FillTextureData &d);
+    static void setupMaterial(DisplayList::SetupMaterialData &d);
+    static void render(DisplayList::RenderData &d);
 
   public:
-    scoped_array<Buffer> buffers;
-    scoped_array<Texture> textures;
-    scoped_array<Material> materials;
-    scoped_array<Framebuffer> framebuffers;
+    memory<Buffer> buffers;
+    memory<Texture> textures;
+    memory<Material> materials;
+    memory<Framebuffer> framebuffers;
   };
 }
 

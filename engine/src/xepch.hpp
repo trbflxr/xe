@@ -18,7 +18,6 @@
 #include <xe/string.hpp>
 #include <xe/vector.hpp>
 #include <xe/unordered_map.hpp>
-#include <xe/scoped_array.hpp>
 
 #include <xe/math/math.hpp>
 

@@ -47,11 +47,11 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(SamplerWrapping e) {
+  static uint toGL(TextureWrap e) {
     switch (e) {
-      case SamplerWrapping::Repeat: return GL_REPEAT;
-      case SamplerWrapping::MirroredRepeat: return GL_MIRRORED_REPEAT;
-      case SamplerWrapping::Clamp:
+      case TextureWrap::Repeat: return GL_REPEAT;
+      case TextureWrap::MirroredRepeat: return GL_MIRRORED_REPEAT;
+      case TextureWrap::Clamp:
       default: return GL_CLAMP_TO_EDGE;
     }
   }
@@ -368,7 +368,7 @@ namespace xe::gpu {
     }
   }
 
-  void BackEnd::setupView(DrawList::ViewData &d) {
+  void BackEnd::setupView(DisplayList::ViewData &d) {
     if (d.framebuffer.id != 0) {
       auto fb = RenderContext::getResource(d.framebuffer.id, &d.framebuffer.ctx->framebuffers_,
                                            &d.framebuffer.ctx->backEnd_->framebuffers);
@@ -440,7 +440,7 @@ namespace xe::gpu {
     GLCHECK(glDisable(GL_SCISSOR_TEST));
   }
 
-  void BackEnd::clear(const DrawList::ClearData &d) {
+  void BackEnd::clear(const DisplayList::ClearData &d) {
     uint mask = 0;
     if (d.clearColor) {
       GLCHECK(glClearColor(d.color.r, d.color.g, d.color.b, d.color.a));
@@ -459,7 +459,7 @@ namespace xe::gpu {
     GLCHECK(glClear(mask));
   }
 
-  void BackEnd::fillBuffer(DrawList::FillBufferData &d) {
+  void BackEnd::fillBuffer(DisplayList::FillBufferData &d) {
     auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backEnd_->buffers);
     uint id = b.second->buffer;
     const uint target = toGL(b.first->info.type_);
@@ -485,7 +485,7 @@ namespace xe::gpu {
     }
   }
 
-  void BackEnd::fillTexture(DrawList::FillTextureData &d) {
+  void BackEnd::fillTexture(DisplayList::FillTextureData &d) {
     auto t = RenderContext::getResource(d.texture.id, &d.texture.ctx->textures_, &d.texture.ctx->backEnd_->textures);
 
     bool sizeChanged = false;
@@ -566,7 +566,7 @@ namespace xe::gpu {
     return shader;
   }
 
-  void BackEnd::setupMaterial(DrawList::SetupMaterialData &d) {
+  void BackEnd::setupMaterial(DisplayList::SetupMaterialData &d) {
     bool mainMaterialChanged = d.material.id != d.material.ctx->mainMaterial_.material.id;
     d.material.ctx->mainMaterial_ = d;
     auto mat = RenderContext::getResource(d.material.ctx->mainMaterial_.material.id, &d.material.ctx->materials_,
@@ -710,7 +710,7 @@ namespace xe::gpu {
     }
   }
 
-  void BackEnd::render(DrawList::RenderData &d) {
+  void BackEnd::render(DisplayList::RenderData &d) {
     auto buf = RenderContext::getResource(d.indexBuffer.id, &d.indexBuffer.ctx->buffers_,
                                           &d.indexBuffer.ctx->backEnd_->buffers);
 

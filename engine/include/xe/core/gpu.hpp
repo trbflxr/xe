@@ -10,7 +10,7 @@
 #include <mutex>
 #include <xe/memory.hpp>
 #include <xe/core/object.hpp>
-#include <xe/graphics/draw_list.hpp>
+#include <xe/graphics/display_list.hpp>
 
 namespace xe {
 
@@ -46,7 +46,7 @@ namespace xe {
     void execute();
     void stop();
 
-    void appendCommands(DrawList &&dl);
+    void appendCommands(DisplayList &&dl);
 
     inline bool isExisting() const { return existing_; }
 
@@ -56,11 +56,11 @@ namespace xe {
 
     ref_ptr<Window> window_;
 
-    scoped_ptr<DrawList> logicFrame_;
-    DrawList renderFrame_;
+    scoped_ptr<DisplayList> logicFrame_;
+    DisplayList renderFrame_;
 
     struct ThreadSync {
-      DrawList nextFrame;
+      DisplayList nextFrame;
       std::thread thread;
       std::mutex mxR;
       std::mutex mxL;

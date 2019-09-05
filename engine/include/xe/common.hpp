@@ -180,7 +180,7 @@ namespace xe {
     DepthStencil24
   };
 
-  enum class SamplerWrapping {
+  enum class TextureWrap {
     Repeat,
     MirroredRepeat,
     Clamp

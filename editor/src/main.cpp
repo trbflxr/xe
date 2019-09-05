@@ -85,7 +85,7 @@ protected:
 
     material_ = Engine::ref().gpu().createMaterial(matInfo);
 
-    DrawList frame;
+    DisplayList frame;
     frame.fillBufferCommand()
         .set_buffer(vbo_)
         .set_data(vertexData)
@@ -102,7 +102,7 @@ protected:
   }
 
   void renderUpdate() override {
-    DrawList frame;
+    DisplayList frame;
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600});
     frame.clearCommand()

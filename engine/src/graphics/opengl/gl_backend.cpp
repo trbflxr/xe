@@ -168,19 +168,16 @@ namespace xe::gpu {
 #define GLCHECK(...) {__VA_ARGS__; checkGLError(__FILE__  ":" GLCHECK_STR(__LINE__) "\n\t-> " #__VA_ARGS__);}
 
   //todo: refactor
-  void BackEnd::initBackEnd(BackEnd **b, const Params::GPU &params) {
-    *b = new BackEnd();
+  void Backend::initBackEnd(Backend **b, const Params::GPU &params) {
+    *b = new Backend();
 
     (*b)->buffers.alloc(params.maxBuffers);
     (*b)->textures.alloc(params.maxTextures);
-    (*b)->materials.alloc(params.maxMaterials);
+    (*b)->pipelines.alloc(params.maxPipelines);
     (*b)->framebuffers.alloc(params.maxFramebuffers);
-
-//    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-//    glEnable(GL_DEPTH_TEST);
   }
 
-  void BackEnd::destroyBackEnd(BackEnd **b) {
+  void Backend::destroyBackEnd(Backend **b) {
     delete *b;
     *b = nullptr;
   }
@@ -197,16 +194,14 @@ namespace xe::gpu {
     }
   }
 
-  static void initTexture(std::pair<TextureInstance *, BackEnd::Texture *> t, bool forceUpdate = false) {
+  static void initTexture(std::pair<TextureInstance *, Backend::Texture *> t) {
     uint id = t.second->texture;
     auto &backEnd = t.second;
     if (!id) {
       GLCHECK(glGenTextures(1, &id));
       backEnd->texture = id;
       t.first->id = id;
-      forceUpdate = true;
-    }
-    if (forceUpdate) {
+
       switch (t.first->info.format) {
         case TexelsFormat::R8: {
           backEnd->format = GL_RED;
@@ -323,7 +318,7 @@ namespace xe::gpu {
     }
   }
 
-  static void SetupFramebufferTexture(std::pair<TextureInstance *, BackEnd::Texture *> t, uint mipLevel, uint16 i) {
+  static void SetupFramebufferTexture(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel, uint16 i) {
     switch (t.second->target) {
       case GL_TEXTURE_2D: {
         GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
@@ -344,7 +339,7 @@ namespace xe::gpu {
     }
   }
 
-  static void SetupFramebufferDepth(std::pair<TextureInstance *, BackEnd::Texture *> t, uint mipLevel) {
+  static void SetupFramebufferDepth(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel) {
     if (t.second->target != GL_TEXTURE_2D) {
       XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D (depth/stencil)");
       return;
@@ -368,10 +363,10 @@ namespace xe::gpu {
     }
   }
 
-  void BackEnd::setupView(DisplayList::ViewData &d) {
+  void Backend::setupView(DisplayList::ViewData &d) {
     if (d.framebuffer.id != 0) {
       auto fb = RenderContext::getResource(d.framebuffer.id, &d.framebuffer.ctx->framebuffers_,
-                                           &d.framebuffer.ctx->backEnd_->framebuffers);
+                                           &d.framebuffer.ctx->backend_->framebuffers);
       uint fbId = fb.second->framebuffer;
       if (!fbId) {
         GLCHECK(glGenFramebuffers(1, &fbId));
@@ -380,25 +375,11 @@ namespace xe::gpu {
 
       GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbId));
 
-      if (d.resolution.x == 0) {
-        d.resolution.x = static_cast<uint16>(d.viewport.width);
-      }
-
-      if (d.resolution.y == 0) {
-        d.resolution.y = static_cast<uint16>(d.viewport.height);
-      }
-
-      bool resize = false;
-      if (fb.first->info.size.x != d.resolution.x || fb.first->info.size.y != d.resolution.y) {
-        resize = true;
-        fb.first->info.size = d.resolution;
-      }
-
       if (d.cubemapTarget != CubemapTarget::Invalid) {
         for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
-                                                &fb.first->colorAttachments[i].ctx->backEnd_->textures);
+                                                &fb.first->colorAttachments[i].ctx->backend_->textures);
           initTexture(tex);
           if (tex.second->target == GL_TEXTURE_CUBE_MAP) {
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, toGL(d.cubemapTarget),
@@ -409,24 +390,16 @@ namespace xe::gpu {
         for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
-                                                &fb.first->colorAttachments[i].ctx->backEnd_->textures);
-          if (resize) {
-            tex.first->info.width = static_cast<uint16>(d.resolution.x);
-            tex.first->info.height = static_cast<uint16>( d.resolution.y);
-          }
-          initTexture(tex, resize);
+                                                &fb.first->colorAttachments[i].ctx->backend_->textures);
+          initTexture(tex);
           SetupFramebufferTexture(tex, d.mipLevel, i);
         }
 
         if (RenderContext::checkValidResource(fb.first->depthAttachment.id, &d.framebuffer.ctx->textures_)) {
           auto tex = RenderContext::getResource(fb.first->depthAttachment.id,
                                                 &fb.first->depthAttachment.ctx->textures_,
-                                                &fb.first->depthAttachment.ctx->backEnd_->textures);
-          if (resize) {
-            tex.first->info.width = static_cast<uint16>(d.resolution.x);
-            tex.first->info.height = static_cast<uint16>( d.resolution.y);
-          }
-          initTexture(tex, resize);
+                                                &fb.first->depthAttachment.ctx->backend_->textures);
+          initTexture(tex);
           SetupFramebufferDepth(tex, d.mipLevel);
         }
       }
@@ -440,7 +413,7 @@ namespace xe::gpu {
     GLCHECK(glDisable(GL_SCISSOR_TEST));
   }
 
-  void BackEnd::clear(const DisplayList::ClearData &d) {
+  void Backend::clear(const DisplayList::ClearData &d) {
     uint mask = 0;
     if (d.clearColor) {
       GLCHECK(glClearColor(d.color.r, d.color.g, d.color.b, d.color.a));
@@ -459,8 +432,8 @@ namespace xe::gpu {
     GLCHECK(glClear(mask));
   }
 
-  void BackEnd::fillBuffer(DisplayList::FillBufferData &d) {
-    auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backEnd_->buffers);
+  void Backend::fillBuffer(DisplayList::FillBufferData &d) {
+    auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backend_->buffers);
     uint id = b.second->buffer;
     const uint target = toGL(b.first->info.type_);
 
@@ -485,10 +458,8 @@ namespace xe::gpu {
     }
   }
 
-  void BackEnd::fillTexture(DisplayList::FillTextureData &d) {
-    auto t = RenderContext::getResource(d.texture.id, &d.texture.ctx->textures_, &d.texture.ctx->backEnd_->textures);
-
-    bool sizeChanged = false;
+  void Backend::fillTexture(DisplayList::FillTextureData &d) {
+    auto t = RenderContext::getResource(d.texture.id, &d.texture.ctx->textures_, &d.texture.ctx->backend_->textures);
 
     d.width = d.width ? d.width : t.first->info.width;
     d.height = d.height ? d.height : t.first->info.height;
@@ -497,10 +468,9 @@ namespace xe::gpu {
       t.first->info.width = d.width;
       t.first->info.height = d.height;
       t.first->info.depth = d.depth;
-      sizeChanged = true;
     }
 
-    initTexture(t, sizeChanged);
+    initTexture(t);
     auto &backEnd = *t.second;
 
     GLCHECK(glBindTexture(backEnd.target, backEnd.texture));
@@ -566,12 +536,13 @@ namespace xe::gpu {
     return shader;
   }
 
-  void BackEnd::setupMaterial(DisplayList::SetupMaterialData &d) {
-    bool mainMaterialChanged = d.material.id != d.material.ctx->mainMaterial_.material.id;
-    d.material.ctx->mainMaterial_ = d;
-    auto mat = RenderContext::getResource(d.material.ctx->mainMaterial_.material.id, &d.material.ctx->materials_,
-                                          &d.material.ctx->backEnd_->materials);
-    if (mainMaterialChanged) {
+  void Backend::setupPipeline(DisplayList::SetupPipelineData &d) {
+    //todo: refactor, create uniform buffers
+    bool lastPipelineChanged = d.pipeline.id != d.pipeline.ctx->lastPipeline_.pipeline.id;
+    d.pipeline.ctx->lastPipeline_ = d;
+    auto mat = RenderContext::getResource(d.pipeline.ctx->lastPipeline_.pipeline.id, &d.pipeline.ctx->pipelines_,
+                                          &d.pipeline.ctx->backend_->pipelines);
+    if (lastPipelineChanged) {
       if (mat.second->program == 0) {
         for (int32 &i : mat.second->textureUniformsLoc) {
           i = -1;
@@ -691,16 +662,17 @@ namespace xe::gpu {
 
       for (size_t i = 0; i < cMaxUniformBuffers; ++i) {
         if (d.uniformBuffer[i].id) {
-          auto ubo = RenderContext::getResource(d.uniformBuffer[i].id, &d.material.ctx->buffers_,
-                                                &d.material.ctx->backEnd_->buffers);
-          uint uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name_);
+          auto ubo = RenderContext::getResource(d.uniformBuffer[i].id, &d.pipeline.ctx->buffers_,
+                                                &d.pipeline.ctx->backend_->buffers);
+          uint uniformIndex = 0;
+          GLCHECK(uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name_));
           GLCHECK(glUniformBlockBinding(mat.second->program, uniformIndex, ubo.second->buffer));
         }
       }
     }
 
-    glUniformMatrix4fv(glGetUniformLocation(mat.second->program, cShaderModelUniform), 1,
-                       GL_TRUE, (const float *) &d.modelMatrix);
+//    glUniformMatrix4fv(glGetUniformLocation(mat.second->program, cShaderModelUniform), 1,
+//                       GL_TRUE, (const float *) &d.modelMatrix);
 
     if (d.scissor[2] > 0.0f && d.scissor[3] > 0.0f) {
       GLCHECK(glScissor((int32) d.scissor[0], (int32) d.scissor[1], (int32) d.scissor[2], (int32) d.scissor[3]));
@@ -710,12 +682,12 @@ namespace xe::gpu {
     }
   }
 
-  void BackEnd::render(DisplayList::RenderData &d) {
+  void Backend::render(DisplayList::RenderData &d) {
     auto buf = RenderContext::getResource(d.indexBuffer.id, &d.indexBuffer.ctx->buffers_,
-                                          &d.indexBuffer.ctx->backEnd_->buffers);
+                                          &d.indexBuffer.ctx->backend_->buffers);
 
-    auto mat = RenderContext::getResource(d.indexBuffer.ctx->mainMaterial_.material.id, &d.indexBuffer.ctx->materials_,
-                                          &d.indexBuffer.ctx->backEnd_->materials);
+    auto mat = RenderContext::getResource(d.indexBuffer.ctx->lastPipeline_.pipeline.id, &d.indexBuffer.ctx->pipelines_,
+                                          &d.indexBuffer.ctx->backend_->pipelines);
 
     if (mat.first->info.renderMode == RenderMode::Disabled) {
       return;
@@ -725,13 +697,13 @@ namespace xe::gpu {
       XE_CORE_ERROR("[GL Error] Invalid Index buffer");
     }
 
-    auto &mainMaterial = d.indexBuffer.ctx->mainMaterial_;
+    auto &mainMaterial = d.indexBuffer.ctx->lastPipeline_;
 
     size_t texUnit = 0;
     for (auto i = 0; i < cMaxTextureUnits; ++i) {
       if (mat.second->textureUniformsLoc[i] >= 0) {
         auto tex = RenderContext::getResource(mainMaterial.texture[i].id, &d.indexBuffer.ctx->textures_,
-                                              &d.indexBuffer.ctx->backEnd_->textures);
+                                              &d.indexBuffer.ctx->backend_->textures);
         if (!tex.first) {
           XE_CORE_ERROR("[GL Error] Missing texture");
           return;
@@ -766,7 +738,7 @@ namespace xe::gpu {
           return;
         }
         auto buffer = RenderContext::getResource(bufferId, &d.indexBuffer.ctx->buffers_,
-                                                 &d.indexBuffer.ctx->backEnd_->buffers);
+                                                 &d.indexBuffer.ctx->backend_->buffers);
         if (buffer.second->buffer == 0) {
           XE_CORE_ERROR("[GL Error] Invalid GL buffer (vertex data)");
         }

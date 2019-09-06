@@ -11,8 +11,8 @@
 
 namespace xe::gpu {
 
-  class XE_API BackEnd : public Object {
-  XE_OBJECT(BackEnd, Object);
+  class XE_API Backend : public Object {
+  XE_OBJECT(Backend, Object);
   public:
     struct Buffer {
       uint buffer = 0;
@@ -26,7 +26,7 @@ namespace xe::gpu {
       uint target = 0;
     };
 
-    struct Material {
+    struct Pipeline {
       uint program = 0;
       int32 textureUniformsLoc[cMaxTextureUnits] = { };
     };
@@ -36,20 +36,20 @@ namespace xe::gpu {
     };
 
   public:
-    static void initBackEnd(BackEnd **backEnd, const Params::GPU &params);
-    static void destroyBackEnd(BackEnd **backEnd);
+    static void initBackEnd(Backend **backEnd, const Params::GPU &params);
+    static void destroyBackEnd(Backend **backEnd);
 
     static void clear(const DisplayList::ClearData &d);
     static void setupView(DisplayList::ViewData &d);
     static void fillBuffer(DisplayList::FillBufferData &d);
     static void fillTexture(DisplayList::FillTextureData &d);
-    static void setupMaterial(DisplayList::SetupMaterialData &d);
+    static void setupPipeline(DisplayList::SetupPipelineData &d);
     static void render(DisplayList::RenderData &d);
 
   public:
     memory<Buffer> buffers;
     memory<Texture> textures;
-    memory<Material> materials;
+    memory<Pipeline> pipelines;
     memory<Framebuffer> framebuffers;
   };
 }

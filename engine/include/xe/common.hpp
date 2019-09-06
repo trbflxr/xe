@@ -119,6 +119,7 @@ namespace xe {
 
   static constexpr size_t cMaxUniformBuffers = 16;
 
+  //todo: move
   static const char *cShaderModelUniform = "u_model";
 
   struct Params {
@@ -131,14 +132,14 @@ namespace xe {
       uint iconWidth;
       uint iconHeight;
       byte *iconPixels = nullptr;
-    } window_;
+    } window;
 
     struct GPU {
       uint maxBuffers;
       uint maxTextures;
-      uint maxMaterials;
+      uint maxPipelines;
       uint maxFramebuffers;
-    } gpu_;
+    } gpu;
   };
 
   enum class Usage {

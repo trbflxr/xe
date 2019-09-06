@@ -27,8 +27,8 @@ namespace xe {
 
   void Engine::setParams(const Params &params) {
     params_ = params;
-    gpu_->setParams(params_.gpu_);
-    gpu_->window_->setParams(params_.window_);
+    gpu_->setParams(params_.gpu);
+    gpu_->window_->setParams(params_.window);
   }
 
   bool Engine::init() {

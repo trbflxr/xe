@@ -17,23 +17,23 @@ namespace xe {
   }
 
   RenderContext::~RenderContext() {
-    gpu::BackEnd::destroyBackEnd(&backEnd_);
+    gpu::Backend::destroyBackEnd(&backend_);
   }
 
   void RenderContext::init(const Params::GPU &params) {
-    gpu::BackEnd::initBackEnd(&backEnd_, params);
+    gpu::Backend::initBackEnd(&backend_, params);
 
     buffers_.alloc(params.maxBuffers);
     textures_.alloc(params.maxTextures);
-    materials_.alloc(params.maxMaterials);
+    pipelines_.alloc(params.maxPipelines);
     framebuffers_.alloc(params.maxFramebuffers);
 
     XE_CORE_INFO("[GPU / RenderContext] Initialized RenderContext with params:\n"
                  "\t- maxBuffers\t\t({})\n"
                  "\t- maxTextures\t\t({})\n"
-                 "\t- maxMaterials\t\t({})\n"
+                 "\t- maxPipelines\t\t({})\n"
                  "\t- maxFramebuffers\t({})",
-                 params.maxBuffers, params.maxTextures, params.maxMaterials, params.maxFramebuffers);
+                 params.maxBuffers, params.maxTextures, params.maxPipelines, params.maxFramebuffers);
   }
 
   uint RenderContext::index(uint id) {

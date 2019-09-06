@@ -54,9 +54,9 @@ namespace xe {
     return cmd->data_;
   }
 
-  DisplayList::SetupMaterialData &DisplayList::setupMaterialCommand() {
-    SetupMaterialCommand *cmd = new SetupMaterialCommand();
-    ref_ptr<SetupMaterialCommand> c;
+  DisplayList::SetupPipelineData &DisplayList::setupPipelineCommand() {
+    SetupPipelineCommand *cmd = new SetupPipelineCommand();
+    ref_ptr<SetupPipelineCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;

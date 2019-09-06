@@ -41,11 +41,11 @@ namespace xe {
     DisplayList::FillTextureData data_;
   };
 
-  struct SetupMaterialCommand : DisplayList::Command {
+  struct SetupPipelineCommand : DisplayList::Command {
     friend class DisplayList;
     void execute() override;
 
-    DisplayList::SetupMaterialData data_;
+    DisplayList::SetupPipelineData data_;
   };
 
   struct RenderCommand : DisplayList::Command {

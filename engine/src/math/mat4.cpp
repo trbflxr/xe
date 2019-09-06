@@ -154,14 +154,12 @@ namespace xe {
   }
 
   mat4 mat4::perspective(float fovDeg, float aspect, float nearZ, float farZ) {
-    const float rtanHalfFov = reciprocal(tanf(TO_RAD(fovDeg / 2.0f)));
-    const float scaleZ = nearZ == farZ ? 1.0f : farZ / (farZ - nearZ);
-    const float offsetZ = -nearZ * scaleZ;
+    const float tanHalfFov = tanf(TO_RAD(fovDeg / 2.0f));
 
-    return mat4(Vector::make(rtanHalfFov, 0.0f, 0.0f, 0.0f),
-                Vector::make(0.0f, aspect * rtanHalfFov, 0.0f, 0.0f),
-                Vector::make(0.0f, 0.0f, scaleZ, offsetZ),
-                Vector::make(0.0f, 0.0f, 1.0f, 0.0f));
+    return mat4(Vector::make(1.0f / (aspect * tanHalfFov), 0.0f, 0.0f, 0.0f),
+                Vector::make(0.0f, 1.0f / tanHalfFov, 0.0f, 0.0f),
+                Vector::make(0.0f, 0.0f, -(farZ + nearZ) / (farZ - nearZ), -1.0f),
+                Vector::make(0.0f, 0.0f, -2.0f * farZ * nearZ / (farZ - nearZ), 0.0f));
   }
 
 

@@ -42,9 +42,12 @@ namespace xe::gpu {
     uint id;
   };
 
-  struct MaterialInstance : public InstanceBase {
-    Material::Info info;
+  struct PipelineInstance : public InstanceBase {
+    Pipeline::Info info;
     string vertShader;
+    string tessControlShader;
+    string tessEvalShader;
+    string geomShader;
     string fragShader;
     string attributes[cMaxVertexAttribs];
   };

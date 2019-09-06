@@ -14,13 +14,13 @@
 namespace xe {
 
   namespace gpu {
-    class BackEnd;
+    class Backend;
     struct Framebuffer;
   }
 
   class XE_API RenderContext {
     friend class GPU;
-    friend class gpu::BackEnd;
+    friend class gpu::Backend;
     friend struct gpu::Framebuffer;
   public:
     RenderContext();
@@ -54,14 +54,14 @@ namespace xe {
     }
 
   private:
-    gpu::BackEnd *backEnd_;
+    gpu::Backend *backend_;
 
     memory<gpu::BufferInstance> buffers_;
     memory<gpu::TextureInstance> textures_;
-    memory<gpu::MaterialInstance> materials_;
+    memory<gpu::PipelineInstance> pipelines_;
     memory<gpu::FramebufferInstance> framebuffers_;
 
-    DisplayList::SetupMaterialData mainMaterial_;
+    DisplayList::SetupPipelineData lastPipeline_;
   };
 
 }

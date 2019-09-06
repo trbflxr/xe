@@ -13,7 +13,7 @@ namespace xe {
       existing_(false),
       usedBuffers_(0),
       usedTextures_(0),
-      usedMaterials_(0),
+      usedPipelines_(0),
       usedFramebuffers_(0) {
 
     setName("GPU");
@@ -192,19 +192,21 @@ namespace xe {
     return result;
   }
 
-  gpu::Material GPU::createMaterial(const gpu::Material::Info &info) {
-    const uint id = acquireResource(&ctx_->materials_);
+  gpu::Pipeline GPU::createPipeline(const gpu::Pipeline::Info &info) {
+    const uint id = acquireResource(&ctx_->pipelines_);
     const uint loc = RenderContext::index(id);
-    gpu::MaterialInstance &inst = ctx_->materials_[loc];
+    gpu::PipelineInstance &inst = ctx_->pipelines_[loc];
     inst.info = info;
 
     inst.fragShader = info.shader.frag;
+    inst.tessControlShader = info.shader.tessControl;
+    inst.tessEvalShader = info.shader.tessEval;
+    inst.geomShader = info.shader.geom;
     inst.vertShader = info.shader.vert;
 
     inst.info.shader.frag = inst.fragShader.c_str();
     inst.info.shader.vert = inst.vertShader.c_str();
 
-    // Compute strides/offsets
     size_t stride[cMaxVertexAttribs] = { };
     for (size_t i = 0; i < cMaxVertexAttribs; ++i) {
       const char *name = info.attribs[i].name;
@@ -224,9 +226,24 @@ namespace xe {
       }
     }
 
-    ++usedMaterials_;
+    ++usedPipelines_;
 
-    return gpu::Material{ctx_, id};
+    return gpu::Pipeline{ctx_, id};
+  }
+
+  gpu::Framebuffer GPU::createFramebuffer(const gpu::Framebuffer::Info &info) {
+    const uint id = acquireResource(&ctx_->framebuffers_);
+    const uint pos = RenderContext::index(id);
+    gpu::FramebufferInstance &inst = ctx_->framebuffers_[pos];
+    inst.info = info;
+    for (uint i = 0; i < info.colorAttachmentsSize; ++i) {
+      inst.colorAttachments[i] = createTexture(info.colorAttachmentInfo[i]);
+    }
+    inst.depthAttachment = createTexture(info.depthStencilAttachmentInfo);
+
+    ++usedFramebuffers_;
+
+    return gpu::Framebuffer{ctx_, id};
   }
 
 }

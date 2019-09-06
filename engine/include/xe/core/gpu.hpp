@@ -27,16 +27,17 @@ namespace xe {
 
     gpu::Buffer createBuffer(const gpu::Buffer::Info &info);
     gpu::Texture createTexture(const gpu::Texture::Info &info);
-    gpu::Material createMaterial(const gpu::Material::Info &info);
+    gpu::Pipeline createPipeline(const gpu::Pipeline::Info &info);
+    gpu::Framebuffer createFramebuffer(const gpu::Framebuffer::Info &info);
 
     inline uint maxBuffers() const { return params_.maxBuffers; }
     inline uint maxTextures() const { return params_.maxTextures; }
-    inline uint maxMaterials() const { return params_.maxMaterials; }
+    inline uint maxPipelines() const { return params_.maxPipelines; }
     inline uint maxFramebuffers() const { return params_.maxFramebuffers; }
 
     inline uint usedBuffers() const { return usedBuffers_; }
     inline uint usedTextures() const { return usedTextures_; }
-    inline uint usedMaterials() const { return usedMaterials_; }
+    inline uint usedPipelines() const { return usedPipelines_; }
     inline uint usedFramebuffers() const { return usedFramebuffers_; }
 
   protected:
@@ -74,7 +75,7 @@ namespace xe {
 
     uint usedBuffers_;
     uint usedTextures_;
-    uint usedMaterials_;
+    uint usedPipelines_;
     uint usedFramebuffers_;
   };
 

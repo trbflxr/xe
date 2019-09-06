@@ -18,7 +18,7 @@ namespace xe {
         Invalid,
         Buffer,
         Texture,
-        Material,
+        Pipeline,
         Framebuffer
       };
 
@@ -45,7 +45,7 @@ namespace xe {
         uint16 depth = 1;
         TextureMinFilter minFilter = TextureMinFilter::Linear;
         TextureMagFilter magFilter = TextureMagFilter::Linear;
-        TextureWrap wrapping[3] = {TextureWrap::Repeat, TextureWrap::Repeat, TextureWrap::Repeat};
+        TextureWrap wrapping[3] = {TextureWrap::Clamp, TextureWrap::Clamp, TextureWrap::Clamp};
         TexelsFormat format = TexelsFormat::None;
         Usage usage = Usage::Static;
         TextureType type = TextureType::T2D;
@@ -57,11 +57,14 @@ namespace xe {
                                                 Texture::Info &tex, bool flip = true);
     };
 
-    struct Material : public Resource {
-      Material(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Material, id} { }
+    struct Pipeline : public Resource {
+      Pipeline(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Pipeline, id} { }
       struct Info {
         struct Shader {
           string vert;
+          string tessControl;
+          string tessEval;
+          string geom;
           string frag;
         } shader;
         VertexDeclaration attribs[cMaxVertexAttribs] = { };

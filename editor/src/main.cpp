@@ -274,7 +274,8 @@ protected:
         .set_viewport({0, 0, 800, 600})
         .set_projectionMatrix(state.cube.uniforms.proj)
         .set_viewMatrix(state.cube.uniforms.view)
-        .set_framebuffer(state.fb)        ;
+//        .set_framebuffer(state.fb)
+        ;
     frame.clearCommand()
         .set_color(Color(0xFFA6A6A6))
         .set_clearColor(true)
@@ -296,29 +297,29 @@ protected:
         .set_type(IndexFormat::Uint16)
         .set_instances(sizeof(state.cube.instancePositions) / sizeof(state.cube.instancePositions[0]));
 
-    //framebuffer
-    frame.setupViewCommand()
-        .set_viewport({0, 0, 800, 600})
-        .set_projectionMatrix(state.quad.uniforms.proj)
-        .set_viewMatrix(state.quad.uniforms.proj);
-    frame.clearCommand()
-        .set_color(Color(Color::Yellow()))
-        .set_clearColor(true)
-        .set_clearDepth(true);
-
-    state.quad.uniforms.model = state.cube.uniforms.model *
-                                mat4::rotation(v * 0.25f, {0, 1, 0}) *
-                                mat4::scale(-2.0f);
-    frame.setupPipelineCommand()
-        .set_pipeline(state.quad.material)
-        .set_buffer(0, state.quad.vertexBuff)
-        .set_modelMatrix(state.quad.uniforms.model)
-        .set_uniformBuffer(0, state.quad.uniformBuff)
-        .set_texture(0, state.fb.colorAttachment(0));
-    frame.renderCommand()
-        .set_indexBuffer(state.quad.indexBuff)
-        .set_count(sizeof(quad::indexData) / sizeof(uint16))
-        .set_type(IndexFormat::Uint16);
+//    //framebuffer
+//    frame.setupViewCommand()
+//        .set_viewport({0, 0, 800, 600})
+//        .set_projectionMatrix(state.quad.uniforms.proj)
+//        .set_viewMatrix(state.quad.uniforms.proj);
+//    frame.clearCommand()
+//        .set_color(Color(Color::Yellow()))
+//        .set_clearColor(true)
+//        .set_clearDepth(true);
+//
+//    state.quad.uniforms.model = state.cube.uniforms.model *
+//                                mat4::rotation(v * 0.25f, {0, 1, 0}) *
+//                                mat4::scale(-2.0f);
+//    frame.setupPipelineCommand()
+//        .set_pipeline(state.quad.material)
+//        .set_buffer(0, state.quad.vertexBuff)
+//        .set_modelMatrix(state.quad.uniforms.model)
+//        .set_uniformBuffer(0, state.quad.uniformBuff)
+//        .set_texture(0, state.fb.colorAttachment(0));
+//    frame.renderCommand()
+//        .set_indexBuffer(state.quad.indexBuff)
+//        .set_count(sizeof(quad::indexData) / sizeof(uint16))
+//        .set_type(IndexFormat::Uint16);
 
     Engine::ref().submitDrawList(std::move(frame));
   }

@@ -4,7 +4,7 @@
 
 #include "xepch.hpp"
 #include "gl_backend.hpp"
-#include <glad/glad.h>
+#include "external/glad/glad.h"
 #include <xe/graphics/render_context.hpp>
 
 namespace xe::gpu {

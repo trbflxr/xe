@@ -6,7 +6,7 @@
 #define XE_GL_WINDOW_DATA_HPP
 
 #include <atomic>
-#include <glad/glad.h>
+#include "external/glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <xe/graphics/window.hpp>
 

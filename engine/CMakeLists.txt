@@ -31,6 +31,8 @@ set(XE_RELEASE_FLAGS "-Ox -DNDEBUG" CACHE STRING "xe_release flags")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 
 set(XE_DEFINES
     -DXE_STATIC)
@@ -58,9 +60,6 @@ set(XE_INCLUDE_DIRS
     CACHE STRING "XE include dirs" FORCE)
 
 #external libs
-add_subdirectory(external/glad)
-include_directories(external/glad/include)
-
 add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
 
@@ -70,17 +69,18 @@ include_directories(external/tbb/include)
 add_subdirectory(external/spdlog)
 include_directories(external/spdlog/include)
 
-include_directories(external/stb)
-
 #includes
 include_directories(${XE_INCLUDE_DIRS})
 include_directories(src)
 
 #engine sources
+file(GLOB ENGINE_EXTERNAL_SRC
+    src/external/glad/*.c
+    src/external/minitrace/*.cpp)
+
 file(GLOB ENGINE_SRC
     src/*.cpp
     src/core/*.cpp
-    src/external/minitrace/*.cpp
     src/graphics/*.cpp
     src/math/*.cpp
     src/utils/*.cpp)
@@ -104,6 +104,9 @@ endif ()
 #add pch
 add_msvc_pch("xepch.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/xepch/xepch.cpp" ENGINE_SRC)
 
+#append ext libs src
+list(APPEND ENGINE_SRC ${ENGINE_EXTERNAL_SRC})
+
 #xe lib
 if (XE_BUILD_SHARED_LIB)
   add_library(xe SHARED ${ENGINE_SRC})
@@ -119,9 +122,7 @@ target_link_libraries(xe
 
 #link opengl libs
 if (XE_PLATFORM_GL)
-  target_link_libraries(xe
-      glad
-      glfw)
+  target_link_libraries(xe glfw)
 endif ()
 
 #link win32 libs

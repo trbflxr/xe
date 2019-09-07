@@ -5,6 +5,8 @@
 #include <xe/core/application.hpp>
 #include <xe/utils/debug_trace.hpp>
 #include <xe/utils/logger.hpp>
+#include <xe/core/vfs.hpp>
+#include <xe/core/filesystem.hpp>
 
 using namespace xe;
 
@@ -67,11 +69,9 @@ struct State {
 
   gpu::Framebuffer fb;
   struct {
-    vec3 instancePositions[5000];
     gpu::Pipeline material;
     gpu::Buffer vertexBuff;
     gpu::Buffer indexBuff;
-    gpu::Buffer instanceBuffer;
     gpu::Buffer uniformBuff;
     UniformState uniforms;
     gpu::Texture texture;
@@ -102,10 +102,15 @@ public:
 
 protected:
   void init() override {
+    VFS::mount("shaders", "assets/shaders/");
+    VFS::mount("textures", "assets/textures/");
+
     state.quad.uniforms.proj = mat4::perspective(65, 800 / 600, 0.1, 1000);
     state.cube.uniforms.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
 
-    state.cube.uniforms.view = mat4::translation({0, 0, -100});
+    state.cube.uniforms.view = mat4::translation({0, 2, 5}).inverse();
+
+    state.cube.uniforms.model = mat4::translation({2, 2, 0});
 
 //    state.cube.uniforms.model = mat4::transformation({0, 0, -5}, quat({0, 1, 0}, 45.0f));
   }
@@ -115,8 +120,6 @@ protected:
         {BufferType::Vertex, Usage::Static, sizeof(cube::vertexData)});
     state.cube.indexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(cube::indexData)});
-    state.cube.instanceBuffer = Engine::ref().gpu().createBuffer(
-        {BufferType::Vertex, Usage::Stream, sizeof(state.cube.instancePositions)});
     state.cube.uniformBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Uniform, Usage::Static, sizeof(State::UniformState), "UniformState"});
 
@@ -129,39 +132,12 @@ protected:
 
     {
       gpu::Pipeline::Info matInfo;
-      matInfo.shader.vert = R"(
-        #version 330 core
-        in vec3 a_position;
-        in vec3 a_instancePosition;
-        in vec4 a_color;
-        in vec2 a_texCoords;
-        out vec4 v_color;
-        out vec2 v_texCoords;
-        layout(std140, row_major) uniform UniformState {
-          mat4 model;
-          mat4 view;
-          mat4 proj;
-        };
-        void main() {
-          gl_Position = proj * view * model * vec4(a_position + a_instancePosition, 1.0);
-          v_color = a_color;
-          v_texCoords = a_texCoords;
-        })";
-      matInfo.shader.frag = R"(
-        #version 330 core
-        out vec4 color;
-        in vec4 v_color;
-        in vec2 v_texCoords;
-        uniform sampler2D u_tex2d0;
-        void main() {
-          color = v_color * texture(u_tex2d0, v_texCoords);
-          //color = texture(u_tex2d0, v_texCoords);
-        })";
+      VFS::readTextFile("/shaders/test.vert", matInfo.shader.vert);
+      VFS::readTextFile("/shaders/test.frag", matInfo.shader.frag);
 
       matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
       matInfo.attribs[1] = {"a_color", VertexFormat::Float4};
       matInfo.attribs[2] = {"a_texCoords", VertexFormat::Float2};
-      matInfo.attribs[3] = {"a_instancePosition", VertexFormat::Float3, 1, VertexStep::PerVertex};
 
       matInfo.textures[0] = TextureType::T2D;
 
@@ -194,81 +170,83 @@ protected:
       }
     }
 
-    {
-      gpu::Pipeline::Info matInfo;
-      matInfo.shader.vert = R"(
-        #version 330 core
-        in vec3 a_position;
-        in vec2 a_texCoords;
-        out vec2 v_texCoords;
-        layout(std140, row_major) uniform UniformState {
-          mat4 model;
-          mat4 view;
-          mat4 proj;
-        };
-        void main() {
-          gl_Position = proj * view * model *vec4(a_position, 1.0);
-          v_texCoords = a_texCoords;
-        })";
-      matInfo.shader.frag = R"(
-        #version 330 core
-        out vec4 color;
-        in vec2 v_texCoords;
-        uniform sampler2D u_tex2d0;
-        void main() {
-          color = texture(u_tex2d0, v_texCoords);
-        })";
+    /* {
+       gpu::Pipeline::Info matInfo;
+       matInfo.shader.vert = R"(
+         #version 330 core
+         in vec3 a_position;
+         in vec2 a_texCoords;
+         out vec2 v_texCoords;
+         layout(std140, row_major) uniform UniformState {
+           mat4 model;
+           mat4 view;
+           mat4 proj;
+         };
+         void main() {
+           gl_Position = proj * view * model *vec4(a_position, 1.0);
+           v_texCoords = a_texCoords;
+         })";
+       matInfo.shader.frag = R"(
+         #version 330 core
+         out vec4 color;
+         in vec2 v_texCoords;
+         uniform sampler2D u_tex2d0;
+         void main() {
+           color = texture(u_tex2d0, v_texCoords);
+         })";
 
-      matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
-      matInfo.attribs[3] = {"a_texCoords", VertexFormat::Float2};
+       matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
+       matInfo.attribs[3] = {"a_texCoords", VertexFormat::Float2};
 
-      matInfo.textures[0] = TextureType::T2D;
-      matInfo.cull = Cull::Disabled;
-      state.quad.material = Engine::ref().gpu().createPipeline(matInfo);
+       matInfo.textures[0] = TextureType::T2D;
+       matInfo.cull = Cull::Disabled;
+       state.quad.material = Engine::ref().gpu().createPipeline(matInfo);
 
-      {
-        DisplayList frame;
-        frame.fillBufferCommand()
-            .set_buffer(state.quad.vertexBuff)
-            .set_data(quad::vertexData)
-            .set_size(sizeof(quad::vertexData));
-        frame.fillBufferCommand()
-            .set_buffer(state.quad.indexBuff)
-            .set_data(quad::indexData)
-            .set_size(sizeof(quad::indexData));
-        frame.fillBufferCommand()
-            .set_buffer(state.quad.uniformBuff)
-            .set_data(&state.quad.uniforms)
-            .set_size(sizeof(State::UniformState));
-        Engine::ref().submitDrawList(std::move(frame));
-      }
+       {
+         DisplayList frame;
+         frame.fillBufferCommand()
+             .set_buffer(state.quad.vertexBuff)
+             .set_data(quad::vertexData)
+             .set_size(sizeof(quad::vertexData));
+         frame.fillBufferCommand()
+             .set_buffer(state.quad.indexBuff)
+             .set_data(quad::indexData)
+             .set_size(sizeof(quad::indexData));
+         frame.fillBufferCommand()
+             .set_buffer(state.quad.uniformBuff)
+             .set_data(&state.quad.uniforms)
+             .set_size(sizeof(State::UniformState));
+         Engine::ref().submitDrawList(std::move(frame));
+       }
 
-      gpu::Texture::Info fbColor = {800, 600};
-      fbColor.format = TexelsFormat::Rgba8;
+       gpu::Texture::Info fbColor = {800, 600};
+       fbColor.format = TexelsFormat::Rgba8;
 
-      gpu::Texture::Info fbDepth = {800, 600};
-      fbDepth.format = TexelsFormat::Depth16;
+       gpu::Texture::Info fbDepth = {800, 600};
+       fbDepth.format = TexelsFormat::Depth16;
 
-      gpu::Framebuffer::Info fbInfo;
-      fbInfo.colorAttachmentInfo[0] = fbColor;
-      fbInfo.depthStencilAttachmentInfo = fbDepth;
-      fbInfo.colorAttachmentsSize = 1;
+       gpu::Framebuffer::Info fbInfo;
+       fbInfo.colorAttachmentInfo[0] = fbColor;
+       fbInfo.depthStencilAttachmentInfo = fbDepth;
+       fbInfo.colorAttachmentsSize = 1;
 
-      state.fb = Engine::ref().gpu().createFramebuffer(fbInfo);
-    }
+       state.fb = Engine::ref().gpu().createFramebuffer(fbInfo);
+     }*/
+  }
+
+  void update(Timestep ts) override {
+//    static float v = 0;
+//    for (size_t i = 0; i < sizeof(state.cube.instancePositions) / sizeof(vec3); ++i) {
+//      state.cube.instancePositions[i] = {
+//          (float) (i % 1000) * 3.0f,
+//          5.0f * (float) (sin(i * XE_MATH_PI / 10 + v)),
+//          (i / 1000.0f) * 3.0f};
+//    }
+//    state.cube.uniforms.model = mat4::rotation(quat({0, 1, 0}, v));
+//    v += 0.01;
   }
 
   void renderUpdate() override {
-    static float v = 0;
-    for (size_t i = 0; i < sizeof(state.cube.instancePositions) / sizeof(vec3); ++i) {
-      state.cube.instancePositions[i] = {
-          (float) (i % 1000) * 3.0f,
-          5.0f * (float) (sin(i * XE_MATH_PI / 10 + v)),
-          (i / 1000.0f) * 3.0f};
-    }
-    state.cube.uniforms.model = mat4::rotation(quat({0, 1, 0}, v));
-    v += 0.01;
-
     DisplayList frame;
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600})
@@ -280,22 +258,16 @@ protected:
         .set_color(Color(0xFFA6A6A6))
         .set_clearColor(true)
         .set_clearDepth(true);
-    frame.fillBufferCommand()
-        .set_buffer(state.cube.instanceBuffer)
-        .set_data(state.cube.instancePositions)
-        .set_size(sizeof(state.cube.instancePositions));
     frame.setupPipelineCommand()
         .set_pipeline(state.cube.material)
         .set_buffer(0, state.cube.vertexBuff)
-        .set_buffer(1, state.cube.instanceBuffer)
         .set_modelMatrix(state.cube.uniforms.view)
         .set_uniformBuffer(0, state.cube.uniformBuff)
         .set_texture(0, state.cube.texture);
     frame.renderCommand()
         .set_indexBuffer(state.cube.indexBuff)
         .set_count(sizeof(cube::indexData) / sizeof(uint16))
-        .set_type(IndexFormat::Uint16)
-        .set_instances(sizeof(state.cube.instancePositions) / sizeof(state.cube.instancePositions[0]));
+        .set_type(IndexFormat::Uint16);
 
 //    //framebuffer
 //    frame.setupViewCommand()

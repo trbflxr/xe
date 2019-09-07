@@ -63,6 +63,7 @@ namespace xe {
     if (resolvePhysicalPath(path, physicalPath)) {
       return FileSystem::read(physicalPath, outSize);
     } else {
+      XE_CORE_ERROR("[VFS] Unable find file '{}'", path);
       return nullptr;
     }
   }
@@ -73,6 +74,7 @@ namespace xe {
     if (resolvePhysicalPath(path, physicalPath)) {
       return FileSystem::readText(physicalPath, outString);
     } else {
+      XE_CORE_ERROR("[VFS] Unable find file '{}'", path);
       outString = "";
       return false;
     }

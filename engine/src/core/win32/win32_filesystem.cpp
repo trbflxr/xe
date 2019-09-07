@@ -28,8 +28,8 @@ namespace xe {
   }
 
   bool FileSystem::exists(const string &file) {
-    DWORD result = GetFileAttributesW(file.toWide().c_str());
-    return !(result == INVALID_FILE_ATTRIBUTES && GetLastError() == ERROR_FILE_NOT_FOUND);
+    const DWORD dwAttrib = GetFileAttributesW(file.toWide().c_str());
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
   }
 
   int64 FileSystem::size(const string &file) {

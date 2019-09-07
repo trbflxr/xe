@@ -24,6 +24,8 @@
 #include <string.h>
 #include "glad.h"
 
+#pragma warning(disable : 4005) //'APIENTRY': macro redefinition
+
 static void* get_proc(const char *namez);
 
 #if defined(_WIN32) || defined(__CYGWIN__)

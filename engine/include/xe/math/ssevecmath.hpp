@@ -148,7 +148,7 @@ namespace xe::detail {
       __m128 tr = horizontalAdd(_mm_mul_ps(A_B, SSEVector_Swizzle(D_C, 0, 2, 1, 3)));
       detM = _mm_sub_ps(detM, tr);
 
-      const __m128 adjSignMask = _mm_setr_ps(1.0f, -1.0f, -1.f, 1.f);
+      const __m128 adjSignMask = _mm_setr_ps(1.0f, -1.0f, -1.0f, 1.0f);
       __m128 rDetM = _mm_div_ps(adjSignMask, detM);
 
       X_ = _mm_mul_ps(X_, rDetM);

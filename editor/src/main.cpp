@@ -177,13 +177,14 @@ protected:
 
     {
       gpu::Pipeline::Info matInfo;
-      VFS::readTextFile("/shaders/common.vert", matInfo.shader.vert);
-      VFS::readTextFile("/shaders/common.frag", matInfo.shader.frag);
+      VFS::readTextFile("/shaders/fb_test.vert", matInfo.shader.vert);
+      VFS::readTextFile("/shaders/fb_test.frag", matInfo.shader.frag);
 
       matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
       matInfo.attribs[1] = {"a_texCoords", VertexFormat::Float2};
 
       matInfo.textures[0] = TextureType::T2D;
+      matInfo.textures[1] = TextureType::T2D;
       matInfo.cull = Cull::Disabled;
       state.quad.material = Engine::ref().gpu().createPipeline(matInfo);
 
@@ -204,16 +205,20 @@ protected:
         Engine::ref().submitDrawList(std::move(frame));
       }
 
-      gpu::Texture::Info fbColor = {800, 600};
-      fbColor.format = TexelsFormat::Rgba8;
+      gpu::Texture::Info fbColor0 = {800, 600};
+      fbColor0.format = TexelsFormat::Rgba8;
+
+      gpu::Texture::Info fbColor1 = {800, 600};
+      fbColor1.format = TexelsFormat::Rgba8;
 
       gpu::Texture::Info fbDepth = {800, 600};
       fbDepth.format = TexelsFormat::Depth16;
 
       gpu::Framebuffer::Info fbInfo;
-      fbInfo.colorAttachmentInfo[0] = fbColor;
+      fbInfo.colorAttachmentInfo[0] = fbColor0;
+      fbInfo.colorAttachmentInfo[1] = fbColor1;
       fbInfo.depthStencilAttachmentInfo = fbDepth;
-      fbInfo.colorAttachmentsSize = 1;
+      fbInfo.colorAttachmentsSize = 2;
 
       state.fb = Engine::ref().gpu().createFramebuffer(fbInfo);
     }
@@ -243,7 +248,9 @@ protected:
         .set_viewport({0, 0, 800, 600})
         .set_projectionMatrix(state.cube.uniforms.proj)
         .set_viewMatrix(state.cube.uniforms.view)
-        .set_framebuffer(state.fb);
+        .set_framebuffer(state.fb)
+        .set_colorAttachment(0, true)
+        .set_colorAttachment(1, true);
     frame.clearCommand()
         .set_color(Color(0xFFA6A6A6))
         .set_clearColor(true)
@@ -283,7 +290,8 @@ protected:
         .set_buffer(0, state.quad.vertexBuff)
         .set_modelMatrix(state.quad.uniforms.model)
         .set_uniformBuffer(0, state.quad.uniformBuff)
-        .set_texture(0, state.fb.colorAttachment(0));
+        .set_texture(0, state.fb.colorAttachment(0))
+        .set_texture(1, state.fb.colorAttachment(1));
     frame.renderCommand()
         .set_indexBuffer(state.quad.indexBuff)
         .set_count(sizeof(quad::indexData) / sizeof(uint16))

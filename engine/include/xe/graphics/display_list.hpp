@@ -50,6 +50,7 @@ namespace xe {
       PROP(mat4, viewMatrix, mat4());
       PROP(mat4, projectionMatrix, mat4());
       PROP(gpu::Framebuffer, framebuffer, { });
+      PROP_ARRAY(bool, cMaxFramebufferColorAttachments, colorAttachment);
       PROP(CubemapTarget, cubemapTarget, CubemapTarget::Invalid);
       PROP(uint, mipLevel, 0);
     };

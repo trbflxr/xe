@@ -318,28 +318,21 @@ namespace xe::gpu {
     }
   }
 
-  static void SetupFramebufferTexture(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel, uint16 i) {
+  static void setupFramebufferTexture(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel, uint16 i) {
     switch (t.second->target) {
       case GL_TEXTURE_2D: {
         GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
                                        GL_TEXTURE_2D, t.second->texture, mipLevel));
         break;
       }
-      case GL_TEXTURE_CUBE_MAP: {
-        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
-                                       GL_TEXTURE_CUBE_MAP_POSITIVE_X, t.second->texture, mipLevel));
-
-        GLCHECK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
-        break;
-      }
       default: {
-        XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D or Cubemap (color {}})", i);
+        XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D (color {}})", i);
         break;
       }
     }
   }
 
-  static void SetupFramebufferDepth(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel) {
+  static void setupFramebufferDepth(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel) {
     if (t.second->target != GL_TEXTURE_2D) {
       XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D (depth/stencil)");
       return;
@@ -382,8 +375,8 @@ namespace xe::gpu {
                                                 &fb.first->colorAttachments[i].ctx->backend_->textures);
           initTexture(tex);
           if (tex.second->target == GL_TEXTURE_CUBE_MAP) {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, toGL(d.cubemapTarget),
-                                   tex.second->texture, d.mipLevel);
+            GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, toGL(d.cubemapTarget),
+                                           tex.second->texture, d.mipLevel));
           }
         }
       } else {
@@ -392,7 +385,7 @@ namespace xe::gpu {
                                                 &fb.first->colorAttachments[i].ctx->textures_,
                                                 &fb.first->colorAttachments[i].ctx->backend_->textures);
           initTexture(tex);
-          SetupFramebufferTexture(tex, d.mipLevel, i);
+          setupFramebufferTexture(tex, d.mipLevel, i);
         }
 
         if (RenderContext::checkValidResource(fb.first->depthAttachment.id, &d.framebuffer.ctx->textures_)) {
@@ -400,9 +393,27 @@ namespace xe::gpu {
                                                 &fb.first->depthAttachment.ctx->textures_,
                                                 &fb.first->depthAttachment.ctx->backend_->textures);
           initTexture(tex);
-          SetupFramebufferDepth(tex, d.mipLevel);
+          setupFramebufferDepth(tex, d.mipLevel);
         }
       }
+
+      //todo: move
+      memory<uint> buffers;
+      buffers.alloc(fb.first->info.colorAttachmentsSize);
+      uint count = 0;
+      for (uint i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+        if (d.colorAttachment[i]) {
+          buffers[count] = GL_COLOR_ATTACHMENT0 + i;
+          ++count;
+        }
+      }
+
+      if (count > 0) {
+        GLCHECK(glDrawBuffers(count, buffers.data.get()));
+      } else {
+        GLCHECK(glDrawBuffer(GL_NONE));
+      }
+
     } else {
       GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     }

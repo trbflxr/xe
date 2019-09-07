@@ -8,7 +8,7 @@ in vec4 a_instancePosition;
 out vec4 v_color;
 out vec2 v_texCoords;
 
-layout(std140, row_major) uniform UniformState{
+layout(std140, row_major) uniform UniformState {
   mat4 model;
   mat4 view;
   mat4 proj;

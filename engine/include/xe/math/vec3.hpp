@@ -67,13 +67,13 @@ namespace xe {
     inline Vector toVector() const { return data_; }
     inline Vector toVector(float w) const { return data_.select(VectorConstants::MaskW(), Vector::load1f(w)); }
 
-    static const vec3 &UnitX();
-    static const vec3 &UnitY();
-    static const vec3 &UnitZ();
-    static const vec3 &UnitXN();
-    static const vec3 &UnitYN();
-    static const vec3 &UnitZN();
-    static const vec3 &Zero();
+    static const vec3 &unitX();
+    static const vec3 &unitY();
+    static const vec3 &unitZ();
+    static const vec3 &unitXN();
+    static const vec3 &unitYN();
+    static const vec3 &unitZN();
+    static const vec3 &zero();
 
     inline float operator[](uint index) const { return data_[index]; }
 

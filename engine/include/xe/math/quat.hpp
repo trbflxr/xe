@@ -18,7 +18,7 @@ namespace xe {
     explicit quat();
     explicit quat(const Vector &quat);
     quat(float x, float y, float z, float w);
-    explicit quat(const vec3 &axis, float angleDeg);
+    quat(const vec3 &axis, float angleDeg);
 
     quat normalize(float errorMargin = 1.e-8f) const;
     bool isNormalized(float errorMargin = 1.e-4f) const;

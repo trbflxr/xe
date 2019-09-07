@@ -47,18 +47,18 @@ namespace xe {
   static Color name (r / 255.0f, g / 255.0f, b / 255.0f, 1.0f); \
   return name;
 
-  Color Color::Transparent() {
+  Color Color::transparent() {
     static Color transparent = Color(0.0f, 0.0f, 0.0f, 0.0f);
     return transparent;
   }
 
-  Color Color::Black() { COLOR(Black, 0, 0, 0); }
-  Color Color::White() { COLOR(White, 255, 255, 255); }
-  Color Color::Red() { COLOR(Red, 255, 0, 0); }
-  Color Color::Green() { COLOR(Green, 0, 255, 0); }
-  Color Color::Blue() { COLOR(Blue, 0, 0, 255); }
-  Color Color::Yellow() { COLOR(Yellow, 255, 255, 0); }
-  Color Color::Magenta() { COLOR(Magenta, 255, 0, 255); }
-  Color Color::Cyan() { COLOR(Cyan, 0, 255, 255); }
+  Color Color::black() { COLOR(black, 0, 0, 0); }
+  Color Color::white() { COLOR(white, 255, 255, 255); }
+  Color Color::red() { COLOR(red, 255, 0, 0); }
+  Color Color::green() { COLOR(green, 0, 255, 0); }
+  Color Color::blue() { COLOR(blue, 0, 0, 255); }
+  Color Color::yellow() { COLOR(yellow, 255, 255, 0); }
+  Color Color::magenta() { COLOR(magenta, 255, 0, 255); }
+  Color Color::cyan() { COLOR(cyan, 0, 255, 255); }
 
 }

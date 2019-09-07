@@ -68,10 +68,13 @@ struct State {
   };
 
   gpu::Framebuffer fb;
+  static constexpr uint INSTANCES = 50000;
   struct {
+    vec4 instancePositions[INSTANCES];
     gpu::Pipeline material;
     gpu::Buffer vertexBuff;
     gpu::Buffer indexBuff;
+    gpu::Buffer instanceBuffer;
     gpu::Buffer uniformBuff;
     UniformState uniforms;
     gpu::Texture texture;
@@ -108,11 +111,24 @@ protected:
     state.quad.uniforms.proj = mat4::perspective(65, 800 / 600, 0.1, 1000);
     state.cube.uniforms.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
 
-    state.cube.uniforms.view = mat4::translation({0, 2, 5}).inverse();
+    state.cube.uniforms.view = mat4::transformation({-20, 25, 60},
+                                                    quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
 
-    state.cube.uniforms.model = mat4::translation({2, 2, 0});
+//    state.cube.uniforms.model = mat4::transformation({2, 2, 0}, {vec3::unitZ(), 45.0f});
 
 //    state.cube.uniforms.model = mat4::transformation({0, 0, -5}, quat({0, 1, 0}, 45.0f));
+
+    /*float x = 0.0f;
+    float z = 0.0f;
+    for (size_t i = 0; i < State::INSTANCES; ++i) {
+      state.cube.instancePositions[i] = {x, 0.0f, z, 0.0f};
+      x += 1.5f;
+      if (x >= 50.0f) {
+        x = 0.0f;
+        z -= 1.5f;
+      }
+    }*/
+
   }
 
   void start() override {
@@ -120,6 +136,8 @@ protected:
         {BufferType::Vertex, Usage::Static, sizeof(cube::vertexData)});
     state.cube.indexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(cube::indexData)});
+    state.cube.instanceBuffer = Engine::ref().gpu().createBuffer(
+        {BufferType::Vertex, Usage::Dynamic, sizeof(state.cube.instancePositions)});
     state.cube.uniformBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Uniform, Usage::Static, sizeof(State::UniformState), "UniformState"});
 
@@ -138,6 +156,7 @@ protected:
       matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
       matInfo.attribs[1] = {"a_color", VertexFormat::Float4};
       matInfo.attribs[2] = {"a_texCoords", VertexFormat::Float2};
+      matInfo.attribs[3] = {"a_instancePosition", VertexFormat::Float4, 1, VertexStep::PerInstance};
 
       matInfo.textures[0] = TextureType::T2D;
 
@@ -235,15 +254,16 @@ protected:
   }
 
   void update(Timestep ts) override {
-//    static float v = 0;
-//    for (size_t i = 0; i < sizeof(state.cube.instancePositions) / sizeof(vec3); ++i) {
-//      state.cube.instancePositions[i] = {
-//          (float) (i % 1000) * 3.0f,
-//          5.0f * (float) (sin(i * XE_MATH_PI / 10 + v)),
-//          (i / 1000.0f) * 3.0f};
-//    }
-//    state.cube.uniforms.model = mat4::rotation(quat({0, 1, 0}, v));
-//    v += 0.01;
+    static float v = 0;
+    for (size_t i = 0; i < State::INSTANCES; ++i) {
+      state.cube.instancePositions[i] = {
+          (i / 100) * 2.0f,
+          750.0f * (float) (sin(i * XE_MATH_PI / 10.0f + v) * ts),
+          (float) (i % 100) * 1.2f,
+          0.0f
+      };
+    }
+    v += 0.01f;
   }
 
   void renderUpdate() override {
@@ -258,16 +278,22 @@ protected:
         .set_color(Color(0xFFA6A6A6))
         .set_clearColor(true)
         .set_clearDepth(true);
+    frame.fillBufferCommand()
+        .set_buffer(state.cube.instanceBuffer)
+        .set_data(state.cube.instancePositions)
+        .set_size(sizeof(state.cube.instancePositions));
     frame.setupPipelineCommand()
         .set_pipeline(state.cube.material)
         .set_buffer(0, state.cube.vertexBuff)
+        .set_buffer(1, state.cube.instanceBuffer)
         .set_modelMatrix(state.cube.uniforms.view)
         .set_uniformBuffer(0, state.cube.uniformBuff)
         .set_texture(0, state.cube.texture);
     frame.renderCommand()
         .set_indexBuffer(state.cube.indexBuff)
         .set_count(sizeof(cube::indexData) / sizeof(uint16))
-        .set_type(IndexFormat::Uint16);
+        .set_type(IndexFormat::Uint16)
+        .set_instances(State::INSTANCES);
 
 //    //framebuffer
 //    frame.setupViewCommand()

@@ -141,37 +141,37 @@ namespace xe {
     return equals(vec3(val), errorMargin);
   }
 
-  const vec3 &vec3::UnitX() {
+  const vec3 &vec3::unitX() {
     static const vec3 u = vec3(1.0f, 0.0f, 0.0f);
     return u;
   }
 
-  const vec3 &vec3::UnitY() {
+  const vec3 &vec3::unitY() {
     static const vec3 u = vec3(0.0f, 1.0f, 0.0f);
     return u;
   }
 
-  const vec3 &vec3::UnitZ() {
+  const vec3 &vec3::unitZ() {
     static const vec3 u = vec3(0.0f, 0.0f, 1.0f);
     return u;
   }
 
-  const vec3 &vec3::UnitXN() {
+  const vec3 &vec3::unitXN() {
     static const vec3 u = vec3(-1.0f, 0.0f, 0.0f);
     return u;
   }
 
-  const vec3 &vec3::UnitYN() {
+  const vec3 &vec3::unitYN() {
     static const vec3 u = vec3(0.0f, -1.0f, 0.0f);
     return u;
   }
 
-  const vec3 &vec3::UnitZN() {
+  const vec3 &vec3::unitZN() {
     static const vec3 u = vec3(0.0f, 0.0f, -1.0f);
     return u;
   }
 
-  const vec3 &vec3::Zero() {
+  const vec3 &vec3::zero() {
     static const vec3 u = vec3(0.0f, 0.0f, 0.0f);
     return u;
   }

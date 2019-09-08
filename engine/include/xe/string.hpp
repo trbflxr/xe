@@ -63,14 +63,16 @@ namespace xe {
 
     std::wstring toWide() const;
 
-    string &operator=(const string &right);
-    string &operator+=(const string &right);
+    inline string &operator=(const string &right);
+    inline string &operator+=(const string &right);
 
-    char operator[](size_t index) const;
-    char &operator[](size_t index);
+    inline char operator[](size_t index) const;
+    inline char &operator[](size_t index);
 
     template<typename OStream>
     inline friend OStream &operator<<(OStream &os, const string &s) { return os << s.c_str(); }
+
+    static uint wcharToUTF8(uint wchar);
 
     vector<string> split(char delimiter) const;
     vector<string> split(const string &delimiters) const;
@@ -86,22 +88,61 @@ namespace xe {
     static vector<string> tokenize(const string &str);
 
   private:
-    friend bool XE_API operator==(const string &left, const string &right);
-    friend bool XE_API operator<(const string &left, const string &right);
+    friend bool operator==(const string &left, const string &right);
+    friend bool operator<(const string &left, const string &right);
 
   private:
     std::string base_;
   };
 
-  bool XE_API operator==(const string &left, const string &right);
-  bool XE_API operator!=(const string &left, const string &right);
-  bool XE_API operator<(const string &left, const string &right);
-  bool XE_API operator>(const string &left, const string &right);
-  bool XE_API operator<=(const string &left, const string &right);
-  bool XE_API operator>=(const string &left, const string &right);
-  string XE_API operator+(const string &left, const string &right);
+  inline string &string::operator=(const string &right) {
+    base_ = right.base_;
+    return *this;
+  }
 
-  uint XE_API wcharToUTF8(uint wchar);
+  inline string &string::operator+=(const string &right) {
+    base_ += right.base_;
+    return *this;
+  }
+
+  inline char string::operator[](size_t index) const {
+    return base_[index];
+  }
+
+  inline char &string::operator[](size_t index) {
+    return base_[index];
+  }
+
+  inline bool operator==(const string &left, const string &right) {
+    return left.base_ == right.base_;
+  }
+
+  inline bool operator!=(const string &left, const string &right) {
+    return !(left == right);
+  }
+
+  inline bool operator<(const string &left, const string &right) {
+    return left.base_ < right.base_;
+  }
+
+  inline bool operator>(const string &left, const string &right) {
+    return right < left;
+  }
+
+  inline bool operator<=(const string &left, const string &right) {
+    return !(right < left);
+  }
+
+  inline bool operator>=(const string &left, const string &right) {
+    return !(left < right);
+  }
+
+  inline string operator+(const string &left, const string &right) {
+    string string = left;
+    string += right;
+
+    return string;
+  }
 
 }
 

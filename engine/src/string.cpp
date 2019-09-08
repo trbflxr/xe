@@ -87,22 +87,27 @@ namespace xe {
     return toWideString(base_);
   }
 
-  string &string::operator=(const string &right) {
-    base_ = right.base_;
-    return *this;
-  }
+  uint string::wcharToUTF8(uint wchar) {
+    uint utf8 = 0;
+    char *c = (char *) &utf8;
 
-  string &string::operator+=(const string &right) {
-    base_ += right.base_;
-    return *this;
-  }
+    if (wchar < 0x80) {
+      utf8 = wchar;
+    } else if (wchar < 0x800) {
+      c[0] = static_cast<char>((wchar >> 6) | 0xC0);
+      c[1] = static_cast<char>((wchar & 0x3F) | 0x80);
+    } else if (wchar < 0x10000) {
+      c[0] = static_cast<char>((wchar >> 12) | 0xE0);
+      c[1] = static_cast<char>(((wchar >> 6) & 0x3F) | 0x80);
+      c[2] = static_cast<char>((wchar & 0x3F) | 0x80);
+    } else if (wchar < 0x110000) {
+      c[0] = static_cast<char>((wchar >> 18) | 0xF0);
+      c[1] = static_cast<char>(((wchar >> 12) & 0x3F) | 0x80);
+      c[2] = static_cast<char>(((wchar >> 6) & 0x3F) | 0x80);
+      c[3] = static_cast<char>((wchar & 0x3F) | 0x80);
+    }
 
-  char string::operator[](size_t index) const {
-    return base_[index];
-  }
-
-  char &string::operator[](size_t index) {
-    return base_[index];
+    return utf8;
   }
 
   vector<string> string::split(char delimiter) const {
@@ -203,60 +208,6 @@ namespace xe {
 
   vector<string> string::tokenize(const string &str) {
     return str.split(" \t\n");
-  }
-
-  bool operator==(const string &left, const string &right) {
-    return left.base_ == right.base_;
-  }
-
-  bool operator!=(const string &left, const string &right) {
-    return !(left == right);
-  }
-
-  bool operator<(const string &left, const string &right) {
-    return left.base_ < right.base_;
-  }
-
-  bool operator>(const string &left, const string &right) {
-    return right < left;
-  }
-
-  bool operator<=(const string &left, const string &right) {
-    return !(right < left);
-  }
-
-  bool operator>=(const string &left, const string &right) {
-    return !(left < right);
-  }
-
-  string operator+(const string &left, const string &right) {
-    string string = left;
-    string += right;
-
-    return string;
-  }
-
-  uint wcharToUTF8(uint wchar) {
-    uint utf8 = 0;
-    char *c = (char *) &utf8;
-
-    if (wchar < 0x80) {
-      utf8 = wchar;
-    } else if (wchar < 0x800) {
-      c[0] = static_cast<char>((wchar >> 6) | 0xC0);
-      c[1] = static_cast<char>((wchar & 0x3F) | 0x80);
-    } else if (wchar < 0x10000) {
-      c[0] = static_cast<char>((wchar >> 12) | 0xE0);
-      c[1] = static_cast<char>(((wchar >> 6) & 0x3F) | 0x80);
-      c[2] = static_cast<char>((wchar & 0x3F) | 0x80);
-    } else if (wchar < 0x110000) {
-      c[0] = static_cast<char>((wchar >> 18) | 0xF0);
-      c[1] = static_cast<char>(((wchar >> 12) & 0x3F) | 0x80);
-      c[2] = static_cast<char>(((wchar >> 6) & 0x3F) | 0x80);
-      c[3] = static_cast<char>((wchar & 0x3F) | 0x80);
-    }
-
-    return utf8;
   }
 
 }

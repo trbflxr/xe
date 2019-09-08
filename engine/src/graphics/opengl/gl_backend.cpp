@@ -4,6 +4,7 @@
 
 #include "xepch.hpp"
 #include "gl_backend.hpp"
+#include "gl_shader_parser.hpp"
 #include "external/glad/glad.h"
 #include <xe/graphics/render_context.hpp>
 
@@ -343,8 +344,12 @@ namespace xe::gpu {
     }
   }
 
-  static uint compileShader(uint type, const char *src) {
-    uint shader = 0;
+  static int32 compileShader(uint type, const char *src) {
+    if (src[0] == '\0') {
+      return -1;
+    }
+
+    int32 shader = 0;
     GLCHECK(shader = glCreateShader(type));
     if (!shader) {
       XE_CORE_ERROR("[GL Error] Could not create shader program");
@@ -359,15 +364,52 @@ namespace xe::gpu {
       static const size_t maxLength = 2048;
       char buffer[maxLength];
       GLCHECK(glGetShaderInfoLog(shader, maxLength, nullptr, buffer));
-      XE_CORE_ERROR("[GL Error] Could compile shader ({}):{} // CODE: {}", type, buffer, src);
+      XE_CORE_ERROR("[GL Error] Could compile shader ({}):{}\n// CODE: {}", type, buffer, src);
       GLCHECK(glDeleteShader(shader));
       return 0;
     }
     return shader;
   }
 
-  mat4 Backend::viewMatrix_ = mat4::identity();
-  mat4 Backend::projMatrix_ = mat4::identity();
+  static bool parseOrError(const string &source, Backend::Uniform *uniforms, size_t &outUsedUniforms, size_t &outSize) {
+    if (!GLShaderParser::parse(source, uniforms, outUsedUniforms, outSize)) {
+      XE_CORE_ERROR("[GL Error] Max shader uniforms reached ({}/{})", cMaxShaderUniforms, outUsedUniforms);
+    }
+    return true;
+  }
+
+  static void setUniform(int32 loc, uint count, VertexFormat::Enum type, const void *data) {
+    switch (type) {
+      case VertexFormat::Float: {
+        GLCHECK(glUniform1f(loc, *(float *) data));
+        break;
+      }
+      case VertexFormat::Float2: {
+        const float *v = (const float *) data;
+        GLCHECK(glUniform2f(loc, v[0], v[1]));
+        break;
+      }
+      case VertexFormat::Float3: {
+        const float *v = (const float *) data;
+        GLCHECK(glUniform3f(loc, v[0], v[1], v[2]));
+        break;
+      }
+      case VertexFormat::Float4: {
+        const float *v = (const float *) data;
+        GLCHECK(glUniform4f(loc, v[0], v[1], v[2], v[3]));
+        break;
+      }
+      case VertexFormat::Int32: {
+        glUniform1i(loc, *(int32 *) data);
+        break;
+      }
+      case VertexFormat::Mat4: {
+        GLCHECK(glUniformMatrix4fv(loc, count, GL_TRUE, (const float *) data));
+        break;
+      }
+      default: break;
+    }
+  }
 
   void Backend::initBackend(Backend **b, const Params::GPU &params) {
     *b = new Backend();
@@ -468,9 +510,6 @@ namespace xe::gpu {
       GLCHECK(glViewport(d.viewport.x, d.viewport.y, d.viewport.width, d.viewport.height));
     }
     GLCHECK(glDisable(GL_SCISSOR_TEST));
-
-    viewMatrix_ = d.viewMatrix;
-    projMatrix_ = d.projMatrix;
   }
 
   void Backend::fillBuffer(DisplayList::FillBufferData &d) {
@@ -567,10 +606,12 @@ namespace xe::gpu {
           i = -1;
         }
 
-        //todo: deal with geom and tess shaders
-        uint shaderV = compileShader(GL_VERTEX_SHADER, mat.first->vertShader.c_str());
-        uint shaderF = compileShader(GL_FRAGMENT_SHADER, mat.first->fragShader.c_str());
-        if (!shaderV || !shaderF) {
+        const int32 shaderV = compileShader(GL_VERTEX_SHADER, mat.first->vertShader.c_str());
+        const int32 shaderF = compileShader(GL_FRAGMENT_SHADER, mat.first->fragShader.c_str());
+        const int32 shaderTC = compileShader(GL_TESS_CONTROL_SHADER, mat.first->tessControlShader.c_str());
+        const int32 shaderTE = compileShader(GL_TESS_EVALUATION_SHADER, mat.first->tessEvalShader.c_str());
+        const int32 shaderG = compileShader(GL_GEOMETRY_SHADER, mat.first->geomShader.c_str());
+        if (!shaderV || !shaderF || !shaderTC || !shaderTE || !shaderG) {
           return;
         }
 
@@ -580,8 +621,45 @@ namespace xe::gpu {
           XE_CORE_ERROR("[GL Error] Could not create shader program");
           return;
         }
-        GLCHECK(glAttachShader(programId, shaderV));
-        GLCHECK(glAttachShader(programId, shaderF));
+
+        uint bufferSize = 0;
+        if (shaderV != -1) {
+          GLCHECK(glAttachShader(programId, shaderV));
+          if (!parseOrError(mat.first->vertShader, mat.second->uniforms,
+                            mat.second->usedUniforms, bufferSize)) {
+            return;
+          }
+        }
+        if (shaderF != -1) {
+          GLCHECK(glAttachShader(programId, shaderF));
+          if (!parseOrError(mat.first->fragShader, mat.second->uniforms,
+                            mat.second->usedUniforms, bufferSize)) {
+            return;
+          }
+        }
+        if (shaderTC != -1) {
+          GLCHECK(glAttachShader(programId, shaderTC));
+          if (!parseOrError(mat.first->tessControlShader, mat.second->uniforms,
+                            mat.second->usedUniforms, bufferSize)) {
+            return;
+          }
+        }
+        if (shaderTE != -1) {
+          GLCHECK(glAttachShader(programId, shaderTE));
+          if (!parseOrError(mat.first->tessEvalShader, mat.second->uniforms,
+                            mat.second->usedUniforms, bufferSize)) {
+            return;
+          }
+        }
+        if (shaderG != -1) {
+          GLCHECK(glAttachShader(programId, shaderG));
+          if (!parseOrError(mat.first->geomShader, mat.second->uniforms,
+                            mat.second->usedUniforms, bufferSize)) {
+            return;
+          }
+        }
+
+        mat.second->uniformData.alloc(bufferSize);
 
         for (auto i = 0; i < cMaxVertexAttribs; ++i) {
           const auto &attrib = mat.first->info.attribs[i];
@@ -604,8 +682,11 @@ namespace xe::gpu {
         }
         mat.second->program = programId;
 
-        GLCHECK(glDeleteShader(shaderV));
-        GLCHECK(glDeleteShader(shaderF));
+        if (shaderV != -1) GLCHECK(glDeleteShader(shaderV));
+        if (shaderF != -1) GLCHECK(glDeleteShader(shaderF));
+        if (shaderTC != -1) GLCHECK(glDeleteShader(shaderTC));
+        if (shaderTE != -1) GLCHECK(glDeleteShader(shaderTE));
+        if (shaderG != -1) GLCHECK(glDeleteShader(shaderG));
 
         //get texture locations
         for (size_t i = 0; i < cMaxTextureUnits; ++i) {
@@ -633,14 +714,9 @@ namespace xe::gpu {
           }
         }
 
-        //get common matrices locations
-        GLCHECK(mat.second->modelLoc = glGetUniformLocation(mat.second->program, uniformModel));
-        GLCHECK(mat.second->viewLoc = glGetUniformLocation(mat.second->program, uniformView));
-        GLCHECK(mat.second->projLoc = glGetUniformLocation(mat.second->program, uniformProjection));
-
-        if (mat.second->modelLoc == -1 || mat.second->viewLoc == -1 || mat.second->projLoc == -1) {
-          XE_CORE_ERROR("[GL Error] Unable to find default uniforms (model: {}, view: {}, proj: {})",
-                        mat.second->modelLoc, mat.second->viewLoc, mat.second->projLoc);
+        auto &&p = mat.second;
+        for (size_t i = 0; i < p->usedUniforms; ++i) {
+          GLCHECK(p->uniforms[i].loc = glGetUniformLocation(p->program, p->uniforms[i].name.c_str()));
         }
       }
 
@@ -710,9 +786,25 @@ namespace xe::gpu {
     }
 
     //todo: push model matrix
-    GLCHECK(glUniformMatrix4fv(mat.second->modelLoc, 1, GL_TRUE, (const float *) &d.modelMatrix));
-    GLCHECK(glUniformMatrix4fv(mat.second->viewLoc, 1, GL_TRUE, (const float *) &viewMatrix_));
-    GLCHECK(glUniformMatrix4fv(mat.second->projLoc, 1, GL_TRUE, (const float *) &projMatrix_));
+//    GLCHECK(glUniformMatrix4fv(mat.second->modelLoc, 1, GL_TRUE, (const float *) &d.modelMatrix));
+//    GLCHECK(glUniformMatrix4fv(mat.second->viewLoc, 1, GL_TRUE, (const float *) &viewMatrix_));
+//    GLCHECK(glUniformMatrix4fv(mat.second->projLoc, 1, GL_TRUE, (const float *) &projMatrix_));
+
+
+    for (auto &&u : d.uniform) {
+      if (!u.name) {
+        break;
+      }
+      for (size_t j = 0; j < mat.second->usedUniforms; ++j) {
+        auto &&mu = mat.second->uniforms[j];
+        if (mu.name == u.name) {
+          memcpy(mat.second->uniformData.data.get() + mu.offset, u.data, mu.size);
+          setUniform(mu.loc, mu.count, mu.type, mat.second->uniformData.data.get() + mu.offset);
+          break;
+        }
+      }
+    }
+
 
     if (d.scissor[2] > 0.0f && d.scissor[3] > 0.0f) {
       GLCHECK(glScissor((int32) d.scissor[0], (int32) d.scissor[1], (int32) d.scissor[2], (int32) d.scissor[3]));

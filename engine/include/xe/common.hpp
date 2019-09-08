@@ -118,6 +118,7 @@ namespace xe {
   static constexpr size_t cMaxFramebufferColorAttachments = 16;
 
   static constexpr size_t cMaxUniformBuffers = 16;
+  static constexpr size_t cMaxShaderUniforms = 32;
 
   struct Params {
     struct Window {
@@ -272,6 +273,7 @@ namespace xe {
       Uint16 = 0x5,
       Int32 = 0x6,
       Uint32 = 0x7,
+      Mat4 = 0x8,
 
       NumComponents1 = 0x10,
       NumComponents2 = 0x20,
@@ -280,7 +282,6 @@ namespace xe {
 
       Normalized = 0x100,
 
-      Float1 = Float | NumComponents1,
       Float2 = Float | NumComponents2,
       Float3 = Float | NumComponents3,
       Float4 = Float | NumComponents4,
@@ -301,7 +302,7 @@ namespace xe {
 
   struct VertexDeclaration {
     const char *name;
-    uint format;
+    VertexFormat::Enum format;
     uint bufferIndex;
     VertexStep vertexStep;
 

@@ -14,6 +14,15 @@ namespace xe::gpu {
   class Backend : public Object {
   XE_OBJECT(Backend, Object);
   public:
+    struct Uniform {
+      int32 loc = -1;
+      string name;
+      VertexFormat::Enum type = VertexFormat::Undefined;
+      uint size = 0;
+      uint count = 1;
+      uint offset = 0;
+    };
+
     struct Buffer {
       uint buffer = 0;
     };
@@ -29,18 +38,14 @@ namespace xe::gpu {
     struct Pipeline {
       uint program = 0;
       int32 textureUniformsLoc[cMaxTextureUnits] = { };
-      int32 modelLoc = -1;
-      int32 viewLoc = -1;
-      int32 projLoc = -1;
+      Uniform uniforms[cMaxShaderUniforms] = { };
+      memory<byte> uniformData;
+      size_t usedUniforms = 0;
     };
 
     struct Framebuffer {
       uint framebuffer = 0;
     };
-
-    static constexpr const char *uniformModel = "u_model";
-    static constexpr const char *uniformView = "u_view";
-    static constexpr const char *uniformProjection = "u_projection";
 
   public:
     static void initBackend(Backend **b, const Params::GPU &params);
@@ -54,14 +59,12 @@ namespace xe::gpu {
     static void render(DisplayList::RenderData &d);
 
   private:
-    static mat4 viewMatrix_;
-    static mat4 projMatrix_;
-
     memory<Buffer> buffers_;
     memory<Texture> textures_;
     memory<Pipeline> pipelines_;
     memory<Framebuffer> framebuffers_;
   };
+
 }
 
 #endif //XE_GL_BACKEND_HPP

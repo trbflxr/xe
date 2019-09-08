@@ -15,6 +15,21 @@
 
 namespace xe {
 
+  struct Uniform {
+    const char *name = nullptr;
+    byte data[64] = { };
+    uint count = 1;
+
+    Uniform() : name(nullptr), count(1) { }
+
+    Uniform(const char *name, void *data, size_t size, uint count = 1) :
+        name(name),
+        count(count) {
+
+      memcpy(Uniform::data, data, size);
+    }
+  };
+
   class XE_API DisplayList : public Object {
   XE_OBJECT(DisplayList, Object);
     friend class GPU;
@@ -27,16 +42,16 @@ namespace xe {
 
 #define PROP(type, name, ...) \
     type name = __VA_ARGS__;\
-    Self& set_##name(const type &c) { name = c; return *this; }
+    Self &set_##name(const type &c) { name = c; return *this; }
 
 #define PROP_PTR(type, name) \
     const type *name = nullptr;\
-    Self& set_##name(const type *c) { name = c; return *this; }
+    Self &set_##name(const type *c) { name = c; return *this; }
 
 #define PROP_ARRAY(type, count, name) \
     type name[count] = {};\
-    Self& set_##name(size_t i, const type &c) { name[i] = c; return *this; }\
-    Self& set_v_##name(const vector<type> &c) { for (uint i = 0; i < c.size(); ++i) { set_##name(i, c[i]); } return *this; }
+    Self &set_##name(size_t i, const type &c) { name[i] = c; return *this; }\
+    Self &set_v_##name(const vector<type> &c) { for (uint i = 0; i < c.size(); ++i) { set_##name(i, c[i]); } return *this; }
 
     struct ViewData {
       typedef ViewData Self;
@@ -97,6 +112,7 @@ namespace xe {
       PROP_ARRAY(gpu::Texture, cMaxTextureUnits, texture);
       PROP_ARRAY(gpu::Buffer, cMaxVertexAttribs, buffer);
       PROP_ARRAY(gpu::Buffer, cMaxUniformBuffers, uniformBuffer);
+      PROP_ARRAY(Uniform, cMaxShaderUniforms, uniform);
       PROP(vec4, scissor, vec4(0.0f));
       PROP(mat4, modelMatrix, mat4());
     };

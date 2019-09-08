@@ -9,27 +9,6 @@
 
 namespace xe {
 
-  static size_t computeVertexSize(uint format) {
-    const uint type = (format & VertexFormat::TypeMask) >> VertexFormat::TypeShift;
-    uint result = (format & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
-    switch (type) {
-      case VertexFormat::Int8: break;
-      case VertexFormat::Uint8: break;
-
-      case VertexFormat::Int16:
-      case VertexFormat::Uint16: result *= 2;
-        break;
-
-      case VertexFormat::Int32:
-      case VertexFormat::Uint32:
-      case VertexFormat::Float: result *= 4;
-        break;
-
-      default: return 0;
-    }
-    return result;
-  }
-
   template<class T>
   static uint acquireResource(memory<T> *pool) {
     uint tryCount = 10;
@@ -198,17 +177,17 @@ namespace xe {
     gpu::PipelineInstance &inst = ctx_->pipelines_[loc];
     inst.info = info;
 
-    inst.fragShader = info.shader.frag;
+    inst.vertShader = info.shader.vert;
     inst.tessControlShader = info.shader.tessControl;
     inst.tessEvalShader = info.shader.tessEval;
     inst.geomShader = info.shader.geom;
-    inst.vertShader = info.shader.vert;
+    inst.fragShader = info.shader.frag;
 
-    inst.info.shader.frag = inst.fragShader.c_str();
+    inst.info.shader.vert = inst.vertShader.c_str();
     inst.info.shader.tessControl = inst.tessControlShader.c_str();
     inst.info.shader.tessEval = inst.tessEvalShader.c_str();
     inst.info.shader.geom = inst.geomShader.c_str();
-    inst.info.shader.vert = inst.vertShader.c_str();
+    inst.info.shader.frag = inst.fragShader.c_str();
 
     size_t stride[cMaxVertexAttribs] = { };
     for (size_t i = 0; i < cMaxVertexAttribs; ++i) {
@@ -220,7 +199,7 @@ namespace xe {
       if (!inst.info.attribs[i].offset) {
         inst.info.attribs[i].offset = stride[inst.info.attribs[i].bufferIndex];
       }
-      stride[inst.info.attribs[i].bufferIndex] += computeVertexSize(inst.info.attribs[i].format);
+      stride[inst.info.attribs[i].bufferIndex] += RenderContext::computeSize(inst.info.attribs[i].format);
     }
 
     for (auto &a : inst.info.attribs) {

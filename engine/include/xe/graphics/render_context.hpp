@@ -31,6 +31,8 @@ namespace xe {
     static uint index(uint id);
     static std::pair<uint, uint> indexAndVersion(uint id);
 
+    static size_t computeSize(VertexFormat::Enum type);
+
     template<class T>
     static bool checkValidResource(uint id, const memory<T> *pool) {
       auto pv = indexAndVersion(id);

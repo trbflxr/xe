@@ -106,7 +106,7 @@ protected:
 
     state.cube.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
     state.cube.view = mat4::transformation({-10, 25, 60},
-                                                    quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
+                                           quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
 
 
     state.quad.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
@@ -250,6 +250,9 @@ protected:
         .set_pipeline(state.cube.material)
         .set_buffer(0, state.cube.vertexBuff)
         .set_buffer(1, state.cube.instanceBuffer)
+        .set_uniform(0, {"u_model", &state.cube.model, sizeof(mat4)})
+        .set_uniform(1, {"u_view", &state.cube.view, sizeof(mat4)})
+        .set_uniform(2, {"u_projection", &state.cube.proj, sizeof(mat4)})
         .set_modelMatrix(state.cube.model)
         .set_texture(0, state.cube.texture);
     frame.renderCommand()
@@ -257,6 +260,9 @@ protected:
         .set_count(sizeof(cube::indexData) / sizeof(uint16))
         .set_type(IndexFormat::Uint16)
         .set_instances(State::INSTANCES);
+
+    Color tint = Color::cyan();
+    float alpha = 0.5f;
 
     //framebuffer
     frame.setupViewCommand()
@@ -271,6 +277,11 @@ protected:
         .set_pipeline(state.quad.material)
         .set_buffer(0, state.quad.vertexBuff)
         .set_modelMatrix(state.quad.model)
+        .set_uniform(0, {"u_model", &state.quad.model, sizeof(mat4)})
+        .set_uniform(1, {"u_view", &state.quad.view, sizeof(mat4)})
+        .set_uniform(2, {"u_projection", &state.quad.proj, sizeof(mat4)})
+//        .set_uniform(3, {"u_alpha", &alpha, sizeof(float)})
+        .set_uniform(3, {"u_tint", &tint, sizeof(Color)})
         .set_texture(0, state.fb.colorAttachment(0))
         .set_texture(1, state.fb.colorAttachment(1));
     frame.renderCommand()

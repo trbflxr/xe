@@ -61,12 +61,6 @@ namespace quad {
 }
 
 struct State {
-  struct UniformState {
-    mat4 model;
-    mat4 view;
-    mat4 proj;
-  };
-
   gpu::Framebuffer fb;
   static constexpr uint INSTANCES = 50000;
   struct {
@@ -75,16 +69,18 @@ struct State {
     gpu::Buffer vertexBuff;
     gpu::Buffer indexBuff;
     gpu::Buffer instanceBuffer;
-    gpu::Buffer uniformBuff;
-    UniformState uniforms;
     gpu::Texture texture;
+    mat4 model;
+    mat4 view;
+    mat4 proj;
   } cube;
   struct {
     gpu::Pipeline material;
     gpu::Buffer vertexBuff;
     gpu::Buffer indexBuff;
-    gpu::Buffer uniformBuff;
-    UniformState uniforms;
+    mat4 model;
+    mat4 view;
+    mat4 proj;
   } quad;
 };
 
@@ -108,13 +104,13 @@ protected:
     VFS::mount("shaders", "assets/shaders/");
     VFS::mount("textures", "assets/textures/");
 
-    state.cube.uniforms.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
-    state.cube.uniforms.view = mat4::transformation({-10, 25, 60},
+    state.cube.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
+    state.cube.view = mat4::transformation({-10, 25, 60},
                                                     quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
 
 
-    state.quad.uniforms.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
-    state.quad.uniforms.view = mat4::translation({0.0f, 0.0f, 2.0f}).inverse();
+    state.quad.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
+    state.quad.view = mat4::translation({0.0f, 0.0f, 2.0f}).inverse();
   }
 
   void start() override {
@@ -127,15 +123,11 @@ protected:
         {BufferType::Index, Usage::Static, sizeof(cube::indexData)});
     state.cube.instanceBuffer = Engine::ref().gpu().createBuffer(
         {BufferType::Vertex, Usage::Dynamic, sizeof(state.cube.instancePositions)});
-    state.cube.uniformBuff = Engine::ref().gpu().createBuffer(
-        {BufferType::Uniform, Usage::Static, sizeof(State::UniformState), "UniformState"});
 
     state.quad.vertexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Vertex, Usage::Static, sizeof(quad::vertexData)});
     state.quad.indexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(quad::indexData)});
-    state.quad.uniformBuff = Engine::ref().gpu().createBuffer(
-        {BufferType::Uniform, Usage::Dynamic, sizeof(State::UniformState), "UniformState0"});
 
     {
       gpu::Pipeline::Info matInfo;
@@ -166,10 +158,6 @@ protected:
             .set_buffer(state.cube.indexBuff)
             .set_data(cube::indexData)
             .set_size(sizeof(cube::indexData));
-        frame.fillBufferCommand()
-            .set_buffer(state.cube.uniformBuff)
-            .set_data(&state.cube.uniforms)
-            .set_size(sizeof(State::UniformState));
         frame.fillTextureCommand()
             .set_texture(state.cube.texture)
             .set_data0(texData_)
@@ -201,10 +189,6 @@ protected:
             .set_buffer(state.quad.indexBuff)
             .set_data(quad::indexData)
             .set_size(sizeof(quad::indexData));
-        frame.fillBufferCommand()
-            .set_buffer(state.quad.uniformBuff)
-            .set_data(&state.quad.uniforms)
-            .set_size(sizeof(State::UniformState));
         Engine::ref().submitDrawList(std::move(frame));
       }
 
@@ -242,15 +226,15 @@ protected:
     static float angle = 0.0f;
     angle += 45.0f * ts;
 
-    state.quad.uniforms.model = mat4::transformation(vec3(), {{0, 1, 0}, angle});
+    state.quad.model = mat4::transformation(vec3(), {{0, 1, 0}, angle});
   }
 
   void renderUpdate() override {
     DisplayList frame;
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600})
-        .set_projectionMatrix(state.cube.uniforms.proj)
-        .set_viewMatrix(state.cube.uniforms.view)
+        .set_projMatrix(state.cube.proj)
+        .set_viewMatrix(state.cube.view)
         .set_framebuffer(state.fb)
         .set_colorAttachment(0, true)
         .set_colorAttachment(1, true);
@@ -266,8 +250,7 @@ protected:
         .set_pipeline(state.cube.material)
         .set_buffer(0, state.cube.vertexBuff)
         .set_buffer(1, state.cube.instanceBuffer)
-        .set_modelMatrix(state.cube.uniforms.view)
-        .set_uniformBuffer(0, state.cube.uniformBuff)
+        .set_modelMatrix(state.cube.model)
         .set_texture(0, state.cube.texture);
     frame.renderCommand()
         .set_indexBuffer(state.cube.indexBuff)
@@ -278,21 +261,16 @@ protected:
     //framebuffer
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600})
-        .set_projectionMatrix(state.quad.uniforms.proj)
-        .set_viewMatrix(state.quad.uniforms.proj);
+        .set_projMatrix(state.quad.proj)
+        .set_viewMatrix(state.quad.view);
     frame.clearCommand()
         .set_color(Color(Color::yellow()))
         .set_clearColor(true)
         .set_clearDepth(true);
-    frame.fillBufferCommand()
-        .set_buffer(state.quad.uniformBuff)
-        .set_data(&state.quad.uniforms)
-        .set_size(sizeof(State::UniformState));
     frame.setupPipelineCommand()
         .set_pipeline(state.quad.material)
         .set_buffer(0, state.quad.vertexBuff)
-        .set_modelMatrix(state.quad.uniforms.model)
-        .set_uniformBuffer(0, state.quad.uniformBuff)
+        .set_modelMatrix(state.quad.model)
         .set_texture(0, state.fb.colorAttachment(0))
         .set_texture(1, state.fb.colorAttachment(1));
     frame.renderCommand()

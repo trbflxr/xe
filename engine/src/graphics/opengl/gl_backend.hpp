@@ -11,7 +11,7 @@
 
 namespace xe::gpu {
 
-  class XE_API Backend : public Object {
+  class Backend : public Object {
   XE_OBJECT(Backend, Object);
   public:
     struct Buffer {
@@ -29,15 +29,22 @@ namespace xe::gpu {
     struct Pipeline {
       uint program = 0;
       int32 textureUniformsLoc[cMaxTextureUnits] = { };
+      int32 modelLoc = -1;
+      int32 viewLoc = -1;
+      int32 projLoc = -1;
     };
 
     struct Framebuffer {
       uint framebuffer = 0;
     };
 
+    static constexpr const char *uniformModel = "u_model";
+    static constexpr const char *uniformView = "u_view";
+    static constexpr const char *uniformProjection = "u_projection";
+
   public:
-    static void initBackEnd(Backend **backEnd, const Params::GPU &params);
-    static void destroyBackEnd(Backend **backEnd);
+    static void initBackend(Backend **b, const Params::GPU &params);
+    static void destroyBackend(Backend **b);
 
     static void clear(const DisplayList::ClearData &d);
     static void setupView(DisplayList::ViewData &d);
@@ -47,6 +54,9 @@ namespace xe::gpu {
     static void render(DisplayList::RenderData &d);
 
   private:
+    static mat4 viewMatrix_;
+    static mat4 projMatrix_;
+
     memory<Buffer> buffers_;
     memory<Texture> textures_;
     memory<Pipeline> pipelines_;

@@ -48,7 +48,7 @@ namespace xe {
       };
       PROP(Viewport, viewport, { });
       PROP(mat4, viewMatrix, mat4());
-      PROP(mat4, projectionMatrix, mat4());
+      PROP(mat4, projMatrix, mat4());
       PROP(gpu::Framebuffer, framebuffer, { });
       PROP_ARRAY(bool, cMaxFramebufferColorAttachments, colorAttachment);
       PROP(CubemapTarget, cubemapTarget, CubemapTarget::Invalid);
@@ -96,7 +96,7 @@ namespace xe {
       PROP(gpu::Pipeline, pipeline, { });
       PROP_ARRAY(gpu::Texture, cMaxTextureUnits, texture);
       PROP_ARRAY(gpu::Buffer, cMaxVertexAttribs, buffer);
-      PROP_ARRAY(gpu::Buffer, cMaxUniformBuffers + 1, uniformBuffer);
+      PROP_ARRAY(gpu::Buffer, cMaxUniformBuffers, uniformBuffer);
       PROP(vec4, scissor, vec4(0.0f));
       PROP(mat4, modelMatrix, mat4());
     };
@@ -104,9 +104,9 @@ namespace xe {
     struct RenderData {
       typedef RenderData Self;
       PROP(gpu::Buffer, indexBuffer, { });
-      PROP(uint32, offset, 0);
-      PROP(uint32, count, 0);
-      PROP(uint32, instances, 1);
+      PROP(uint, offset, 0);
+      PROP(uint, count, 0);
+      PROP(uint, instances, 1);
       PROP(IndexFormat, type, IndexFormat::Uint16);
     };
 

@@ -119,9 +119,6 @@ namespace xe {
 
   static constexpr size_t cMaxUniformBuffers = 16;
 
-  //todo: move
-  static const char *cShaderModelUniform = "u_model";
-
   struct Params {
     struct Window {
       uint width;

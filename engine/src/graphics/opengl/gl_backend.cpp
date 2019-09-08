@@ -366,7 +366,10 @@ namespace xe::gpu {
     return shader;
   }
 
-  void Backend::initBackEnd(Backend **b, const Params::GPU &params) {
+  mat4 Backend::viewMatrix_ = mat4::identity();
+  mat4 Backend::projMatrix_ = mat4::identity();
+
+  void Backend::initBackend(Backend **b, const Params::GPU &params) {
     *b = new Backend();
 
     (*b)->buffers_.alloc(params.maxBuffers);
@@ -375,7 +378,7 @@ namespace xe::gpu {
     (*b)->framebuffers_.alloc(params.maxFramebuffers);
   }
 
-  void Backend::destroyBackEnd(Backend **b) {
+  void Backend::destroyBackend(Backend **b) {
     delete *b;
     *b = nullptr;
   }
@@ -465,6 +468,9 @@ namespace xe::gpu {
       GLCHECK(glViewport(d.viewport.x, d.viewport.y, d.viewport.width, d.viewport.height));
     }
     GLCHECK(glDisable(GL_SCISSOR_TEST));
+
+    viewMatrix_ = d.viewMatrix;
+    projMatrix_ = d.projMatrix;
   }
 
   void Backend::fillBuffer(DisplayList::FillBufferData &d) {
@@ -601,6 +607,7 @@ namespace xe::gpu {
         GLCHECK(glDeleteShader(shaderV));
         GLCHECK(glDeleteShader(shaderF));
 
+        //get texture locations
         for (size_t i = 0; i < cMaxTextureUnits; ++i) {
           char name[32];
           switch (mat.first->info.textures[i]) {
@@ -624,6 +631,16 @@ namespace xe::gpu {
               XE_CORE_ERROR("[GL Error] Unable to find texture uniform '{}' (pipeline {})", name, d.pipeline.id);
             }
           }
+        }
+
+        //get common matrices locations
+        GLCHECK(mat.second->modelLoc = glGetUniformLocation(mat.second->program, uniformModel));
+        GLCHECK(mat.second->viewLoc = glGetUniformLocation(mat.second->program, uniformView));
+        GLCHECK(mat.second->projLoc = glGetUniformLocation(mat.second->program, uniformProjection));
+
+        if (mat.second->modelLoc == -1 || mat.second->viewLoc == -1 || mat.second->projLoc == -1) {
+          XE_CORE_ERROR("[GL Error] Unable to find default uniforms (model: {}, view: {}, proj: {})",
+                        mat.second->modelLoc, mat.second->viewLoc, mat.second->projLoc);
         }
       }
 
@@ -693,8 +710,9 @@ namespace xe::gpu {
     }
 
     //todo: push model matrix
-//    glUniformMatrix4fv(glGetUniformLocation(mat.second->program, cShaderModelUniform), 1,
-//                       GL_TRUE, (const float *) &d.modelMatrix);
+    GLCHECK(glUniformMatrix4fv(mat.second->modelLoc, 1, GL_TRUE, (const float *) &d.modelMatrix));
+    GLCHECK(glUniformMatrix4fv(mat.second->viewLoc, 1, GL_TRUE, (const float *) &viewMatrix_));
+    GLCHECK(glUniformMatrix4fv(mat.second->projLoc, 1, GL_TRUE, (const float *) &projMatrix_));
 
     if (d.scissor[2] > 0.0f && d.scissor[3] > 0.0f) {
       GLCHECK(glScissor((int32) d.scissor[0], (int32) d.scissor[1], (int32) d.scissor[2], (int32) d.scissor[3]));

@@ -17,11 +17,11 @@ namespace xe {
   }
 
   RenderContext::~RenderContext() {
-    gpu::Backend::destroyBackEnd(&backend_);
+    gpu::Backend::destroyBackend(&backend_);
   }
 
   void RenderContext::init(const Params::GPU &params) {
-    gpu::Backend::initBackEnd(&backend_, params);
+    gpu::Backend::initBackend(&backend_, params);
 
     buffers_.alloc(params.maxBuffers);
     textures_.alloc(params.maxTextures);

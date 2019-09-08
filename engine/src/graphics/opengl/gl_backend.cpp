@@ -167,21 +167,6 @@ namespace xe::gpu {
 #define GLCHECK_STR(A) GLCHECK_STR_STR(A)
 #define GLCHECK(...) {__VA_ARGS__; checkGLError(__FILE__  ":" GLCHECK_STR(__LINE__) "\n\t-> " #__VA_ARGS__);}
 
-  //todo: refactor
-  void Backend::initBackEnd(Backend **b, const Params::GPU &params) {
-    *b = new Backend();
-
-    (*b)->buffers.alloc(params.maxBuffers);
-    (*b)->textures.alloc(params.maxTextures);
-    (*b)->pipelines.alloc(params.maxPipelines);
-    (*b)->framebuffers.alloc(params.maxFramebuffers);
-  }
-
-  void Backend::destroyBackEnd(Backend **b) {
-    delete *b;
-    *b = nullptr;
-  }
-
   static void initTextureParams(uint target, const Texture::Info &info) {
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, toGL(info.minFilter)));
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, toGL(info.magFilter)));
@@ -318,6 +303,7 @@ namespace xe::gpu {
     }
   }
 
+  //todo: move to framebuffer init
   static void setupFramebufferTexture(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel, uint16 i) {
     switch (t.second->target) {
       case GL_TEXTURE_2D: {
@@ -332,6 +318,7 @@ namespace xe::gpu {
     }
   }
 
+  //todo: move to framebuffer init
   static void setupFramebufferDepth(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel) {
     if (t.second->target != GL_TEXTURE_2D) {
       XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D (depth/stencil)");
@@ -356,10 +343,66 @@ namespace xe::gpu {
     }
   }
 
+  static uint compileShader(uint type, const char *src) {
+    uint shader = 0;
+    GLCHECK(shader = glCreateShader(type));
+    if (!shader) {
+      XE_CORE_ERROR("[GL Error] Could not create shader program");
+      return 0;
+    }
+    int32 compiled = 0;
+    GLCHECK(glShaderSource(shader, 1, &src, nullptr));
+    GLCHECK(glCompileShader(shader));
+    GLCHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled));
+
+    if (!compiled) {
+      static const size_t maxLength = 2048;
+      char buffer[maxLength];
+      GLCHECK(glGetShaderInfoLog(shader, maxLength, nullptr, buffer));
+      XE_CORE_ERROR("[GL Error] Could compile shader ({}):{} // CODE: {}", type, buffer, src);
+      GLCHECK(glDeleteShader(shader));
+      return 0;
+    }
+    return shader;
+  }
+
+  void Backend::initBackEnd(Backend **b, const Params::GPU &params) {
+    *b = new Backend();
+
+    (*b)->buffers_.alloc(params.maxBuffers);
+    (*b)->textures_.alloc(params.maxTextures);
+    (*b)->pipelines_.alloc(params.maxPipelines);
+    (*b)->framebuffers_.alloc(params.maxFramebuffers);
+  }
+
+  void Backend::destroyBackEnd(Backend **b) {
+    delete *b;
+    *b = nullptr;
+  }
+
+  void Backend::clear(const DisplayList::ClearData &d) {
+    uint mask = 0;
+    if (d.clearColor) {
+      GLCHECK(glClearColor(d.color.r, d.color.g, d.color.b, d.color.a));
+      mask |= GL_COLOR_BUFFER_BIT;
+      GLCHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+    }
+    if (d.clearDepth) {
+      GLCHECK(glClearDepth(d.depth));
+      mask |= GL_DEPTH_BUFFER_BIT;
+      GLCHECK(glDepthMask(GL_TRUE));
+    }
+    if (d.clearStencil) {
+      GLCHECK(glClearStencil(d.stencil));
+      mask |= GL_STENCIL_BUFFER_BIT;
+    }
+    GLCHECK(glClear(mask));
+  }
+
   void Backend::setupView(DisplayList::ViewData &d) {
     if (d.framebuffer.id != 0) {
       auto fb = RenderContext::getResource(d.framebuffer.id, &d.framebuffer.ctx->framebuffers_,
-                                           &d.framebuffer.ctx->backend_->framebuffers);
+                                           &d.framebuffer.ctx->backend_->framebuffers_);
       uint fbId = fb.second->framebuffer;
       if (!fbId) {
         GLCHECK(glGenFramebuffers(1, &fbId));
@@ -372,7 +415,7 @@ namespace xe::gpu {
         for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
-                                                &fb.first->colorAttachments[i].ctx->backend_->textures);
+                                                &fb.first->colorAttachments[i].ctx->backend_->textures_);
           initTexture(tex);
           if (tex.second->target == GL_TEXTURE_CUBE_MAP) {
             GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, toGL(d.cubemapTarget),
@@ -383,7 +426,7 @@ namespace xe::gpu {
         for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
-                                                &fb.first->colorAttachments[i].ctx->backend_->textures);
+                                                &fb.first->colorAttachments[i].ctx->backend_->textures_);
           initTexture(tex);
           setupFramebufferTexture(tex, d.mipLevel, i);
         }
@@ -391,7 +434,7 @@ namespace xe::gpu {
         if (RenderContext::checkValidResource(fb.first->depthAttachment.id, &d.framebuffer.ctx->textures_)) {
           auto tex = RenderContext::getResource(fb.first->depthAttachment.id,
                                                 &fb.first->depthAttachment.ctx->textures_,
-                                                &fb.first->depthAttachment.ctx->backend_->textures);
+                                                &fb.first->depthAttachment.ctx->backend_->textures_);
           initTexture(tex);
           setupFramebufferDepth(tex, d.mipLevel);
         }
@@ -424,27 +467,8 @@ namespace xe::gpu {
     GLCHECK(glDisable(GL_SCISSOR_TEST));
   }
 
-  void Backend::clear(const DisplayList::ClearData &d) {
-    uint mask = 0;
-    if (d.clearColor) {
-      GLCHECK(glClearColor(d.color.r, d.color.g, d.color.b, d.color.a));
-      mask |= GL_COLOR_BUFFER_BIT;
-      GLCHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
-    }
-    if (d.clearDepth) {
-      GLCHECK(glClearDepth(d.depth));
-      mask |= GL_DEPTH_BUFFER_BIT;
-      GLCHECK(glDepthMask(GL_TRUE));
-    }
-    if (d.clearStencil) {
-      GLCHECK(glClearStencil(d.stencil));
-      mask |= GL_STENCIL_BUFFER_BIT;
-    }
-    GLCHECK(glClear(mask));
-  }
-
   void Backend::fillBuffer(DisplayList::FillBufferData &d) {
-    auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backend_->buffers);
+    auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backend_->buffers_);
     uint id = b.second->buffer;
     const uint target = toGL(b.first->info.type_);
 
@@ -470,7 +494,7 @@ namespace xe::gpu {
   }
 
   void Backend::fillTexture(DisplayList::FillTextureData &d) {
-    auto t = RenderContext::getResource(d.texture.id, &d.texture.ctx->textures_, &d.texture.ctx->backend_->textures);
+    auto t = RenderContext::getResource(d.texture.id, &d.texture.ctx->textures_, &d.texture.ctx->backend_->textures_);
 
     d.width = d.width ? d.width : t.first->info.width;
     d.height = d.height ? d.height : t.first->info.height;
@@ -525,47 +549,27 @@ namespace xe::gpu {
     }
   }
 
-  static uint compileShader(uint type, const char *src) {
-    uint shader = glCreateShader(type);
-    if (!shader) {
-      XE_CORE_ERROR("[GL Error] Could not create shader program");
-      return 0;
-    }
-    int32 compiled = 0;
-    GLCHECK(glShaderSource(shader, 1, &src, nullptr));
-    GLCHECK(glCompileShader(shader));
-    GLCHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled));
-
-    if (!compiled) {
-      static const size_t maxLength = 2048;
-      char buffer[maxLength];
-      GLCHECK(glGetShaderInfoLog(shader, maxLength, nullptr, buffer));
-      XE_CORE_ERROR("[GL Error] Could compile shader ({}):{} // CODE: {}", type, buffer, src);
-      GLCHECK(glDeleteShader(shader));
-      return 0;
-    }
-    return shader;
-  }
-
   void Backend::setupPipeline(DisplayList::SetupPipelineData &d) {
-    //todo: refactor, create uniform buffers
     bool lastPipelineChanged = d.pipeline.id != d.pipeline.ctx->lastPipeline_.pipeline.id;
     d.pipeline.ctx->lastPipeline_ = d;
     auto mat = RenderContext::getResource(d.pipeline.ctx->lastPipeline_.pipeline.id, &d.pipeline.ctx->pipelines_,
-                                          &d.pipeline.ctx->backend_->pipelines);
+                                          &d.pipeline.ctx->backend_->pipelines_);
     if (lastPipelineChanged) {
+      //shader creation
       if (mat.second->program == 0) {
         for (int32 &i : mat.second->textureUniformsLoc) {
           i = -1;
         }
 
+        //todo: deal with geom and tess shaders
         uint shaderV = compileShader(GL_VERTEX_SHADER, mat.first->vertShader.c_str());
         uint shaderF = compileShader(GL_FRAGMENT_SHADER, mat.first->fragShader.c_str());
         if (!shaderV || !shaderF) {
           return;
         }
 
-        uint programId = glCreateProgram();
+        uint programId = 0;
+        GLCHECK(programId = glCreateProgram());
         if (!programId) {
           XE_CORE_ERROR("[GL Error] Could not create shader program");
           return;
@@ -612,7 +616,13 @@ namespace xe::gpu {
           }
 
           if ((uint) mat.first->info.textures[i]) {
-            mat.second->textureUniformsLoc[i] = glGetUniformLocation(programId, name);
+            int32 loc;
+            GLCHECK(loc = glGetUniformLocation(programId, name));
+            if (loc != -1) {
+              mat.second->textureUniformsLoc[i] = loc;
+            } else {
+              XE_CORE_ERROR("[GL Error] Unable to find texture uniform '{}' (pipeline {})", name, d.pipeline.id);
+            }
           }
         }
       }
@@ -644,10 +654,10 @@ namespace xe::gpu {
           break;
       }
 
-      byte rgbw = (mat.first->info.rgbaWrite) ? GL_TRUE : GL_FALSE;
-      byte dephtw = (mat.first->info.depthWrite) ? GL_TRUE : GL_FALSE;
-      GLCHECK(glColorMask(rgbw, rgbw, rgbw, rgbw));
-      GLCHECK(glDepthMask(dephtw));
+      const byte colorWrite = (mat.first->info.rgbaWrite) ? GL_TRUE : GL_FALSE;
+      const byte depthWrite = (mat.first->info.depthWrite) ? GL_TRUE : GL_FALSE;
+      GLCHECK(glColorMask(colorWrite, colorWrite, colorWrite, colorWrite));
+      GLCHECK(glDepthMask(depthWrite));
 
       if (mat.first->info.depthFunc != CompareFunc::Disabled) {
         GLCHECK(glDepthFunc(toGL(mat.first->info.depthFunc)));
@@ -674,7 +684,7 @@ namespace xe::gpu {
       for (size_t i = 0; i < cMaxUniformBuffers; ++i) {
         if (d.uniformBuffer[i].id) {
           auto ubo = RenderContext::getResource(d.uniformBuffer[i].id, &d.pipeline.ctx->buffers_,
-                                                &d.pipeline.ctx->backend_->buffers);
+                                                &d.pipeline.ctx->backend_->buffers_);
           uint uniformIndex = 0;
           GLCHECK(uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name_));
           GLCHECK(glUniformBlockBinding(mat.second->program, uniformIndex, ubo.second->buffer));
@@ -682,6 +692,7 @@ namespace xe::gpu {
       }
     }
 
+    //todo: push model matrix
 //    glUniformMatrix4fv(glGetUniformLocation(mat.second->program, cShaderModelUniform), 1,
 //                       GL_TRUE, (const float *) &d.modelMatrix);
 
@@ -695,26 +706,26 @@ namespace xe::gpu {
 
   void Backend::render(DisplayList::RenderData &d) {
     auto buf = RenderContext::getResource(d.indexBuffer.id, &d.indexBuffer.ctx->buffers_,
-                                          &d.indexBuffer.ctx->backend_->buffers);
+                                          &d.indexBuffer.ctx->backend_->buffers_);
 
     auto mat = RenderContext::getResource(d.indexBuffer.ctx->lastPipeline_.pipeline.id, &d.indexBuffer.ctx->pipelines_,
-                                          &d.indexBuffer.ctx->backend_->pipelines);
+                                          &d.indexBuffer.ctx->backend_->pipelines_);
 
     if (mat.first->info.renderMode == RenderMode::Disabled) {
       return;
     }
 
     if (!buf.second->buffer) {
-      XE_CORE_ERROR("[GL Error] Invalid Index buffer");
+      XE_CORE_ERROR("[GL Error] Invalid index buffer");
     }
 
-    auto &mainMaterial = d.indexBuffer.ctx->lastPipeline_;
+    auto &pipeline = d.indexBuffer.ctx->lastPipeline_;
 
     size_t texUnit = 0;
     for (auto i = 0; i < cMaxTextureUnits; ++i) {
       if (mat.second->textureUniformsLoc[i] >= 0) {
-        auto tex = RenderContext::getResource(mainMaterial.texture[i].id, &d.indexBuffer.ctx->textures_,
-                                              &d.indexBuffer.ctx->backend_->textures);
+        auto tex = RenderContext::getResource(pipeline.texture[i].id, &d.indexBuffer.ctx->textures_,
+                                              &d.indexBuffer.ctx->backend_->textures_);
         if (!tex.first) {
           XE_CORE_ERROR("[GL Error] Missing texture");
           return;
@@ -740,20 +751,21 @@ namespace xe::gpu {
     }
 
     for (auto i = 0; i < cMaxVertexAttribs; ++i) {
-      uint attribFormat = mat.first->info.attribs[i].format;
+      const uint attribFormat = mat.first->info.attribs[i].format;
       if (attribFormat) {
-        size_t bufferIndex = mat.first->info.attribs[i].bufferIndex;
-        size_t bufferId = mainMaterial.buffer[bufferIndex].id;
+        const size_t bufferIndex = mat.first->info.attribs[i].bufferIndex;
+        const size_t bufferId = pipeline.buffer[bufferIndex].id;
         if (!bufferId) {
-          XE_CORE_ERROR("[GL Error] Expected Valid buffer (see pipeline declaration)");
+          XE_CORE_ERROR("[GL Error] Expected valid buffer (see pipeline declaration)");
           return;
         }
         auto buffer = RenderContext::getResource(bufferId, &d.indexBuffer.ctx->buffers_,
-                                                 &d.indexBuffer.ctx->backend_->buffers);
+                                                 &d.indexBuffer.ctx->backend_->buffers_);
         if (buffer.second->buffer == 0) {
           XE_CORE_ERROR("[GL Error] Invalid GL buffer (vertex data)");
         }
 
+        //todo: refactor
         GLCHECK(glBindBuffer(GL_ARRAY_BUFFER, buffer.second->buffer));
         int32 a_size = (attribFormat & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
         uint a_type = vertexTypeToGL(attribFormat);
@@ -769,25 +781,14 @@ namespace xe::gpu {
 
     switch (mat.first->info.renderMode) {
       case RenderMode::Solid: {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        GLCHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
         GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
         GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
                                         d.count, toGL(d.type), (void *) d.offset, d.instances));
         break;
       }
       case RenderMode::Wireframe: {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
-        GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
-                                        d.count, toGL(d.type), (void *) d.offset, d.instances));
-        break;
-      }
-      case RenderMode::SolidWireframe: {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
-        GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
-                                        d.count, toGL(d.type), (void *) d.offset, d.instances));
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        GLCHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
         GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
         GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
                                         d.count, toGL(d.type), (void *) d.offset, d.instances));

@@ -9,6 +9,43 @@
 
 namespace xe {
 
+  static size_t computeVertexSize(uint format) {
+    const uint type = (format & VertexFormat::TypeMask) >> VertexFormat::TypeShift;
+    uint result = (format & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
+    switch (type) {
+      case VertexFormat::Int8: break;
+      case VertexFormat::Uint8: break;
+
+      case VertexFormat::Int16:
+      case VertexFormat::Uint16: result *= 2;
+        break;
+
+      case VertexFormat::Int32:
+      case VertexFormat::Uint32:
+      case VertexFormat::Float: result *= 4;
+        break;
+
+      default: return 0;
+    }
+    return result;
+  }
+
+  template<class T>
+  static uint acquireResource(memory<T> *pool) {
+    uint tryCount = 10;
+    while (tryCount--) {
+      for (uint i = 0; i < pool->size; ++i) {
+        if ((*pool)[i].acquire()) {
+          const uint version = (*pool)[i].version;
+          const uint result = i | (version << 20);
+          return result;
+        }
+      }
+    }
+    XE_CORE_ERROR("[GPU] Assigned id 0 to resource instance");
+    return 0;
+  }
+
   GPU::GPU() :
       existing_(false),
       usedBuffers_(0),
@@ -97,7 +134,7 @@ namespace xe {
     XE_CORE_TRACE("[GPU] GPU Synchronization (logic ready)");
   }
 
-  void GPU::appendCommands(DisplayList &&dl) {
+  void GPU::submitCommands(DisplayList &&dl) {
     if (logicFrame_->commands_.empty()) {
       logicFrame_->commands_ = std::move(dl.commands_);
     } else {
@@ -110,22 +147,6 @@ namespace xe {
   void GPU::stop() {
     threadSync_.thread.join();
     XE_CORE_INFO("[GPU] Joined rendering thread");
-  }
-
-  template<class T>
-  static uint acquireResource(memory<T> *pool) {
-    uint tryCount = 10;
-    while (tryCount--) {
-      for (uint i = 0; i < pool->size; ++i) {
-        if ((*pool)[i].acquire()) {
-          const uint version = (*pool)[i].version;
-          const uint result = i | (version << 20);
-          return result;
-        }
-      }
-    }
-    XE_CORE_ERROR("[GPU] Assigned id 0 to resource instance");
-    return 0;
   }
 
   gpu::Buffer GPU::createBuffer(const gpu::Buffer::Info &info) {
@@ -171,27 +192,6 @@ namespace xe {
     return gpu::Texture{ctx_, id};
   }
 
-  static size_t computeVertexSize(uint format) {
-    const uint type = (format & VertexFormat::TypeMask) >> VertexFormat::TypeShift;
-    uint result = (format & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
-    switch (type) {
-      // 1
-      case VertexFormat::Int8: break;
-      case VertexFormat::Uint8: break;
-        // 2
-      case VertexFormat::Int16:
-      case VertexFormat::Uint16: result *= 2;
-        break;
-        // 4
-      case VertexFormat::Int32:
-      case VertexFormat::Uint32:
-      case VertexFormat::Float: result *= 4;
-        break;
-      default: return 0;
-    }
-    return result;
-  }
-
   gpu::Pipeline GPU::createPipeline(const gpu::Pipeline::Info &info) {
     const uint id = acquireResource(&ctx_->pipelines_);
     const uint loc = RenderContext::index(id);
@@ -205,6 +205,9 @@ namespace xe {
     inst.vertShader = info.shader.vert;
 
     inst.info.shader.frag = inst.fragShader.c_str();
+    inst.info.shader.tessControl = inst.tessControlShader.c_str();
+    inst.info.shader.tessEval = inst.tessEvalShader.c_str();
+    inst.info.shader.geom = inst.geomShader.c_str();
     inst.info.shader.vert = inst.vertShader.c_str();
 
     size_t stride[cMaxVertexAttribs] = { };

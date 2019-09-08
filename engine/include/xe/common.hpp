@@ -216,8 +216,7 @@ namespace xe {
   enum class RenderMode {
     Disabled,
     Solid,
-    Wireframe,
-    SolidWireframe
+    Wireframe
   };
 
   enum class TextureType {

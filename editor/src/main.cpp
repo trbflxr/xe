@@ -109,7 +109,7 @@ protected:
     VFS::mount("textures", "assets/textures/");
 
     state.cube.uniforms.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
-    state.cube.uniforms.view = mat4::transformation({-20, 25, 60},
+    state.cube.uniforms.view = mat4::transformation({-10, 25, 60},
                                                     quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
 
 
@@ -118,6 +118,9 @@ protected:
   }
 
   void start() override {
+    //todo: print render api info
+    //todo: remove vertex attribs
+    //todo: create common shader attachment with matrices and connect view and pipeline data to it
     state.cube.vertexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Vertex, Usage::Static, sizeof(cube::vertexData)});
     state.cube.indexBuff = Engine::ref().gpu().createBuffer(

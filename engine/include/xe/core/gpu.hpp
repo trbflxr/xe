@@ -47,7 +47,7 @@ namespace xe {
     void execute();
     void stop();
 
-    void appendCommands(DisplayList &&dl);
+    void submitCommands(DisplayList &&dl);
 
     inline bool isExisting() const { return existing_; }
 

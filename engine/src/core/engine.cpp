@@ -93,7 +93,7 @@ namespace xe {
   }
 
   void Engine::submitDrawList(DisplayList &&dl) {
-    gpu_->appendCommands(std::move(dl));
+    gpu_->submitCommands(std::move(dl));
   }
 
 }

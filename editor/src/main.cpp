@@ -114,9 +114,6 @@ protected:
   }
 
   void start() override {
-    //todo: print render api info
-    //todo: remove vertex attribs
-    //todo: create common shader attachment with matrices and connect view and pipeline data to it
     state.cube.vertexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Vertex, Usage::Static, sizeof(cube::vertexData)});
     state.cube.indexBuff = Engine::ref().gpu().createBuffer(

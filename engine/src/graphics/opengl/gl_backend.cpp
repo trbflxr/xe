@@ -292,7 +292,7 @@ namespace xe::gpu {
         case TextureType::CubeMap: {
           t.second->target = GL_TEXTURE_CUBE_MAP;
           GLCHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
-          for (uint16 i = 0; i < 6; ++i) {
+          for (uint i = 0; i < 6; ++i) {
             GLCHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, backEnd->internalFormat, t.first->info.width,
                                  t.first->info.height, 0, backEnd->format, backEnd->type, nullptr));
           }
@@ -304,7 +304,6 @@ namespace xe::gpu {
     }
   }
 
-  //todo: move to framebuffer init
   static void setupFramebufferTexture(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel, uint16 i) {
     switch (t.second->target) {
       case GL_TEXTURE_2D: {
@@ -319,7 +318,6 @@ namespace xe::gpu {
     }
   }
 
-  //todo: move to framebuffer init
   static void setupFramebufferDepth(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel) {
     if (t.second->target != GL_TEXTURE_2D) {
       XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D (depth/stencil)");
@@ -457,7 +455,7 @@ namespace xe::gpu {
       GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbId));
 
       if (d.cubemapTarget != CubemapTarget::Invalid) {
-        for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+        for (uint i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
                                                 &fb.first->colorAttachments[i].ctx->backend_->textures_);
@@ -468,7 +466,7 @@ namespace xe::gpu {
           }
         }
       } else {
-        for (uint16 i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+        for (uint i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
                                                 &fb.first->colorAttachments[i].ctx->backend_->textures_);
@@ -485,7 +483,6 @@ namespace xe::gpu {
         }
       }
 
-      //todo: move
       memory<uint> buffers;
       buffers.alloc(fb.first->info.colorAttachmentsSize);
       uint count = 0;
@@ -579,7 +576,7 @@ namespace xe::gpu {
       case TextureType::CubeMap: {
         void *data[6] = {(void *) d.data0, (void *) d.data1, (void *) d.data2,
                          (void *) d.data3, (void *) d.data4, (void *) d.data5};
-        for (uint16 i = 0; i < 6; ++i) {
+        for (uint i = 0; i < 6; ++i) {
           if (data[i] != nullptr) {
             GLCHECK(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, d.offsetX, d.offsetY, d.width, d.height,
                                     backEnd.format, backEnd.type, data[i]));
@@ -790,8 +787,8 @@ namespace xe::gpu {
       if (!u.name) {
         break;
       }
-      for (size_t j = 0; j < mat.second->usedUniforms; ++j) {
-        auto &&mu = mat.second->uniforms[j];
+      for (uint i = 0; i < mat.second->usedUniforms; ++i) {
+        auto &&mu = mat.second->uniforms[i];
         if (mu.name == u.name) {
           memcpy(mat.second->uniformData.data.get() + mu.offset, u.data, mu.size);
           setUniform(mu.loc, mu.type, mat.second->uniformData.data.get() + mu.offset);
@@ -827,7 +824,7 @@ namespace xe::gpu {
     auto &pipeline = d.indexBuffer.ctx->lastPipeline_;
 
     size_t texUnit = 0;
-    for (auto i = 0; i < cMaxTextureUnits; ++i) {
+    for (uint i = 0; i < cMaxTextureUnits; ++i) {
       if (mat.second->textureUniformsLoc[i] >= 0) {
         auto tex = RenderContext::getResource(pipeline.texture[i].id, &d.indexBuffer.ctx->textures_,
                                               &d.indexBuffer.ctx->backend_->textures_);
@@ -870,14 +867,13 @@ namespace xe::gpu {
           XE_CORE_ERROR("[GL Error] Invalid GL buffer (vertex data)");
         }
 
-        //todo: refactor
         GLCHECK(glBindBuffer(GL_ARRAY_BUFFER, buffer.second->buffer));
-        int32 a_size = (attribFormat & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
-        uint a_type = vertexTypeToGL(attribFormat);
-        byte a_normalized = (attribFormat & VertexFormat::Normalized) ? GL_TRUE : GL_FALSE;
-        int32 a_stride = mat.first->info.attribs[i].stride;
-        int32 a_offset = mat.first->info.attribs[i].offset;
-        GLCHECK(glVertexAttribPointer(i, a_size, a_type, a_normalized, a_stride, (void *) a_offset));
+        const int32 attrSize = (attribFormat & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
+        const uint attrType = vertexTypeToGL(attribFormat);
+        const byte attrNormalized = (attribFormat & VertexFormat::Normalized) ? GL_TRUE : GL_FALSE;
+        const int32 attrStride = mat.first->info.attribs[i].stride;
+        const int32 attrOffset = mat.first->info.attribs[i].offset;
+        GLCHECK(glVertexAttribPointer(i, attrSize, attrType, attrNormalized, attrStride, (void *) attrOffset));
         glEnableVertexAttribArray(i);
       } else {
         break;

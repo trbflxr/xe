@@ -10,14 +10,14 @@ namespace xe {
 
   void WindowBackend::init(Window::Data *data) {
     if (!glfwInit()) {
-      XE_CORE_CRITICAL("Window failed at startup");
+      XE_CORE_CRITICAL("[WindowBackend / GL] Window failed at startup");
       return;
     }
 
     data->window = glfwCreateWindow(data->width, data->height, data->title.c_str(), nullptr, nullptr);
 
     if (!data->window) {
-      XE_CORE_CRITICAL("Could not create window");
+      XE_CORE_CRITICAL("[WindowBackend / GL] Could not create window");
       return;
     }
 
@@ -25,14 +25,23 @@ namespace xe {
 
     const int32 status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     if (!status) {
-      XE_CORE_CRITICAL("Failed to initialize Glad");
+      XE_CORE_CRITICAL("[WindowBackend / GL] Failed to initialize Glad");
       return;
     }
 
     setIcon(data);
     setSwapInterval(data);
 
-    XE_CORE_INFO("Window initialized successful");
+
+    const byte *version = glGetString(GL_VERSION);
+    const byte *vendor = glGetString(GL_VENDOR);
+    const byte *renderer = glGetString(GL_RENDERER);
+
+    XE_CORE_INFO("[WindowBackend / GL] Window initialized successful:\n"
+                 "\t- glVersion \t\t({})\n"
+                 "\t- glVendor \t\t({})\n"
+                 "\t- glRenderer \t\t({})",
+                 version, vendor, renderer);
   }
 
   void WindowBackend::swap(Window::Data *data) {

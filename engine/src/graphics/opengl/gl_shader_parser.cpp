@@ -51,18 +51,6 @@ namespace xe::gpu {
       name = std::string(name.c_str(), s - name.c_str());
     }
 
-    uint count = 1;
-    const string n = name;
-    const char *nameStr = n.c_str();
-
-    if (const char *s = strstr(nameStr, "[")) {
-      name = std::string(nameStr, s - nameStr);
-
-      const char *end = strstr(nameStr, "]");
-      const std::string countStr(s + 1, end - s);
-      count = static_cast<uint>(atoi(countStr.c_str()));
-    }
-
     const VertexFormat::Enum t = stringToShaderDataTypeGL(typeStr);
     if (t == VertexFormat::Undefined) return;
 
@@ -72,7 +60,7 @@ namespace xe::gpu {
     }
     const uint size = RenderContext::computeSize(t);
     outSize += size;
-    uniforms[index++] = {-1, name, t, size, count, offset};
+    uniforms[index++] = {-1, name, t, size, offset};
   }
 
 }

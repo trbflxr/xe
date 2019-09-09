@@ -378,7 +378,7 @@ namespace xe::gpu {
     return true;
   }
 
-  static void setUniform(int32 loc, uint count, VertexFormat::Enum type, const void *data) {
+  static void setUniform(int32 loc, VertexFormat::Enum type, const void *data) {
     switch (type) {
       case VertexFormat::Float: {
         GLCHECK(glUniform1f(loc, *(float *) data));
@@ -404,7 +404,7 @@ namespace xe::gpu {
         break;
       }
       case VertexFormat::Mat4: {
-        GLCHECK(glUniformMatrix4fv(loc, count, GL_TRUE, (const float *) data));
+        GLCHECK(glUniformMatrix4fv(loc, 1, GL_TRUE, (const float *) data));
         break;
       }
       default: break;
@@ -785,12 +785,7 @@ namespace xe::gpu {
       }
     }
 
-    //todo: push model matrix
-//    GLCHECK(glUniformMatrix4fv(mat.second->modelLoc, 1, GL_TRUE, (const float *) &d.modelMatrix));
-//    GLCHECK(glUniformMatrix4fv(mat.second->viewLoc, 1, GL_TRUE, (const float *) &viewMatrix_));
-//    GLCHECK(glUniformMatrix4fv(mat.second->projLoc, 1, GL_TRUE, (const float *) &projMatrix_));
-
-
+    //uniformfs setup
     for (auto &&u : d.uniform) {
       if (!u.name) {
         break;
@@ -799,7 +794,7 @@ namespace xe::gpu {
         auto &&mu = mat.second->uniforms[j];
         if (mu.name == u.name) {
           memcpy(mat.second->uniformData.data.get() + mu.offset, u.data, mu.size);
-          setUniform(mu.loc, mu.count, mu.type, mat.second->uniformData.data.get() + mu.offset);
+          setUniform(mu.loc, mu.type, mat.second->uniformData.data.get() + mu.offset);
           break;
         }
       }

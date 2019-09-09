@@ -19,7 +19,6 @@ namespace xe::gpu {
       string name;
       VertexFormat::Enum type = VertexFormat::Undefined;
       uint size = 0;
-      uint count = 1;
       uint offset = 0;
     };
 

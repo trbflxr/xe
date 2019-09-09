@@ -18,14 +18,10 @@ namespace xe {
   struct Uniform {
     const char *name = nullptr;
     byte data[64] = { };
-    uint count = 1;
 
-    Uniform() : name(nullptr), count(1) { }
+    Uniform() : name(nullptr) { }
 
-    Uniform(const char *name, void *data, size_t size, uint count = 1) :
-        name(name),
-        count(count) {
-
+    Uniform(const char *name, void *data, size_t size) : name(name) {
       memcpy(Uniform::data, data, size);
     }
   };
@@ -62,8 +58,6 @@ namespace xe {
         uint height;
       };
       PROP(Viewport, viewport, { });
-      PROP(mat4, viewMatrix, mat4());
-      PROP(mat4, projMatrix, mat4());
       PROP(gpu::Framebuffer, framebuffer, { });
       PROP_ARRAY(bool, cMaxFramebufferColorAttachments, colorAttachment);
       PROP(CubemapTarget, cubemapTarget, CubemapTarget::Invalid);
@@ -114,7 +108,6 @@ namespace xe {
       PROP_ARRAY(gpu::Buffer, cMaxUniformBuffers, uniformBuffer);
       PROP_ARRAY(Uniform, cMaxShaderUniforms, uniform);
       PROP(vec4, scissor, vec4(0.0f));
-      PROP(mat4, modelMatrix, mat4());
     };
 
     struct RenderData {

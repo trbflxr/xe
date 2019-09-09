@@ -233,8 +233,6 @@ protected:
     DisplayList frame;
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600})
-        .set_projMatrix(state.cube.proj)
-        .set_viewMatrix(state.cube.view)
         .set_framebuffer(state.fb)
         .set_colorAttachment(0, true)
         .set_colorAttachment(1, true);
@@ -253,7 +251,6 @@ protected:
         .set_uniform(0, {"u_model", &state.cube.model, sizeof(mat4)})
         .set_uniform(1, {"u_view", &state.cube.view, sizeof(mat4)})
         .set_uniform(2, {"u_projection", &state.cube.proj, sizeof(mat4)})
-        .set_modelMatrix(state.cube.model)
         .set_texture(0, state.cube.texture);
     frame.renderCommand()
         .set_indexBuffer(state.cube.indexBuff)
@@ -262,13 +259,10 @@ protected:
         .set_instances(State::INSTANCES);
 
     Color tint = Color::cyan();
-    float alpha = 0.5f;
 
     //framebuffer
     frame.setupViewCommand()
-        .set_viewport({0, 0, 800, 600})
-        .set_projMatrix(state.quad.proj)
-        .set_viewMatrix(state.quad.view);
+        .set_viewport({0, 0, 800, 600});
     frame.clearCommand()
         .set_color(Color(Color::yellow()))
         .set_clearColor(true)
@@ -276,11 +270,9 @@ protected:
     frame.setupPipelineCommand()
         .set_pipeline(state.quad.material)
         .set_buffer(0, state.quad.vertexBuff)
-        .set_modelMatrix(state.quad.model)
         .set_uniform(0, {"u_model", &state.quad.model, sizeof(mat4)})
         .set_uniform(1, {"u_view", &state.quad.view, sizeof(mat4)})
         .set_uniform(2, {"u_projection", &state.quad.proj, sizeof(mat4)})
-//        .set_uniform(3, {"u_alpha", &alpha, sizeof(float)})
         .set_uniform(3, {"u_tint", &tint, sizeof(Color)})
         .set_texture(0, state.fb.colorAttachment(0))
         .set_texture(1, state.fb.colorAttachment(1));

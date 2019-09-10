@@ -6,6 +6,8 @@
 #define XE_GL_WINDOW_DATA_HPP
 
 #include <atomic>
+#include <queue>
+#include "events/event.hpp"
 #include "external/glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <xe/graphics/window.hpp>
@@ -24,7 +26,7 @@ namespace xe {
     std::atomic<uint> width;
     std::atomic<uint> height;
 
-    double time = 0.0;
+    std::queue<Event> events;
   };
 
 }

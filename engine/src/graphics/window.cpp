@@ -36,18 +36,16 @@ namespace xe {
     WindowBackend::init(data_);
   }
 
+  void Window::initContext() {
+    WindowBackend::initContext(data_);
+  }
+
   bool Window::isExisting() const {
     return WindowBackend::isExisting(data_);
   }
 
   void Window::forceExit() {
     WindowBackend::forceExit(data_);
-  }
-
-  void Window::pollEvents() {
-    XE_TRACE_BEGIN("XE", "Window poll events");
-    WindowBackend::pollEvents(data_);
-    XE_TRACE_END("XE", "Window poll events");
   }
 
   void Window::swap() {
@@ -79,6 +77,21 @@ namespace xe {
   void Window::setSwapInterval(bool enabled) {
     data_->swapInterval = enabled;
     WindowBackend::setSwapInterval(data_);
+  }
+
+  bool Window::pollEvent(Event &event) {
+    if (data_->events.empty()) {
+      XE_TRACE_BEGIN("XE", "Window poll events");
+      WindowBackend::pollEvents(data_);
+      XE_TRACE_END("XE", "Window poll events");
+    } else {
+      event = data_->events.front();
+      data_->events.pop();
+
+      //todo: window resize event
+      return true;
+    }
+    return false;
   }
 
 }

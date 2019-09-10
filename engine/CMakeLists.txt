@@ -82,6 +82,7 @@ file(GLOB ENGINE_SRC
     src/*.cpp
     src/core/*.cpp
     src/graphics/*.cpp
+    src/input/*.cpp
     src/math/*.cpp
     src/utils/*.cpp)
 

@@ -11,6 +11,7 @@ namespace xe {
 
   struct WindowBackend {
     static void init(Window::Data *data);
+    static void initContext(Window::Data *data);
     static void swap(Window::Data *data);
     static void pollEvents(Window::Data *data);
     static void stop(Window::Data *data);

@@ -21,6 +21,28 @@ namespace xe {
       return;
     }
 
+    glfwSetWindowUserPointer(data->window, data);
+
+    glfwSetCursorPosCallback(data->window, [](GLFWwindow *window, double xPos, double yPos) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      e.type = Event::MouseMoved;
+      e.mouseMove.x = static_cast<float>(xPos);
+      e.mouseMove.y = static_cast<float>(yPos);
+      data.events.push(e);
+    });
+
+//    glfwSetKeyCallback(data->window, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+//      XE_CORE_CRITICAL("[Event] Key (action: {}, {}, {})", action, key, mods);
+//      GLFWwindow *w = (GLFWwindow *) glfwGetWindowUserPointer(window);
+//
+//      string title((uint) key);
+//      glfwSetWindowTitle(w, title.c_str());
+//    });
+  }
+
+  void WindowBackend::initContext(Window::Data *data) {
     glfwMakeContextCurrent(data->window);
 
     const int32 status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);

@@ -91,7 +91,7 @@ public:
     xe::Logger::setLogLevel(LogLevel::Info, LogLevel::Info);
 
     Params params = {{800, 600,
-                                "test",
+                                "test / жопа",
                                     true,
                          0, 0, nullptr},
                      {128, 128, 64, 128}};

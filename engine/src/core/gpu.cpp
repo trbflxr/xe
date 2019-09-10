@@ -46,6 +46,7 @@ namespace xe {
 
   void GPU::init() {
     ctx_->init(params_);
+    window_->init();
 
     threadSync_.thread = std::thread(&xe::GPU::run, this);
     XE_CORE_INFO("[GPU] Launched rendering thread");
@@ -55,7 +56,7 @@ namespace xe {
 
   void GPU::run() {
     XE_TRACE_META_THREAD_NAME("Render thread");
-    window_->init();
+    window_->initContext();
 
     threadSync_.initialized = true;
     threadSync_.cvL.notify_one();
@@ -71,7 +72,6 @@ namespace xe {
       if (!threadSync_.nextFrame.commands_.empty()) {
         XE_TRACE_END("XE", "Waiting (render)");
         XE_CORE_TRACE("[GPU] GPU Synchronization (render start)");
-        window_->pollEvents();
         renderFrame_.commands_.swap(threadSync_.nextFrame.commands_);
 
         threadSync_.cvL.notify_one();

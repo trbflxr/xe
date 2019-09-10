@@ -3,6 +3,7 @@
 //
 
 #include "xepch.hpp"
+#include "events/event.hpp"
 #include <xe/core/application.hpp>
 #include <xe/core/engine.hpp>
 
@@ -67,6 +68,20 @@ namespace xe {
   void Application::stopInternal() {
     stop();
     Engine::ref().stop();
+  }
+
+  void Application::processEvents() {
+    Event e;
+    while (Engine::ref().window().pollEvent(e)) {
+      if (e.type == Event::MouseMoved) {
+        XE_CORE_CRITICAL("ms({}, {})", e.mouseMove.x, e.mouseMove.y);
+      }
+
+      if (e.type == Event::Closed) {
+        Engine::ref().window().forceExit();
+        break;
+      }
+    }
   }
 
   bool Application::isExisting() const {
@@ -135,6 +150,10 @@ namespace xe {
 
       postUpdateInternal();
       XE_TRACE_END("XE", "Loop update");
+
+      XE_TRACE_BEGIN("XE", "Application process events");
+      processEvents();
+      XE_TRACE_END("XE", "Application process events");
 
       XE_TRACE_BEGIN("XE", "Render update");
       renderPreUpdateInternal();

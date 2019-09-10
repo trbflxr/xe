@@ -47,6 +47,8 @@ namespace xe {
     void renderPostUpdateInternal();
     void stopInternal();
 
+    void processEvents();
+
   private:
     bool exit_;
 

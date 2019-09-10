@@ -5,15 +5,19 @@
 #ifndef XE_WINDOW_HPP
 #define XE_WINDOW_HPP
 
+#include <functional>
 #include <xe/core/object.hpp>
 #include <xe/core/timestep.hpp>
 
 namespace xe {
 
+  struct Event;
+
   class XE_API Window : public Object {
   XE_OBJECT(Window, Object);
     friend class GPU;
     friend class Engine;
+    friend class Application;
   public:
     struct Data;
 
@@ -34,9 +38,11 @@ namespace xe {
 
   protected:
     void init();
-    void pollEvents();
+    void initContext();
     void swap();
     void stop();
+
+    bool pollEvent(Event &event);
 
   protected:
     Data *data_;

@@ -96,4 +96,20 @@ namespace xe {
     gpu_->submitCommands(std::move(dl));
   }
 
+  bool Engine::isKeyPressed(Keyboard::Key key) {
+    return ref().window().isKeyPressed(key);
+  }
+
+  bool Engine::isMouseButtonPressed(Mouse::Button button) {
+    return ref().window().isMouseButtonPressed(button);
+  }
+
+  vec2 Engine::getMousePosition() {
+    return ref().window().getMousePosition();
+  }
+
+  void Engine::setMousePosition(const vec2 &position) {
+    ref().window().setMousePosition(position);
+  }
+
 }

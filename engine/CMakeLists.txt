@@ -26,7 +26,7 @@ option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
 option(XE_USE_GENERIC_FS "Use generic filesystem" OFF)
 
-set(XE_DEBUG_FLAGS "-Od -Wall -DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
+set(XE_DEBUG_FLAGS "-Od -DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
 set(XE_RELEASE_FLAGS "-Ox -DNDEBUG" CACHE STRING "xe_release flags")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
@@ -82,7 +82,6 @@ file(GLOB ENGINE_SRC
     src/*.cpp
     src/core/*.cpp
     src/graphics/*.cpp
-    src/input/*.cpp
     src/math/*.cpp
     src/utils/*.cpp)
 

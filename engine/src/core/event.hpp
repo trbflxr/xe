@@ -5,8 +5,8 @@
 #ifndef XE_EVENT_HPP
 #define XE_EVENT_HPP
 
-#include <xe/input/keyboard.hpp>
-#include <xe/input/mouse.hpp>
+#include <xe/common.hpp>
+#include <xe/core/input.hpp>
 
 namespace xe {
 
@@ -44,7 +44,6 @@ namespace xe {
       float x;
       float y;
     };
-
 
     enum EventType {
       Closed,

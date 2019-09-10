@@ -6,6 +6,7 @@
 #define XE_WINDOW_HPP
 
 #include <functional>
+#include <xe/core/input.hpp>
 #include <xe/core/object.hpp>
 #include <xe/core/timestep.hpp>
 
@@ -43,6 +44,12 @@ namespace xe {
     void stop();
 
     bool pollEvent(Event &event);
+
+    bool isKeyPressed(Keyboard::Key key);
+    bool isMouseButtonPressed(Mouse::Button button);
+
+    vec2 getMousePosition();
+    void setMousePosition(const vec2 &position);
 
   protected:
     Data *data_;

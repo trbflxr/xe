@@ -3,7 +3,7 @@
 //
 
 #include "xepch.hpp"
-#include "events/event.hpp"
+#include "core/event.hpp"
 #include <xe/core/application.hpp>
 #include <xe/core/engine.hpp>
 

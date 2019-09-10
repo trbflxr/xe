@@ -29,6 +29,12 @@ namespace xe {
     inline Window &window() { return *gpu_->window_; }
     inline GPU &gpu() { return *gpu_; }
 
+    static bool isKeyPressed(Keyboard::Key key);
+    static bool isMouseButtonPressed(Mouse::Button button);
+
+    static vec2 getMousePosition();
+    static void setMousePosition(const vec2 &position);
+
   private:
     Engine();
 

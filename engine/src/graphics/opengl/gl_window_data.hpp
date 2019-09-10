@@ -7,7 +7,7 @@
 
 #include <atomic>
 #include <queue>
-#include "events/event.hpp"
+#include "core/event.hpp"
 #include "external/glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <xe/graphics/window.hpp>

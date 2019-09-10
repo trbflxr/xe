@@ -94,4 +94,20 @@ namespace xe {
     return false;
   }
 
+  bool Window::isKeyPressed(Keyboard::Key key) {
+    return WindowBackend::isKeyPressed(data_, key);
+  }
+
+  bool Window::isMouseButtonPressed(Mouse::Button button) {
+    return WindowBackend::isMouseButtonPressed(data_, button);
+  }
+
+  vec2 Window::getMousePosition() {
+    return WindowBackend::getMousePosition(data_);
+  }
+
+  void Window::setMousePosition(const vec2 &position) {
+    WindowBackend::setMousePosition(data_, position);
+  }
+
 }

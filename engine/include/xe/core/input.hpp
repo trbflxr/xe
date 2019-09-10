@@ -2,14 +2,12 @@
 // Created by FLXR on 9/10/2019.
 //
 
-#ifndef XE_KEYBOARD_HPP
-#define XE_KEYBOARD_HPP
-
-#include <xe/common.hpp>
+#ifndef XE_INPUT_HPP
+#define XE_INPUT_HPP
 
 namespace xe {
 
-  struct XE_API Keyboard {
+  struct Keyboard {
     enum Key {
       Unknown = -1,
       A = 0,
@@ -116,10 +114,24 @@ namespace xe {
 
       KeyCount
     };
+  };
 
-    static bool isKeyPressed(Key key);
+  struct Mouse {
+    enum Button {
+      Left,
+      Right,
+      Middle,
+      XButton1,
+      XButton2,
+      XButton3,
+      XButton4,
+      XButton5,
+
+      ButtonCount
+    };
+
   };
 
 }
 
-#endif //XE_KEYBOARD_HPP
+#endif //XE_INPUT_HPP

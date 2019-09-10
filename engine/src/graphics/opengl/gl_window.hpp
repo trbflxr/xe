@@ -24,6 +24,12 @@ namespace xe {
     static void setTitle(Window::Data *data);
     static void setIcon(Window::Data *data);
     static void setSwapInterval(Window::Data *data);
+
+    static bool isKeyPressed(Window::Data *data, Keyboard::Key key);
+    static bool isMouseButtonPressed(Window::Data *data, Mouse::Button button);
+
+    static vec2 getMousePosition(Window::Data *data);
+    static void setMousePosition(Window::Data *data, const vec2 &position);
   };
 
 }

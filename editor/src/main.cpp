@@ -226,7 +226,7 @@ protected:
     state.quad.model = mat4::transformation(vec3(), {{0, 1, 0}, angle});
   }
 
-  void renderUpdate() override {
+  void render() override {
     DisplayList frame;
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600})

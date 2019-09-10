@@ -21,6 +21,7 @@ namespace xe {
     static bool isExisting(Window::Data *data);
     static void forceExit(Window::Data *data);
 
+    static void setSize(Window::Data *data);
     static void setTitle(Window::Data *data);
     static void setIcon(Window::Data *data);
     static void setSwapInterval(Window::Data *data);

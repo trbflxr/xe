@@ -27,6 +27,7 @@ namespace xe {
 
     void forceExit();
 
+    void setSize(uint width, uint height);
     void setTitle(const string &title);
     void setIcon(uint width, uint height, byte *pixels);
     void setSwapInterval(bool enabled);

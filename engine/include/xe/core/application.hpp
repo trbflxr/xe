@@ -31,9 +31,9 @@ namespace xe {
     virtual void preUpdate() { }
     virtual void update(Timestep ts) { }
     virtual void postUpdate() { }
-    virtual void renderPreUpdate() { }
-    virtual void renderUpdate() { }
-    virtual void renderPostUpdate() { }
+    virtual void preRender() { }
+    virtual void render() { }
+    virtual void postRender() { }
     virtual void stop() { }
 
   private:

@@ -51,17 +51,17 @@ namespace xe {
   }
 
   void Application::renderPreUpdateInternal() {
-    renderPreUpdate();
+    preRender();
     Engine::ref().renderPreUpdate();
   }
 
   void Application::renderUpdateInternal() {
-    renderUpdate();
+    render();
     Engine::ref().renderUpdate();
   }
 
   void Application::renderPostUpdateInternal() {
-    renderPostUpdate();
+    postRender();
     Engine::ref().renderPostUpdate();
   }
 
@@ -73,8 +73,24 @@ namespace xe {
   void Application::processEvents() {
     Event e;
     while (Engine::ref().window().pollEvent(e)) {
-      if (e.type == Event::MouseMoved) {
-        XE_CORE_CRITICAL("ms({}, {})", e.mouseMove.x, e.mouseMove.y);
+      switch (e.type) {
+        //todo: create event functions
+        case Event::Closed: break;
+        case Event::Resized: break;
+        case Event::LostFocus: break;
+        case Event::GainedFocus: break;
+        case Event::TextEntered: break;
+        case Event::KeyPressed: break;
+        case Event::KeyRepeated: break;
+        case Event::KeyReleased: break;
+        case Event::MouseScrolled: break;
+        case Event::MouseButtonPressed: XE_CORE_INFO("Mouse press");
+          break;
+        case Event::MouseButtonReleased: break;
+        case Event::MouseMoved: break;
+        case Event::MouseEntered: break;
+        case Event::MouseLeft: break;
+        default: break;
       }
 
       if (e.type == Event::Closed) {

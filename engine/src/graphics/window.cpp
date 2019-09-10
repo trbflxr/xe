@@ -62,6 +62,12 @@ namespace xe {
     return Timestep(static_cast<float>(WindowBackend::uptime(data_)));
   }
 
+  void Window::setSize(uint width, uint height) {
+    data_->width = width;
+    data_->height = height;
+    WindowBackend::setSize(data_);
+  }
+
   void Window::setTitle(const string &title) {
     data_->title = title;
     WindowBackend::setTitle(data_);
@@ -88,7 +94,9 @@ namespace xe {
       event = data_->events.front();
       data_->events.pop();
 
-      //todo: window resize event
+      if (event.type == Event::Resized) {
+        setSize(event.size.width, event.size.height);
+      }
       return true;
     }
     return false;

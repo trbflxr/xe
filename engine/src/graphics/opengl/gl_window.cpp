@@ -8,6 +8,136 @@
 
 namespace xe {
 
+  static Keyboard::Key glfwKeyToXe(int32 key) {
+    switch (key) {
+      case GLFW_KEY_A: return Keyboard::A;
+      case GLFW_KEY_B: return Keyboard::B;
+      case GLFW_KEY_C: return Keyboard::C;
+      case GLFW_KEY_D: return Keyboard::D;
+      case GLFW_KEY_E: return Keyboard::E;
+      case GLFW_KEY_F: return Keyboard::F;
+      case GLFW_KEY_G: return Keyboard::G;
+      case GLFW_KEY_H: return Keyboard::H;
+      case GLFW_KEY_I: return Keyboard::I;
+      case GLFW_KEY_J: return Keyboard::J;
+      case GLFW_KEY_K: return Keyboard::K;
+      case GLFW_KEY_L: return Keyboard::L;
+      case GLFW_KEY_M: return Keyboard::M;
+      case GLFW_KEY_N: return Keyboard::N;
+      case GLFW_KEY_O: return Keyboard::O;
+      case GLFW_KEY_P: return Keyboard::P;
+      case GLFW_KEY_Q: return Keyboard::Q;
+      case GLFW_KEY_R: return Keyboard::R;
+      case GLFW_KEY_S: return Keyboard::S;
+      case GLFW_KEY_T: return Keyboard::T;
+      case GLFW_KEY_U: return Keyboard::U;
+      case GLFW_KEY_V: return Keyboard::V;
+      case GLFW_KEY_W: return Keyboard::W;
+      case GLFW_KEY_X: return Keyboard::X;
+      case GLFW_KEY_Y: return Keyboard::Y;
+      case GLFW_KEY_Z: return Keyboard::Z;
+      case GLFW_KEY_0: return Keyboard::Num0;
+      case GLFW_KEY_1: return Keyboard::Num1;
+      case GLFW_KEY_2: return Keyboard::Num2;
+      case GLFW_KEY_3: return Keyboard::Num3;
+      case GLFW_KEY_4: return Keyboard::Num4;
+      case GLFW_KEY_5: return Keyboard::Num5;
+      case GLFW_KEY_6: return Keyboard::Num6;
+      case GLFW_KEY_7: return Keyboard::Num7;
+      case GLFW_KEY_8: return Keyboard::Num8;
+      case GLFW_KEY_9: return Keyboard::Num9;
+      case GLFW_KEY_SPACE: return Keyboard::Space;
+      case GLFW_KEY_APOSTROPHE: return Keyboard::Quote;
+      case GLFW_KEY_COMMA: return Keyboard::Comma;
+      case GLFW_KEY_MINUS: return Keyboard::Dash;
+      case GLFW_KEY_PERIOD: return Keyboard::Period;
+      case GLFW_KEY_SLASH: return Keyboard::Slash;
+      case GLFW_KEY_SEMICOLON: return Keyboard::SemiColon;
+      case GLFW_KEY_EQUAL: return Keyboard::Equal;
+      case GLFW_KEY_LEFT_BRACKET: return Keyboard::LBracket;
+      case GLFW_KEY_BACKSLASH: return Keyboard::BackSlash;
+      case GLFW_KEY_RIGHT_BRACKET: return Keyboard::RBracket;
+      case GLFW_KEY_GRAVE_ACCENT: return Keyboard::Tilde;
+      case GLFW_KEY_ESCAPE: return Keyboard::Escape;
+      case GLFW_KEY_ENTER: return Keyboard::Return;
+      case GLFW_KEY_TAB: return Keyboard::Tab;
+      case GLFW_KEY_BACKSPACE: return Keyboard::BackSlash;
+      case GLFW_KEY_INSERT: return Keyboard::Insert;
+      case GLFW_KEY_DELETE: return Keyboard::Delete;
+      case GLFW_KEY_RIGHT: return Keyboard::Right;
+      case GLFW_KEY_LEFT: return Keyboard::Left;
+      case GLFW_KEY_DOWN: return Keyboard::Down;
+      case GLFW_KEY_UP: return Keyboard::Up;
+      case GLFW_KEY_PAGE_UP: return Keyboard::PageUp;
+      case GLFW_KEY_PAGE_DOWN: return Keyboard::PageDown;
+      case GLFW_KEY_HOME: return Keyboard::Home;
+      case GLFW_KEY_END: return Keyboard::End;
+      case GLFW_KEY_CAPS_LOCK: return Keyboard::CapsLock;
+      case GLFW_KEY_SCROLL_LOCK: return Keyboard::ScrollLock;
+      case GLFW_KEY_NUM_LOCK: return Keyboard::NumLock;
+      case GLFW_KEY_PRINT_SCREEN: return Keyboard::PrintScreen;
+      case GLFW_KEY_PAUSE: return Keyboard::Pause;
+      case GLFW_KEY_F1: return Keyboard::F1;
+      case GLFW_KEY_F2: return Keyboard::F2;
+      case GLFW_KEY_F3: return Keyboard::F3;
+      case GLFW_KEY_F4: return Keyboard::F4;
+      case GLFW_KEY_F5: return Keyboard::F5;
+      case GLFW_KEY_F6: return Keyboard::F6;
+      case GLFW_KEY_F7: return Keyboard::F7;
+      case GLFW_KEY_F8: return Keyboard::F8;
+      case GLFW_KEY_F9: return Keyboard::F9;
+      case GLFW_KEY_F10: return Keyboard::F10;
+      case GLFW_KEY_F11: return Keyboard::F11;
+      case GLFW_KEY_F12: return Keyboard::F12;
+      case GLFW_KEY_F13: return Keyboard::F13;
+      case GLFW_KEY_F14: return Keyboard::F14;
+      case GLFW_KEY_F15: return Keyboard::F15;
+      case GLFW_KEY_KP_0: return Keyboard::Numpad0;
+      case GLFW_KEY_KP_1: return Keyboard::Numpad1;
+      case GLFW_KEY_KP_2: return Keyboard::Numpad2;
+      case GLFW_KEY_KP_3: return Keyboard::Numpad3;
+      case GLFW_KEY_KP_4: return Keyboard::Numpad4;
+      case GLFW_KEY_KP_5: return Keyboard::Numpad5;
+      case GLFW_KEY_KP_6: return Keyboard::Numpad6;
+      case GLFW_KEY_KP_7: return Keyboard::Numpad7;
+      case GLFW_KEY_KP_8: return Keyboard::Numpad8;
+      case GLFW_KEY_KP_9: return Keyboard::Numpad9;
+      case GLFW_KEY_KP_DECIMAL: return Keyboard::NumpadDecimal;
+      case GLFW_KEY_KP_DIVIDE: return Keyboard::Divide;
+      case GLFW_KEY_KP_MULTIPLY: return Keyboard::Multiply;
+      case GLFW_KEY_KP_SUBTRACT: return Keyboard::Subtract;
+      case GLFW_KEY_KP_ADD: return Keyboard::Add;
+      case GLFW_KEY_KP_ENTER: return Keyboard::NumpadReturn;
+      case GLFW_KEY_KP_EQUAL: return Keyboard::Equal;
+      case GLFW_KEY_LEFT_SHIFT: return Keyboard::LShift;
+      case GLFW_KEY_LEFT_CONTROL: return Keyboard::LControl;
+      case GLFW_KEY_LEFT_ALT: return Keyboard::LAlt;
+      case GLFW_KEY_LEFT_SUPER: return Keyboard::LSystem;
+      case GLFW_KEY_RIGHT_SHIFT: return Keyboard::RShift;
+      case GLFW_KEY_RIGHT_CONTROL: return Keyboard::RControl;
+      case GLFW_KEY_RIGHT_ALT: return Keyboard::RAlt;
+      case GLFW_KEY_RIGHT_SUPER: return Keyboard::RSystem;
+      case GLFW_KEY_MENU: return Keyboard::Menu;
+      default: break;
+    }
+    return Keyboard::Unknown;
+  }
+
+  static Mouse::Button glfwButtonToXe(int32 button) {
+    switch (button) {
+      case GLFW_MOUSE_BUTTON_1: return Mouse::Left;
+      case GLFW_MOUSE_BUTTON_2: return Mouse::Right;
+      case GLFW_MOUSE_BUTTON_3: return Mouse::Middle;
+      case GLFW_MOUSE_BUTTON_4: return Mouse::Button4;
+      case GLFW_MOUSE_BUTTON_5: return Mouse::Button5;
+      case GLFW_MOUSE_BUTTON_6: return Mouse::Button6;
+      case GLFW_MOUSE_BUTTON_7: return Mouse::Button7;
+      case GLFW_MOUSE_BUTTON_8: return Mouse::Button8;
+      default: break;
+    }
+    return Mouse::ButtonCount;
+  }
+
   void WindowBackend::init(Window::Data *data) {
     if (!glfwInit()) {
       XE_CORE_CRITICAL("[WindowBackend / GL] Window failed at startup");
@@ -23,6 +153,52 @@ namespace xe {
 
     glfwSetWindowUserPointer(data->window, data);
 
+    glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32 key, int32 scanCode, int32 action, int32 mods) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      if (action == GLFW_PRESS) {
+        e.type = Event::KeyPressed;
+      } else if (action == GLFW_REPEAT) {
+        e.type = Event::KeyRepeated;
+      } else if (action == GLFW_RELEASE) {
+        e.type = Event::KeyReleased;
+      }
+      e.key.code = glfwKeyToXe(key);
+      e.key.shift = mods == GLFW_MOD_SHIFT;
+      e.key.control = mods == GLFW_MOD_SHIFT;
+      e.key.alt = mods == GLFW_MOD_SHIFT;
+      e.key.system = mods == GLFW_MOD_SUPER;
+      data.events.push(e);
+    });
+
+    glfwSetMouseButtonCallback(data->window, [](GLFWwindow *window, int32 button, int32 action, int32 mods) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      if (action == GLFW_PRESS) {
+        e.type = Event::MouseButtonPressed;
+      } else if (action == GLFW_RELEASE) {
+        e.type = Event::MouseButtonReleased;
+      }
+      e.mouseButton.button = glfwButtonToXe(button);
+      e.mouseButton.shift = mods == GLFW_MOD_SHIFT;
+      e.mouseButton.control = mods == GLFW_MOD_SHIFT;
+      e.mouseButton.alt = mods == GLFW_MOD_SHIFT;
+      e.mouseButton.system = mods == GLFW_MOD_SUPER;
+      data.events.push(e);
+    });
+
+    glfwSetScrollCallback(data->window, [](GLFWwindow *window, double xOffset, double yOffset) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      e.type = Event::MouseScrolled;
+      e.mouseScroll.x = static_cast<float>(xOffset);
+      e.mouseScroll.y = static_cast<float>(yOffset);
+      data.events.push(e);
+    });
+
     glfwSetCursorPosCallback(data->window, [](GLFWwindow *window, double xPos, double yPos) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
@@ -33,13 +209,40 @@ namespace xe {
       data.events.push(e);
     });
 
-//    glfwSetKeyCallback(data->window, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-//      XE_CORE_CRITICAL("[Event] Key (action: {}, {}, {})", action, key, mods);
-//      GLFWwindow *w = (GLFWwindow *) glfwGetWindowUserPointer(window);
-//
-//      string title((uint) key);
-//      glfwSetWindowTitle(w, title.c_str());
-//    });
+    glfwSetCharCallback(data->window, [](GLFWwindow *window, uint ch) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      e.type = Event::TextEntered;
+      e.text.unicode = ch;
+      data.events.push(e);
+    });
+
+    glfwSetWindowSizeCallback(data->window, [](GLFWwindow *window, int32 width, int32 height) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      e.type = Event::Resized;
+      e.size.width = static_cast<uint>(width);
+      e.size.height = static_cast<uint>(height);
+      data.events.push(e);
+    });
+
+    glfwSetCursorEnterCallback(data->window, [](GLFWwindow *window, int32 entered) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      e.type = entered ? Event::MouseEntered : Event::MouseLeft;
+      data.events.push(e);
+    });
+
+    glfwSetWindowFocusCallback(data->window, [](GLFWwindow *window, int32 focused) {
+      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+
+      Event e;
+      e.type = focused ? Event::GainedFocus : Event::LostFocus;
+      data.events.push(e);
+    });
   }
 
   void WindowBackend::initContext(Window::Data *data) {
@@ -88,6 +291,10 @@ namespace xe {
 
   void WindowBackend::forceExit(Window::Data *data) {
     glfwSetWindowShouldClose(data->window, GLFW_TRUE);
+  }
+
+  void WindowBackend::setSize(Window::Data *data) {
+    glfwSetWindowSize(data->window, static_cast<int32>(data->width), static_cast<int32>(data->height));
   }
 
   void WindowBackend::setTitle(Window::Data *data) {
@@ -232,7 +439,7 @@ namespace xe {
         break;
       case Keyboard::PageUp: glfwCode = GLFW_KEY_PAGE_UP;
         break;
-      case Keyboard::PageDown:glfwCode = GLFW_KEY_PAGE_DOWN;
+      case Keyboard::PageDown: glfwCode = GLFW_KEY_PAGE_DOWN;
         break;
       case Keyboard::End: glfwCode = GLFW_KEY_END;
         break;
@@ -258,6 +465,14 @@ namespace xe {
         break;
       case Keyboard::Down: glfwCode = GLFW_KEY_DOWN;
         break;
+      case Keyboard::CapsLock: glfwCode = GLFW_KEY_CAPS_LOCK;
+        break;
+      case Keyboard::ScrollLock: glfwCode = GLFW_KEY_SCROLL_LOCK;
+        break;
+      case Keyboard::NumLock: glfwCode = GLFW_KEY_NUM_LOCK;
+        break;
+      case Keyboard::PrintScreen: glfwCode = GLFW_KEY_PRINT_SCREEN;
+        break;
       case Keyboard::Numpad0: glfwCode = GLFW_KEY_KP_0;
         break;
       case Keyboard::Numpad1: glfwCode = GLFW_KEY_KP_1;
@@ -277,6 +492,10 @@ namespace xe {
       case Keyboard::Numpad8: glfwCode = GLFW_KEY_KP_8;
         break;
       case Keyboard::Numpad9: glfwCode = GLFW_KEY_KP_9;
+        break;
+      case Keyboard::NumpadDecimal: glfwCode = GLFW_KEY_KP_DECIMAL;
+        break;
+      case Keyboard::NumpadReturn: glfwCode = GLFW_KEY_KP_ENTER;
         break;
       case Keyboard::F1: glfwCode = GLFW_KEY_F1;
         break;
@@ -326,15 +545,15 @@ namespace xe {
         break;
       case Mouse::Middle: glfwButton = GLFW_MOUSE_BUTTON_3;
         break;
-      case Mouse::XButton1: glfwButton = GLFW_MOUSE_BUTTON_4;
+      case Mouse::Button4: glfwButton = GLFW_MOUSE_BUTTON_4;
         break;
-      case Mouse::XButton2: glfwButton = GLFW_MOUSE_BUTTON_5;
+      case Mouse::Button5: glfwButton = GLFW_MOUSE_BUTTON_5;
         break;
-      case Mouse::XButton3: glfwButton = GLFW_MOUSE_BUTTON_6;
+      case Mouse::Button6: glfwButton = GLFW_MOUSE_BUTTON_6;
         break;
-      case Mouse::XButton4: glfwButton = GLFW_MOUSE_BUTTON_7;
+      case Mouse::Button7: glfwButton = GLFW_MOUSE_BUTTON_7;
         break;
-      case Mouse::XButton5: glfwButton = GLFW_MOUSE_BUTTON_8;
+      case Mouse::Button8: glfwButton = GLFW_MOUSE_BUTTON_8;
         break;
       default: break;
     }

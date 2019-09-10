@@ -35,12 +35,13 @@ namespace xe {
 
     struct MouseButtonEvent {
       Mouse::Button button;
-      float x;
-      float y;
+      bool alt;
+      bool control;
+      bool shift;
+      bool system;
     };
 
     struct MouseWheelEvent {
-      int32 delta;
       float x;
       float y;
     };
@@ -52,8 +53,9 @@ namespace xe {
       GainedFocus,
       TextEntered,
       KeyPressed,
+      KeyRepeated,
       KeyReleased,
-      MouseWheelMoved,
+      MouseScrolled,
       MouseButtonPressed,
       MouseButtonReleased,
       MouseMoved,
@@ -71,7 +73,7 @@ namespace xe {
       TextEvent text;
       MouseMoveEvent mouseMove;
       MouseButtonEvent mouseButton;
-      MouseWheelEvent mouseWheel;
+      MouseWheelEvent mouseScroll;
     };
 
     bool handled = false;

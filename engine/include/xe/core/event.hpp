@@ -16,7 +16,7 @@ namespace xe {
       uint height;
     };
 
-    struct KeyEvent {
+    struct Key {
       Keyboard::Key code;
       bool alt;
       bool control;
@@ -24,16 +24,16 @@ namespace xe {
       bool system;
     };
 
-    struct TextEvent {
+    struct Text {
       uint unicode;
     };
 
-    struct MouseMoveEvent {
+    struct MouseMove {
       float x;
       float y;
     };
 
-    struct MouseButtonEvent {
+    struct MouseButton {
       Mouse::Button button;
       bool alt;
       bool control;
@@ -41,7 +41,7 @@ namespace xe {
       bool system;
     };
 
-    struct MouseWheelEvent {
+    struct MouseWheel {
       float x;
       float y;
     };
@@ -69,14 +69,12 @@ namespace xe {
 
     union {
       SizeEvent size;
-      KeyEvent key;
-      TextEvent text;
-      MouseMoveEvent mouseMove;
-      MouseButtonEvent mouseButton;
-      MouseWheelEvent mouseScroll;
+      Key key;
+      Text text;
+      MouseMove mouseMove;
+      MouseButton mouseButton;
+      MouseWheel mouseScroll;
     };
-
-    bool handled = false;
   };
 
 }

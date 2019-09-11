@@ -6,14 +6,15 @@
 #define XE_WINDOW_HPP
 
 #include <functional>
-#include <xe/core/input.hpp>
+#include <xe/core/event.hpp>
 #include <xe/core/object.hpp>
 #include <xe/core/timestep.hpp>
 
 namespace xe {
 
-  struct Event;
-
+  //todo: create more getters/setters
+  //todo: create cursor system
+  //todo: fix icon setter
   class XE_API Window : public Object {
   XE_OBJECT(Window, Object);
     friend class GPU;

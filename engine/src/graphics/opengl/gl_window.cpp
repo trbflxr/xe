@@ -156,7 +156,7 @@ namespace xe {
     glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32 key, int32 scanCode, int32 action, int32 mods) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       if (action == GLFW_PRESS) {
         e.type = Event::KeyPressed;
       } else if (action == GLFW_REPEAT) {
@@ -175,7 +175,7 @@ namespace xe {
     glfwSetMouseButtonCallback(data->window, [](GLFWwindow *window, int32 button, int32 action, int32 mods) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       if (action == GLFW_PRESS) {
         e.type = Event::MouseButtonPressed;
       } else if (action == GLFW_RELEASE) {
@@ -192,7 +192,7 @@ namespace xe {
     glfwSetScrollCallback(data->window, [](GLFWwindow *window, double xOffset, double yOffset) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       e.type = Event::MouseScrolled;
       e.mouseScroll.x = static_cast<float>(xOffset);
       e.mouseScroll.y = static_cast<float>(yOffset);
@@ -202,7 +202,7 @@ namespace xe {
     glfwSetCursorPosCallback(data->window, [](GLFWwindow *window, double xPos, double yPos) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       e.type = Event::MouseMoved;
       e.mouseMove.x = static_cast<float>(xPos);
       e.mouseMove.y = static_cast<float>(yPos);
@@ -212,7 +212,7 @@ namespace xe {
     glfwSetCharCallback(data->window, [](GLFWwindow *window, uint ch) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       e.type = Event::TextEntered;
       e.text.unicode = ch;
       data.events.push(e);
@@ -221,7 +221,7 @@ namespace xe {
     glfwSetWindowSizeCallback(data->window, [](GLFWwindow *window, int32 width, int32 height) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       e.type = Event::Resized;
       e.size.width = static_cast<uint>(width);
       e.size.height = static_cast<uint>(height);
@@ -231,7 +231,7 @@ namespace xe {
     glfwSetCursorEnterCallback(data->window, [](GLFWwindow *window, int32 entered) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       e.type = entered ? Event::MouseEntered : Event::MouseLeft;
       data.events.push(e);
     });
@@ -239,7 +239,7 @@ namespace xe {
     glfwSetWindowFocusCallback(data->window, [](GLFWwindow *window, int32 focused) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
-      Event e;
+      Event e{ };
       e.type = focused ? Event::GainedFocus : Event::LostFocus;
       data.events.push(e);
     });

@@ -6,6 +6,7 @@
 #define XE_APPLICATION_HPP
 
 #include <xe/core/engine.hpp>
+#include <xe/core/layer_stack.hpp>
 
 namespace xe {
 
@@ -14,6 +15,13 @@ namespace xe {
   public:
     explicit Application();
     ~Application() override;
+
+    ref_ptr<Layer> &topLayer();
+
+    void pushLayer(const ref_ptr<Layer> &layer);
+    ref_ptr<Layer> popLayer();
+    void pushOverlay(const ref_ptr<Layer> &overlay);
+    ref_ptr<Layer> popOverlay();
 
     bool isExisting() const;
 
@@ -42,14 +50,16 @@ namespace xe {
     void preUpdateInternal();
     void updateInternal(Timestep ts);
     void postUpdateInternal();
-    void renderPreUpdateInternal();
-    void renderUpdateInternal();
-    void renderPostUpdateInternal();
+    void preRenderInternal();
+    void renderInternal();
+    void postRenderInternal();
     void stopInternal();
 
     void processEvents();
 
   private:
+    LayerStack layerStack_;
+
     bool exit_;
 
     struct Framerate {
@@ -59,12 +69,6 @@ namespace xe {
     } framerate_;
   };
 
-}
-
-#define XE_DEFINE_ENTRY_POINT(className) \
-int32 main(int32 argc, char** argv) { \
-  className app; \
-  return app.run(argc, argv); \
 }
 
 #endif //XE_APPLICATION_HPP

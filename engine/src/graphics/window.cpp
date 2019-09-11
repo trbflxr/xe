@@ -95,7 +95,8 @@ namespace xe {
       data_->events.pop();
 
       if (event.type == Event::Resized) {
-        setSize(event.size.width, event.size.height);
+        data_->width = event.size.width;
+        data_->height = event.size.height;
       }
       return true;
     }

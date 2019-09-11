@@ -3,7 +3,6 @@
 //
 
 #include "xepch.hpp"
-#include "core/event.hpp"
 #include <xe/core/application.hpp>
 #include <xe/core/engine.hpp>
 
@@ -19,6 +18,26 @@ namespace xe {
 
   Application::~Application() {
 
+  }
+
+  ref_ptr<Layer> &Application::topLayer() {
+    return layerStack_.topLayer();
+  }
+
+  void Application::pushLayer(const ref_ptr<Layer> &layer) {
+    layerStack_.pushLayer(layer);
+  }
+
+  ref_ptr<Layer> Application::popLayer() {
+    return layerStack_.popLayer();
+  }
+
+  void Application::pushOverlay(const ref_ptr<Layer> &overlay) {
+    layerStack_.pushOverlay(overlay);
+  }
+
+  ref_ptr<Layer> Application::popOverlay() {
+    return layerStack_.popOverlay();
   }
 
   void Application::initInternal() {
@@ -37,61 +56,48 @@ namespace xe {
 
   void Application::preUpdateInternal() {
     preUpdate();
+    layerStack_.preUpdate();
     Engine::ref().preUpdate();
   }
 
   void Application::updateInternal(Timestep ts) {
     update(ts);
+    layerStack_.update(ts);
     Engine::ref().update(ts);
   }
 
   void Application::postUpdateInternal() {
     postUpdate();
+    layerStack_.postUpdate();
     Engine::ref().postUpdate();
   }
 
-  void Application::renderPreUpdateInternal() {
+  void Application::preRenderInternal() {
     preRender();
     Engine::ref().renderPreUpdate();
   }
 
-  void Application::renderUpdateInternal() {
+  void Application::renderInternal() {
     render();
+    layerStack_.render();
     Engine::ref().renderUpdate();
   }
 
-  void Application::renderPostUpdateInternal() {
+  void Application::postRenderInternal() {
     postRender();
     Engine::ref().renderPostUpdate();
   }
 
   void Application::stopInternal() {
     stop();
+    layerStack_.stop();
     Engine::ref().stop();
   }
 
   void Application::processEvents() {
-    Event e;
+    Event e{ };
     while (Engine::ref().window().pollEvent(e)) {
-      switch (e.type) {
-        //todo: create event functions
-        case Event::Closed: break;
-        case Event::Resized: break;
-        case Event::LostFocus: break;
-        case Event::GainedFocus: break;
-        case Event::TextEntered: break;
-        case Event::KeyPressed: break;
-        case Event::KeyRepeated: break;
-        case Event::KeyReleased: break;
-        case Event::MouseScrolled: break;
-        case Event::MouseButtonPressed: XE_CORE_INFO("Mouse press");
-          break;
-        case Event::MouseButtonReleased: break;
-        case Event::MouseMoved: break;
-        case Event::MouseEntered: break;
-        case Event::MouseLeft: break;
-        default: break;
-      }
+      layerStack_.processEvents(e);
 
       if (e.type == Event::Closed) {
         Engine::ref().window().forceExit();
@@ -172,9 +178,9 @@ namespace xe {
       XE_TRACE_END("XE", "Application process events");
 
       XE_TRACE_BEGIN("XE", "Render update");
-      renderPreUpdateInternal();
-      renderUpdateInternal();
-      renderPostUpdateInternal();
+      preRenderInternal();
+      renderInternal();
+      postRenderInternal();
 
       XE_TRACE_END("XE", "Render update");
 

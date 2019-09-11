@@ -5,6 +5,7 @@
 #include "xepch.hpp"
 #include "gl_backend.hpp"
 #include "gl_shader_parser.hpp"
+#include "embedded/embedded.hpp"
 #include "external/glad/glad.h"
 #include <xe/graphics/render_context.hpp>
 
@@ -554,33 +555,26 @@ namespace xe::gpu {
     GLCHECK(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
     switch (t.first->info.type) {
       case TextureType::T1D: {
-        if (d.data0 != nullptr) {
-          GLCHECK(glTexSubImage1D(GL_TEXTURE_1D, 0, d.offsetX, d.width, backEnd.format, backEnd.type, d.data0));
-        }
+        GLCHECK(glTexSubImage1D(GL_TEXTURE_1D, 0, d.offsetX, d.width, backEnd.format, backEnd.type,
+                                !d.data0 ? Embedded::defaultTextureData() : d.data0));
         break;
       }
       case TextureType::T2D: {
-        if (d.data0 != nullptr) {
-          GLCHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, d.offsetX, d.offsetY, d.width, d.height, backEnd.format,
-                                  backEnd.type, d.data0));
-        }
+        GLCHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, d.offsetX, d.offsetY, d.width, d.height, backEnd.format,
+                                backEnd.type, !d.data0 ? Embedded::defaultTextureData() : d.data0));
         break;
       }
       case TextureType::T3D: {
-        if (d.data0 != nullptr) {
-          GLCHECK(glTexSubImage3D(GL_TEXTURE_3D, 0, d.offsetX, d.offsetY, d.offsetZ, d.width, d.height, d.depth,
-                                  backEnd.format, backEnd.type, d.data0));
-        }
+        GLCHECK(glTexSubImage3D(GL_TEXTURE_3D, 0, d.offsetX, d.offsetY, d.offsetZ, d.width, d.height, d.depth,
+                                backEnd.format, backEnd.type, !d.data0 ? Embedded::defaultTextureData() : d.data0));
         break;
       }
       case TextureType::CubeMap: {
         void *data[6] = {(void *) d.data0, (void *) d.data1, (void *) d.data2,
                          (void *) d.data3, (void *) d.data4, (void *) d.data5};
         for (uint i = 0; i < 6; ++i) {
-          if (data[i] != nullptr) {
-            GLCHECK(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, d.offsetX, d.offsetY, d.width, d.height,
-                                    backEnd.format, backEnd.type, data[i]));
-          }
+          GLCHECK(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, d.offsetX, d.offsetY, d.width, d.height,
+                                  backEnd.format, backEnd.type, !data[i] ? Embedded::defaultTextureData() : data[i]));
         }
         break;
       }

@@ -81,6 +81,7 @@ file(GLOB ENGINE_EXTERNAL_SRC
 file(GLOB ENGINE_SRC
     src/*.cpp
     src/core/*.cpp
+    src/embedded/*.cpp
     src/graphics/*.cpp
     src/math/*.cpp
     src/utils/*.cpp)

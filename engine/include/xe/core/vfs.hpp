@@ -10,6 +10,7 @@
 #include <xe/vector.hpp>
 #include <xe/unordered_map.hpp>
 #include <xe/utils/noncopyable.hpp>
+#include <xe/core/filesystem.hpp>
 
 namespace xe {
 

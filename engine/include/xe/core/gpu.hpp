@@ -25,10 +25,10 @@ namespace xe {
 
     inline void setParams(const Params::GPU &params) { params_ = params; }
 
-    gpu::Buffer createBuffer(const gpu::Buffer::Info &info);
-    gpu::Texture createTexture(const gpu::Texture::Info &info);
-    gpu::Pipeline createPipeline(const gpu::Pipeline::Info &info);
-    gpu::Framebuffer createFramebuffer(const gpu::Framebuffer::Info &info);
+    gpu::Buffer createBuffer(const gpu::Buffer::Info &info) const;
+    gpu::Texture createTexture(const gpu::Texture::Info &info) const;
+    gpu::Pipeline createPipeline(const gpu::Pipeline::Info &info) const;
+    gpu::Framebuffer createFramebuffer(const gpu::Framebuffer::Info &info) const;
 
     inline uint maxBuffers() const { return params_.maxBuffers; }
     inline uint maxTextures() const { return params_.maxTextures; }
@@ -73,10 +73,10 @@ namespace xe {
   private:
     RenderContext *ctx_;
 
-    uint usedBuffers_;
-    uint usedTextures_;
-    uint usedPipelines_;
-    uint usedFramebuffers_;
+    mutable uint usedBuffers_;
+    mutable uint usedTextures_;
+    mutable uint usedPipelines_;
+    mutable uint usedFramebuffers_;
   };
 
 }

@@ -97,7 +97,7 @@ void TestLayer::onInit() {
     matInfo.textures[0] = TextureType::T2D;
 
     gpu::Texture::Info texInfo;
-    texData_ = gpu::Texture::loadFromFile("assets/textures/test.png", texInfo);
+    texData_ = gpu::Texture::loadFromFile("test.png1", texInfo);
     texInfo.magFilter = TextureMagFilter::Linear;
     texInfo.minFilter = TextureMinFilter::LinearMipmapLinear;
     state.cube.texture = Engine::ref().gpu().createTexture(texInfo);

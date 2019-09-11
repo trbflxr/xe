@@ -3,6 +3,7 @@
 //
 
 #include "xepch.hpp"
+#include "embedded/embedded.hpp"
 #include <xe/core/gpu.hpp>
 #include <xe/graphics/window.hpp>
 #include <xe/graphics/render_context.hpp>
@@ -128,7 +129,7 @@ namespace xe {
     XE_CORE_INFO("[GPU] Joined rendering thread");
   }
 
-  gpu::Buffer GPU::createBuffer(const gpu::Buffer::Info &info) {
+  gpu::Buffer GPU::createBuffer(const gpu::Buffer::Info &info) const {
     const uint id = acquireResource(&ctx_->buffers_);
     const uint loc = RenderContext::index(id);
     gpu::BufferInstance &inst = ctx_->buffers_[loc];
@@ -139,18 +140,20 @@ namespace xe {
     return gpu::Buffer(ctx_, id);
   }
 
-  gpu::Texture GPU::createTexture(const gpu::Texture::Info &info) {
+  gpu::Texture GPU::createTexture(const gpu::Texture::Info &info) const {
+    auto &&tex = const_cast<gpu::Texture::Info &>(info);
+
     if (info.format == TexelsFormat::None) {
-      XE_CORE_ERROR("[GPU] Could not create texture: texels format not found");
-      return gpu::Texture();
+      XE_CORE_ERROR("[GPU] Could not create texture: texels format not found. Load default!");
+      tex = Embedded::defaultTextureInfo();
     }
 
     const uint id = acquireResource(&ctx_->textures_);
     const uint loc = RenderContext::index(id);
     gpu::TextureInstance &inst = ctx_->textures_[loc];
-    inst.info = info;
+    inst.info = tex;
 
-    switch (info.format) {
+    switch (tex.format) {
       case TexelsFormat::R8: inst.bpp = 1;
         break;
       case TexelsFormat::Rg8: inst.bpp = 2;
@@ -171,7 +174,7 @@ namespace xe {
     return gpu::Texture{ctx_, id};
   }
 
-  gpu::Pipeline GPU::createPipeline(const gpu::Pipeline::Info &info) {
+  gpu::Pipeline GPU::createPipeline(const gpu::Pipeline::Info &info) const {
     const uint id = acquireResource(&ctx_->pipelines_);
     const uint loc = RenderContext::index(id);
     gpu::PipelineInstance &inst = ctx_->pipelines_[loc];
@@ -213,7 +216,7 @@ namespace xe {
     return gpu::Pipeline{ctx_, id};
   }
 
-  gpu::Framebuffer GPU::createFramebuffer(const gpu::Framebuffer::Info &info) {
+  gpu::Framebuffer GPU::createFramebuffer(const gpu::Framebuffer::Info &info) const {
     const uint id = acquireResource(&ctx_->framebuffers_);
     const uint pos = RenderContext::index(id);
     gpu::FramebufferInstance &inst = ctx_->framebuffers_[pos];

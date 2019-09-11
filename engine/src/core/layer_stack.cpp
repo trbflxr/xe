@@ -13,7 +13,7 @@ namespace xe {
 
   void LayerStack::stop() {
     for (auto &&l : layers_) {
-      l->onStop();
+      l->onClose();
     }
   }
 
@@ -42,7 +42,71 @@ namespace xe {
   }
 
   void LayerStack::processEvents(Event &e) {
-
+    bool handled = false;
+    for (auto it = layers_.end(); it != layers_.begin();) {
+      if ((*--it)->isActive()) {
+        switch (e.type) {
+          case Event::Closed: {
+            (*it)->onClose();
+            break;
+          }
+          case Event::Resized: {
+            handled = (*it)->onResize(e.size);
+            break;
+          }
+          case Event::LostFocus: {
+            (*it)->onFocusLost();
+            break;
+          }
+          case Event::GainedFocus: {
+            (*it)->onFocusGained();
+            break;
+          }
+          case Event::TextEntered: {
+            handled = (*it)->onTextEntered(e.text);
+            break;
+          }
+          case Event::KeyPressed: {
+            handled = (*it)->onKeyPressed(e.key);
+            break;
+          }
+          case Event::KeyRepeated: {
+            handled = (*it)->onKeyRepeated(e.key);
+            break;
+          }
+          case Event::KeyReleased: {
+            handled = (*it)->onKeyReleased(e.key);
+            break;
+          }
+          case Event::MouseScrolled: {
+            handled = (*it)->onMouseScrolled(e.mouseScroll);
+            break;
+          }
+          case Event::MouseButtonPressed: {
+            handled = (*it)->onMousePressed(e.mouseButton);
+            break;
+          }
+          case Event::MouseButtonReleased: {
+            handled = (*it)->onMouseReleased(e.mouseButton);
+            break;
+          }
+          case Event::MouseMoved: {
+            handled = (*it)->onMouseMoved(e.mouseMove);
+            break;
+          }
+          case Event::MouseEntered: {
+            (*it)->onMouseEntered();
+            break;
+          }
+          case Event::MouseLeft: {
+            (*it)->onMouseLeft();
+            break;
+          }
+          default: break;
+        }
+      }
+      if (handled) return;
+    }
   }
 
   void LayerStack::pushLayer(const ref_ptr<Layer> &layer) {
@@ -55,7 +119,7 @@ namespace xe {
     --index_;
     ref_ptr<Layer> layer = layers_[index_];
     layers_.erase(layers_.begin() + index_);
-    layer->onStop();
+    layer->onClose();
     return layer;
   }
 
@@ -67,7 +131,7 @@ namespace xe {
   ref_ptr<Layer> LayerStack::popOverlay() {
     ref_ptr<Layer> overlay = layers_.back();
     layers_.pop_back();
-    overlay->onStop();
+    overlay->onClose();
     return overlay;
   }
 

@@ -37,11 +37,12 @@ public:
   ~TestLayer() override;
 
   void onInit() override;
-  void onStop() override;
+  void onClose() override;
 
   void onRender() override;
   void onUpdate(xe::Timestep ts) override;
 
+  bool onKeyPressed(xe::Event::Key e) override;
 
 private:
   State state;

@@ -170,7 +170,7 @@ TestLayer::~TestLayer() {
 
 }
 
-void TestLayer::onStop() {
+void TestLayer::onClose() {
 
 }
 
@@ -245,4 +245,9 @@ void TestLayer::onUpdate(Timestep ts) {
   angle += 45.0f * ts;
 
   state.quad.model = mat4::transformation(vec3(), {{0, 1, 0}, angle});
+}
+
+bool TestLayer::onKeyPressed(Event::Key e) {
+//  XE_INFO("[TestLayer] key pressed ({})", e.code);
+  return false;
 }

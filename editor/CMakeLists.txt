@@ -13,7 +13,8 @@ include_directories(src)
 
 #sandbox
 file(GLOB SRC
-        src/*.cpp)
+    src/*.cpp
+    src/layers/*.cpp)
 
 add_executable(editor ${SRC})
 

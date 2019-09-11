@@ -5,7 +5,8 @@
 #include <xe/core/application.hpp>
 #include <xe/utils/logger.hpp>
 #include <xe/core/vfs.hpp>
-#include "test_layer.hpp"
+#include "layers/test_layer.hpp"
+#include "layers/test_overlay.hpp"
 
 using namespace xe;
 
@@ -30,7 +31,9 @@ protected:
     VFS::mount("textures", "assets/textures/");
 
     ref_ptr<TestLayer> l = make_ref<TestLayer>(*this);
+    ref_ptr<TestOverlay> o = make_ref<TestOverlay>(*this);
     pushLayer(l);
+    pushOverlay(o);
   }
 
 };

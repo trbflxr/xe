@@ -19,7 +19,7 @@ namespace xe {
         active_(true) { }
 
     virtual void onInit() { }
-    virtual void onStop() { }
+    virtual void onClose() { }
 
     virtual void onRender() { }
 

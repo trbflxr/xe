@@ -11,7 +11,7 @@
 namespace xe::ui {
 
   bool init(Window::Data *data);
-  void update(Window &window);
+  void update(Window &window, Window::Data *data);
   bool processEvent(const Event &e);
   void draw();
   void stop(Window::Data *data);

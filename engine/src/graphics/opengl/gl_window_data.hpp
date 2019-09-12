@@ -15,7 +15,9 @@ namespace xe {
 
   struct Window::Data {
     GLFWwindow *window;
-    GLFWcursor *mouseCursor; //todo: implement
+    GLFWcursor *defaultCursors[Cursor::Count] = {nullptr};
+    Cursor::Enum activeCursor;
+    bool cursorVisible;
     GLFWimage icon;
 
     string title;

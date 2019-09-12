@@ -12,8 +12,21 @@
 
 namespace xe {
 
-  //todo: create more getters/setters
   //todo: create cursor system
+  struct Cursor {
+    enum Enum {
+      Arrow,
+      IBeam,
+      Crosshair,
+      Hand,
+      ResizeX,
+      ResizeY,
+
+      Count
+    };
+  };
+
+  //todo: create more getters/setters
   //todo: fix icon setter
   class XE_API Window : public Object {
   XE_OBJECT(Window, Object);
@@ -28,12 +41,19 @@ namespace xe {
 
     void forceExit();
 
-    vec2 framebufferSize();
-    vec2 size();
+    vec2 framebufferSize() const;
+    vec2 size() const;
     void setSize(uint width, uint height);
+
     void setTitle(const string &title);
     void setIcon(uint width, uint height, byte *pixels);
     void setSwapInterval(bool enabled);
+
+    void setCursor(Cursor::Enum cursor) const;
+    Cursor::Enum activeCursor() const;
+
+    bool isCursorVisible() const;
+    void setCursorVisible(bool visible) const;
 
     bool isExisting() const;
     Timestep uptime() const;

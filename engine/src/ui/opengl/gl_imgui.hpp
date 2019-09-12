@@ -12,7 +12,7 @@
 namespace xe::ui::impl {
 
   bool init(Window::Data *data);
-  void update(Window &window);
+  void update(Window &window, Window::Data *data);
   bool processEvent(const Event &e);
   void draw(ImDrawData *drawData);
   void stop(Window::Data *data);

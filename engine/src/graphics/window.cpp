@@ -34,6 +34,9 @@ namespace xe {
     data_->icon.height = params_.iconHeight;
     data_->icon.pixels = params_.iconPixels;
 
+    data_->activeCursor = Cursor::Hand;
+    data_->cursorVisible = true;
+
     WindowBackend::init(data_);
 
     ui::init(data_);
@@ -52,7 +55,7 @@ namespace xe {
   }
 
   void Window::update() {
-    ui::update(*this);
+    ui::update(*this, data_);
 
     XE_TRACE_BEGIN("XE", "UI Function");
 
@@ -150,11 +153,11 @@ namespace xe {
     return Timestep(static_cast<float>(WindowBackend::uptime(data_)));
   }
 
-  vec2 Window::framebufferSize() {
+  vec2 Window::framebufferSize() const {
     return WindowBackend::framebufferSize(data_);
   }
 
-  vec2 Window::size() {
+  vec2 Window::size() const {
     return vec2(static_cast<float>(data_->width), static_cast<float>(data_->height));
   }
 
@@ -179,6 +182,22 @@ namespace xe {
   void Window::setSwapInterval(bool enabled) {
     data_->swapInterval = enabled;
     WindowBackend::setSwapInterval(data_);
+  }
+
+  void Window::setCursor(Cursor::Enum cursor) const {
+    WindowBackend::setCursor(data_, cursor);
+  }
+
+  Cursor::Enum Window::activeCursor() const {
+    return data_->activeCursor;
+  }
+
+  bool Window::isCursorVisible() const {
+    return data_->cursorVisible;
+  }
+
+  void Window::setCursorVisible(bool visible) const {
+    WindowBackend::setCursorVisible(data_, visible);
   }
 
   void Window::Data::pushEvent(const Event &e) {

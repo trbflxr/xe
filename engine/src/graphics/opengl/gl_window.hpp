@@ -28,6 +28,9 @@ namespace xe {
     static void setIcon(Window::Data *data);
     static void setSwapInterval(Window::Data *data);
 
+    static void setCursor(Window::Data *data, Cursor::Enum cursor);
+    static void setCursorVisible(Window::Data *data, bool visible);
+
     static bool isKeyPressed(Window::Data *data, Keyboard::Key key);
     static bool isMouseButtonPressed(Window::Data *data, Mouse::Button button);
 

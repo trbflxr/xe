@@ -106,24 +106,10 @@ namespace xe::ui::impl {
     io.GetClipboardTextFn = getClipboardText;
     io.ClipboardUserData = data->window;
 
-
-    //todo: cursor
-//    data->mouse_cursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-//    data->mouse_cursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-//    data->mouse_cursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(
-//        GLFW_ARROW_CURSOR);   // FIXME: GLFW doesn't have this.
-//    data->mouse_cursors[ImGuiMouseCursor_ResizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
-//    data->mouse_cursors[ImGuiMouseCursor_ResizeEW] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-//    data->mouse_cursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(
-//        GLFW_ARROW_CURSOR);  // FIXME: GLFW doesn't have this.
-//    data->mouse_cursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(
-//        GLFW_ARROW_CURSOR);  // FIXME: GLFW doesn't have this.
-//    data->mouse_cursors[ImGuiMouseCursor_Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-
     return true;
   }
 
-  void update(Window &window) {
+  void update(Window &window, Window::Data *data) {
     if (!gFontTexture) {
       createDeviceObjects();
     }
@@ -162,24 +148,39 @@ namespace xe::ui::impl {
       }
     }
 
+    if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange) {
+      return;
+    }
 
-    //todo: cursor
-//    if ((io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange) ||
-//        glfwGetInputMode(data->window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
-//      return;
-//
-//    ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
-//    if (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor) {
-//      // Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
-//      glfwSetInputMode(data->window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-//    } else {
-//      // Show OS mouse cursor
-//
-//      // FIXME-PLATFORM: Unfocused windows seems to fail changing the mouse cursor with GLFW 3.2, but 3.3 works here.
-//      glfwSetCursor(data->window, data->mouse_cursors[imgui_cursor] ? data->mouse_cursors[imgui_cursor]
-//                                                                    : data->mouse_cursors[ImGuiMouseCursor_Arrow]);
-//      glfwSetInputMode(data->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//    }
+    if (io.WantCaptureMouse) {
+      const ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+      if (cursor == ImGuiMouseCursor_None || io.MouseDrawCursor) {
+        glfwSetInputMode(data->window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+      } else {
+        Cursor::Enum c;
+        switch (cursor) {
+          case ImGuiMouseCursor_TextInput: c = Cursor::IBeam;
+            break;
+          case ImGuiMouseCursor_ResizeNS: c = Cursor::ResizeY;
+            break;
+          case ImGuiMouseCursor_ResizeEW: c = Cursor::ResizeX;
+            break;
+          case ImGuiMouseCursor_Hand: c = Cursor::Hand;
+            break;
+          case ImGuiMouseCursor_ResizeAll:
+          case ImGuiMouseCursor_ResizeNESW:
+          case ImGuiMouseCursor_ResizeNWSE:
+          case ImGuiMouseCursor_Arrow:
+          default: c = Cursor::Arrow;
+            break;
+        }
+        glfwSetCursor(data->window, data->defaultCursors[c]);
+        glfwSetInputMode(data->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+      }
+    } else {
+      window.setCursor(window.activeCursor());
+      window.setCursorVisible(window.isCursorVisible());
+    }
   }
 
   bool processEvent(const Event &e) {
@@ -397,12 +398,6 @@ namespace xe::ui::impl {
 
   void stop(Window::Data *data) {
     destroyDeviceObjects();
-
-    //todo: cursor
-//    for (ImGuiMouseCursor cursor_n = 0; cursor_n < ImGuiMouseCursor_COUNT; cursor_n++) {
-//      glfwDestroyCursor(data->mouse_cursors[cursor_n]);
-//      data->mouse_cursors[cursor_n] = nullptr;
-//    }
   }
 
   bool createFontTexture() {

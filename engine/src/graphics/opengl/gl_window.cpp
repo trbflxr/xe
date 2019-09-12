@@ -151,6 +151,15 @@ namespace xe {
       return;
     }
 
+    data->defaultCursors[Cursor::Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+    data->defaultCursors[Cursor::IBeam] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+    data->defaultCursors[Cursor::Crosshair] = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+    data->defaultCursors[Cursor::Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+    data->defaultCursors[Cursor::ResizeX] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+    data->defaultCursors[Cursor::ResizeY] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+
+    glfwSetCursor(data->window, data->defaultCursors[data->activeCursor]);
+
     glfwSetWindowUserPointer(data->window, data);
 
     glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32 key, int32 scanCode, int32 action, int32 mods) {
@@ -284,6 +293,9 @@ namespace xe {
   }
 
   void WindowBackend::stop(Window::Data *data) {
+    for (auto &&c : data->defaultCursors) {
+      glfwDestroyCursor(c);
+    }
     glfwTerminate();
   }
 
@@ -323,6 +335,16 @@ namespace xe {
 
   void WindowBackend::setSwapInterval(Window::Data *data) {
     glfwSwapInterval(data->swapInterval);
+  }
+
+  void WindowBackend::setCursor(Window::Data *data, Cursor::Enum cursor) {
+    data->activeCursor = cursor;
+    glfwSetCursor(data->window, data->defaultCursors[cursor]);
+  }
+
+  void WindowBackend::setCursorVisible(Window::Data *data, bool visible) {
+    data->cursorVisible = visible;
+    glfwSetInputMode(data->window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
   }
 
   bool WindowBackend::isKeyPressed(Window::Data *data, Keyboard::Key key) {

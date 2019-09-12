@@ -20,9 +20,9 @@ namespace xe::ui {
     return true;
   }
 
-  void update(Window &window) {
+  void update(Window &window, Window::Data *data) {
     XE_TRACE_BEGIN("XE", "UI Update");
-    impl::update(window);
+    impl::update(window, data);
     ImGui::NewFrame();
     XE_TRACE_END("XE", "UI Update");
   }

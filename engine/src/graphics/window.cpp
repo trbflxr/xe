@@ -34,7 +34,7 @@ namespace xe {
     data_->icon.height = params_.iconHeight;
     data_->icon.pixels = params_.iconPixels;
 
-    data_->activeCursor = Cursor::Hand;
+    data_->activeCursor = Cursor::Arrow;
     data_->cursorVisible = true;
 
     WindowBackend::init(data_);
@@ -56,86 +56,9 @@ namespace xe {
 
   void Window::update() {
     ui::update(*this, data_);
-
     XE_TRACE_BEGIN("XE", "UI Function");
-
-
-    static const uint flags = ImGuiWindowFlags_NoDocking |
-                              ImGuiWindowFlags_MenuBar |
-                              ImGuiWindowFlags_NoTitleBar |
-                              ImGuiWindowFlags_NoResize |
-                              ImGuiWindowFlags_NoCollapse |
-                              ImGuiWindowFlags_AlwaysAutoResize |
-                              ImGuiWindowFlags_NoSavedSettings |
-                              ImGuiWindowFlags_NoFocusOnAppearing |
-                              ImGuiWindowFlags_NoNav;
-
-
-    const float DISTANCE = 10.0f;
-    static int32 corner = 0;
-
-    static bool showDemo = false;
-
-    if (corner != -1) {
-      const ImGuiViewport *viewport = ImGui::GetMainViewport();
-      const ImVec2 windowPos = ImVec2(
-          (corner & 1) ? (viewport->Pos.x + viewport->Size.x - DISTANCE) : (viewport->Pos.x + DISTANCE),
-          (corner & 2) ? (viewport->Pos.y + viewport->Size.y - DISTANCE) : (viewport->Pos.y + DISTANCE));
-
-      const ImVec2 windowPosPivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
-      ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
-      ImGui::SetNextWindowViewport(viewport->ID);
-    }
-
-    ImGui::SetNextWindowBgAlpha(0.3f);
-    if (ImGui::Begin("MainMenu", nullptr, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | flags)) {
-      if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("Examples")) {
-
-          if (ImGui::MenuItem("Demo", nullptr)) {
-            showDemo = !showDemo;
-          }
-          if (ImGui::MenuItem("2D Particles", nullptr)) {
-
-          }
-          ImGui::EndMenu();
-        }
-
-        ImGui::EndMenuBar();
-      }
-    }
-
-    ImGui::Text("fps: %i", 60);
-    ImGui::Text("tick rate: %i", 30);
-    ImGui::Text("delta: %.4f", ImGui::GetIO().DeltaTime);
-    ImGui::Text("uptime: %.2f", uptime().seconds());
-    ImGui::Separator();
-    ImGui::Dummy({10.0f, 0.0f});
-
-    char buff[2048];
-    memset(buff, 0, 2048);
-    ImGui::InputText("Test", buff, 2048);
-    ImGui::Dummy({10.0f, 0.0f});
-
-    ImGui::Text("Right-click to change position");
-
-    if (ImGui::BeginPopupContextWindow()) {
-      if (ImGui::MenuItem("Custom", nullptr, corner == -1)) corner = -1;
-      if (ImGui::MenuItem("Top-left", nullptr, corner == 0)) corner = 0;
-      if (ImGui::MenuItem("Top-right", nullptr, corner == 1)) corner = 1;
-      if (ImGui::MenuItem("Bottom-left", nullptr, corner == 2)) corner = 2;
-      if (ImGui::MenuItem("Bottom-right", nullptr, corner == 3)) corner = 3;
-      ImGui::EndPopup();
-    }
-    ImGui::End();
-
-
-    if (showDemo) {
-      ImGui::ShowDemoWindow(&showDemo);
-    }
-
+    ui_(uiData_);
     XE_TRACE_END("XE", "UI Function");
-
     ui::draw();
 
     XE_TRACE_BEGIN("XE", "Window swap");

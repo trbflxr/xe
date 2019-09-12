@@ -128,8 +128,7 @@ namespace xe::ui::impl {
     const vec2 &windowSize = window.size();
     const vec2 &fbSize = window.framebufferSize();
 
-    io.DisplaySize.x = windowSize.x;
-    io.DisplaySize.y = windowSize.y;
+    io.DisplaySize = windowSize;
 
     io.DisplayFramebufferScale = ImVec2(windowSize.x > 0.0f ? ((float) fbSize.x / windowSize.x) : 0.0f,
                                         windowSize.y > 0.0f ? ((float) fbSize.y / windowSize.y) : 0.0f);
@@ -137,10 +136,9 @@ namespace xe::ui::impl {
     const vec2 mousePos = Engine::getMousePosition();
     if (windowHasFocus) {
       if (io.WantSetMousePos) {
-        Engine::setMousePosition({io.MousePos.x, io.MousePos.y});
+        Engine::setMousePosition(io.MousePos);
       } else {
-        io.MousePos.x = mousePos.x;
-        io.MousePos.y = mousePos.y;
+        io.MousePos = mousePos;
       }
       for (uint i = 0; i < 3; i++) {
         io.MouseDown[i] = mousePressed[i] || Engine::isMouseButtonPressed((Mouse::Button) i);

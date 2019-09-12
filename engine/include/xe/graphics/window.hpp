@@ -77,6 +77,8 @@ namespace xe {
 
   protected:
     Data *data_;
+    std::function<void(void *)> ui_ = [](void *) { };
+    void *uiData_ = nullptr;
     Params::Window params_{ };
   };
 

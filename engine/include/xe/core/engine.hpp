@@ -26,6 +26,8 @@ namespace xe {
 
     void submitDrawList(DisplayList &&dl);
 
+    void setUiFunction(const std::function<void(void *)> &function, void *data);
+
     inline Window &window() { return *gpu_->window_; }
     inline GPU &gpu() { return *gpu_; }
 

@@ -96,6 +96,11 @@ namespace xe {
     gpu_->submitCommands(std::move(dl));
   }
 
+  void Engine::setUiFunction(const std::function<void(void *)> &function, void *data) {
+    gpu_->window_->ui_ = function;
+    gpu_->window_->uiData_ = data;
+  }
+
   bool Engine::isKeyPressed(Keyboard::Key key) {
     return ref().window().isKeyPressed(key);
   }

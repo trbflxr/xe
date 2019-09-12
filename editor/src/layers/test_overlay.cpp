@@ -13,7 +13,7 @@ TestOverlay::TestOverlay(xe::Application &app) :
 
 }
 
-bool TestOverlay::onKeyPressed(const Event::Key e) {
+bool TestOverlay::onKeyPressed(const Event::Key &e) {
 //  XE_INFO("[TestOverlay] key pressed ({})", e.code);
   return false;
 }

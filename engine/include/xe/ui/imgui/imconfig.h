@@ -13,6 +13,10 @@
 
 #pragma once
 
+#include <xe/common.hpp>
+#include <xe/math/vec2.hpp>
+#include <xe/math/vec4.hpp>
+
 //---- Define assertion handler. Defaults to calling assert().
 //#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)
 //#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
@@ -22,8 +26,10 @@
 //#define IMGUI_API __declspec( dllexport )
 //#define IMGUI_API __declspec( dllimport )
 
+#define IMGUI_API XE_API
+
 //---- Don't define obsolete functions/enums names. Consider enabling from time to time after updating to avoid using soon-to-be obsolete function/names.
-//#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 //---- Don't implement demo windows functionality (ShowDemoWindow()/ShowStyleEditor()/ShowUserGuide() methods will be empty)
 // It is very strongly recommended to NOT disable the demo windows during development. Please read the comments in imgui_demo.cpp.
@@ -54,15 +60,15 @@
 
 //---- Define constructor and implicit cast operators to convert back<>forth between your math types and ImVec2/ImVec4.
 // This will be inlined as part of ImVec2 and ImVec4 class declarations.
-/*
-#define IM_VEC2_CLASS_EXTRA                                                 \
-        ImVec2(const MyVec2& f) { x = f.x; y = f.y; }                       \
-        operator MyVec2() const { return MyVec2(x,y); }
 
-#define IM_VEC4_CLASS_EXTRA                                                 \
-        ImVec4(const MyVec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }     \
-        operator MyVec4() const { return MyVec4(x,y,z,w); }
-*/
+#define IM_VEC2_CLASS_EXTRA                                                     \
+        ImVec2(const xe::vec2& f) { x = f.x; y = f.y; }                         \
+        operator xe::vec2() const { return xe::vec2(x,y); }
+
+#define IM_VEC4_CLASS_EXTRA                                                     \
+        ImVec4(const xe::vec4& f) { x = f[0]; y = f[1]; z = f[2]; w = f[3]; }   \
+        operator xe::vec4() const { return xe::vec4(x,y,z,w); }
+
 
 //---- Using 32-bits vertex indices (default is 16-bits) is one way to allow large meshes with more than 64K vertices. 
 // Your renderer back-end will need to support it (most example renderer back-ends support both 16/32-bits indices).

@@ -9,7 +9,7 @@
 
 struct State {
   xe::gpu::Framebuffer fb;
-  static constexpr uint INSTANCES = 50000;
+  static constexpr uint INSTANCES = 500000;
   struct {
     xe::vec4 instancePositions[INSTANCES];
     xe::gpu::Pipeline material;
@@ -42,11 +42,15 @@ public:
   void onRender() override;
   void onUpdate(xe::Timestep ts) override;
 
-  bool onKeyPressed(const xe::Event::Key e) override;
+  bool onKeyPressed(const xe::Event::Key &e) override;
 
 private:
-  State state;
+  static void uiFunc(void *data);
+
+private:
+  State state_;
   void *texData_;
+  int32 instances_;
 };
 
 #endif //XE_TEST_LAYER_HPP

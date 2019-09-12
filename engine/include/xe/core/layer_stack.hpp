@@ -26,7 +26,7 @@ namespace xe {
     virtual void update(Timestep ts);
     virtual void postUpdate();
 
-    void processEvents(Event &e);
+    void processEvents(const Event &e);
 
     void pushLayer(const ref_ptr<Layer> &layer);
     ref_ptr<Layer> popLayer();

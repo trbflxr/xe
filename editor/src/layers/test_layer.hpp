@@ -42,7 +42,7 @@ public:
   void onRender() override;
   void onUpdate(xe::Timestep ts) override;
 
-  bool onKeyPressed(xe::Event::Key e) override;
+  bool onKeyPressed(const xe::Event::Key e) override;
 
 private:
   State state;

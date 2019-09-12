@@ -126,6 +126,7 @@ namespace xe {
       uint height;
       const char *title;
       bool swapInterval;
+      bool srgb;
 
       uint iconWidth;
       uint iconHeight;

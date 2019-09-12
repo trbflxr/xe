@@ -84,6 +84,8 @@ file(GLOB ENGINE_SRC
     src/embedded/*.cpp
     src/graphics/*.cpp
     src/math/*.cpp
+    src/ui/*.cpp
+    src/ui/imgui/*.cpp
     src/utils/*.cpp)
 
 #win32 sources
@@ -92,7 +94,8 @@ file(GLOB ENGINE_WIN32_SRC
 
 #opengl sources
 file(GLOB ENGINE_GL_SRC
-    src/graphics/opengl/*.cpp)
+    src/graphics/opengl/*.cpp
+    src/ui/opengl/*.cpp)
 
 if (XE_PLATFORM_WIN32)
   list(APPEND ENGINE_SRC ${ENGINE_WIN32_SRC})

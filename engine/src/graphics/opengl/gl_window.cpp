@@ -61,7 +61,7 @@ namespace xe {
       case GLFW_KEY_ESCAPE: return Keyboard::Escape;
       case GLFW_KEY_ENTER: return Keyboard::Return;
       case GLFW_KEY_TAB: return Keyboard::Tab;
-      case GLFW_KEY_BACKSPACE: return Keyboard::BackSlash;
+      case GLFW_KEY_BACKSPACE: return Keyboard::BackSpace;
       case GLFW_KEY_INSERT: return Keyboard::Insert;
       case GLFW_KEY_DELETE: return Keyboard::Delete;
       case GLFW_KEY_RIGHT: return Keyboard::Right;
@@ -166,10 +166,10 @@ namespace xe {
       }
       e.key.code = glfwKeyToXe(key);
       e.key.shift = mods == GLFW_MOD_SHIFT;
-      e.key.control = mods == GLFW_MOD_SHIFT;
-      e.key.alt = mods == GLFW_MOD_SHIFT;
+      e.key.control = mods == GLFW_MOD_CONTROL;
+      e.key.alt = mods == GLFW_MOD_ALT;
       e.key.system = mods == GLFW_MOD_SUPER;
-      data.events.push(e);
+      data.pushEvent(e);
     });
 
     glfwSetMouseButtonCallback(data->window, [](GLFWwindow *window, int32 button, int32 action, int32 mods) {
@@ -183,10 +183,10 @@ namespace xe {
       }
       e.mouseButton.button = glfwButtonToXe(button);
       e.mouseButton.shift = mods == GLFW_MOD_SHIFT;
-      e.mouseButton.control = mods == GLFW_MOD_SHIFT;
-      e.mouseButton.alt = mods == GLFW_MOD_SHIFT;
+      e.mouseButton.control = mods == GLFW_MOD_CONTROL;
+      e.mouseButton.alt = mods == GLFW_MOD_ALT;
       e.mouseButton.system = mods == GLFW_MOD_SUPER;
-      data.events.push(e);
+      data.pushEvent(e);
     });
 
     glfwSetScrollCallback(data->window, [](GLFWwindow *window, double xOffset, double yOffset) {
@@ -196,7 +196,7 @@ namespace xe {
       e.type = Event::MouseScrolled;
       e.mouseScroll.x = static_cast<float>(xOffset);
       e.mouseScroll.y = static_cast<float>(yOffset);
-      data.events.push(e);
+      data.pushEvent(e);
     });
 
     glfwSetCursorPosCallback(data->window, [](GLFWwindow *window, double xPos, double yPos) {
@@ -206,7 +206,7 @@ namespace xe {
       e.type = Event::MouseMoved;
       e.mouseMove.x = static_cast<float>(xPos);
       e.mouseMove.y = static_cast<float>(yPos);
-      data.events.push(e);
+      data.pushEvent(e);
     });
 
     glfwSetCharCallback(data->window, [](GLFWwindow *window, uint ch) {
@@ -215,7 +215,7 @@ namespace xe {
       Event e{ };
       e.type = Event::TextEntered;
       e.text.unicode = ch;
-      data.events.push(e);
+      data.pushEvent(e);
     });
 
     glfwSetWindowSizeCallback(data->window, [](GLFWwindow *window, int32 width, int32 height) {
@@ -225,7 +225,7 @@ namespace xe {
       e.type = Event::Resized;
       e.size.width = static_cast<uint>(width);
       e.size.height = static_cast<uint>(height);
-      data.events.push(e);
+      data.pushEvent(e);
     });
 
     glfwSetCursorEnterCallback(data->window, [](GLFWwindow *window, int32 entered) {
@@ -233,7 +233,7 @@ namespace xe {
 
       Event e{ };
       e.type = entered ? Event::MouseEntered : Event::MouseLeft;
-      data.events.push(e);
+      data.pushEvent(e);
     });
 
     glfwSetWindowFocusCallback(data->window, [](GLFWwindow *window, int32 focused) {
@@ -241,11 +241,11 @@ namespace xe {
 
       Event e{ };
       e.type = focused ? Event::GainedFocus : Event::LostFocus;
-      data.events.push(e);
+      data.pushEvent(e);
     });
   }
 
-  void WindowBackend::initContext(Window::Data *data) {
+  void WindowBackend::initContext(Window::Data *data, bool srgb) {
     glfwMakeContextCurrent(data->window);
 
     const int32 status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
@@ -257,6 +257,11 @@ namespace xe {
     setIcon(data);
     setSwapInterval(data);
 
+    if (srgb) {
+      glEnable(GL_FRAMEBUFFER_SRGB);
+    } else {
+      glDisable(GL_FRAMEBUFFER_SRGB);
+    }
 
     const byte *version = glGetString(GL_VERSION);
     const byte *vendor = glGetString(GL_VENDOR);
@@ -265,8 +270,9 @@ namespace xe {
     XE_CORE_INFO("[WindowBackend / GL] Window initialized successful:\n"
                  "\t- glVersion \t\t({})\n"
                  "\t- glVendor \t\t({})\n"
-                 "\t- glRenderer \t\t({})",
-                 version, vendor, renderer);
+                 "\t- glRenderer \t\t({})\n"
+                 "\t- glSrgb \t\t({})",
+                 version, vendor, renderer, srgb);
   }
 
   void WindowBackend::swap(Window::Data *data) {
@@ -291,6 +297,13 @@ namespace xe {
 
   void WindowBackend::forceExit(Window::Data *data) {
     glfwSetWindowShouldClose(data->window, GLFW_TRUE);
+  }
+
+  vec2 WindowBackend::framebufferSize(Window::Data *data) {
+    int32 w = 0;
+    int32 h = 0;
+    glfwGetFramebufferSize(data->window, &w, &h);
+    return vec2(static_cast<float>(w), static_cast<float>(h));
   }
 
   void WindowBackend::setSize(Window::Data *data) {

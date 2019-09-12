@@ -79,7 +79,7 @@ namespace xe {
         XE_CORE_TRACE("[GPU] GPU Synchronization (render ready)");
 
         renderFrame_.update();
-        window_->swap();
+        window_->update();
 
         XE_TRACE_END("XE", "Frame");
         XE_TRACE_BEGIN("XE", "Frame");

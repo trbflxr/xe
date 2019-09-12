@@ -97,7 +97,7 @@ void TestLayer::onInit() {
     matInfo.textures[0] = TextureType::T2D;
 
     gpu::Texture::Info texInfo;
-    texData_ = gpu::Texture::loadFromFile("test.png1", texInfo);
+    texData_ = gpu::Texture::loadFromFile("test.png", texInfo);
     texInfo.magFilter = TextureMagFilter::Linear;
     texInfo.minFilter = TextureMinFilter::LinearMipmapLinear;
     state.cube.texture = Engine::ref().gpu().createTexture(texInfo);
@@ -247,7 +247,7 @@ void TestLayer::onUpdate(Timestep ts) {
   state.quad.model = mat4::transformation(vec3(), {{0, 1, 0}, angle});
 }
 
-bool TestLayer::onKeyPressed(Event::Key e) {
-//  XE_INFO("[TestLayer] key pressed ({})", e.code);
+bool TestLayer::onKeyPressed(const Event::Key e) {
+  XE_INFO("[TestLayer] key pressed ({})", e.code);
   return false;
 }

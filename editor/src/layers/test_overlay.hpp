@@ -11,7 +11,7 @@ class TestOverlay : public xe::Layer {
 public:
   explicit TestOverlay(xe::Application &app);
 
-  bool onKeyPressed(xe::Event::Key e) override;
+  bool onKeyPressed(const xe::Event::Key e) override;
 };
 
 #endif //XE_TEST_OVERLAY_HPP

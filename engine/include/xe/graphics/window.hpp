@@ -28,6 +28,8 @@ namespace xe {
 
     void forceExit();
 
+    vec2 framebufferSize();
+    vec2 size();
     void setSize(uint width, uint height);
     void setTitle(const string &title);
     void setIcon(uint width, uint height, byte *pixels);
@@ -42,7 +44,7 @@ namespace xe {
   protected:
     void init();
     void initContext();
-    void swap();
+    void update();
     void stop();
 
     bool pollEvent(Event &event);

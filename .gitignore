@@ -7,3 +7,5 @@ cmake-build-release
 #xe
 xetrace.json
 
+#imgui
+imgui.ini

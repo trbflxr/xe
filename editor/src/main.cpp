@@ -18,7 +18,7 @@ public:
 
     Params params = {{800, 600,
                                 "test / жопа",
-                                    true,
+                                    true, true,
                          0, 0, nullptr},
                      {128, 128, 64, 128}};
 

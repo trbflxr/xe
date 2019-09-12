@@ -41,7 +41,7 @@ namespace xe {
     }
   }
 
-  void LayerStack::processEvents(Event &e) {
+  void LayerStack::processEvents(const Event &e) {
     bool handled = false;
     for (auto it = layers_.end(); it != layers_.begin();) {
       if ((*--it)->isActive()) {

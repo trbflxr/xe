@@ -26,6 +26,8 @@ namespace xe {
     std::atomic<uint> height;
 
     std::queue<Event> events;
+
+    void pushEvent(const Event &e);
   };
 
 }

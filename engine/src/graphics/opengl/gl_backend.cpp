@@ -343,6 +343,24 @@ namespace xe::gpu {
     }
   }
 
+  static string prettyCodeError(const char *src) {
+    std::stringstream ss;
+
+    size_t i = 0;
+    size_t line = 1;
+    char ch = 0;
+    ss << line++ << "\t|  ";
+    while ((ch = src[i]) != '\0') {
+      if (ch == '\n') {
+        ss << '\n' << line++ << "\t|  ";
+        i++;
+      } else {
+        ss << src[i++];
+      }
+    }
+    return ss.str();
+  }
+
   static int32 compileShader(uint type, const char *src) {
     if (src[0] == '\0') {
       return -1;
@@ -363,7 +381,8 @@ namespace xe::gpu {
       static const size_t maxLength = 2048;
       char buffer[maxLength];
       GLCHECK(glGetShaderInfoLog(shader, maxLength, nullptr, buffer));
-      XE_CORE_ERROR("[GL Error] Could compile shader ({}):{}\n// CODE: {}", type, buffer, src);
+      string code = prettyCodeError(src);
+      XE_CORE_ERROR("[GL Error] Could compile shader ({}):{}\n// CODE:\n{}", type, buffer, code);
       GLCHECK(glDeleteShader(shader));
       return 0;
     }
@@ -590,6 +609,11 @@ namespace xe::gpu {
     d.pipeline.ctx->lastPipeline_ = d;
     auto mat = RenderContext::getResource(d.pipeline.ctx->lastPipeline_.pipeline.id, &d.pipeline.ctx->pipelines_,
                                           &d.pipeline.ctx->backend_->pipelines_);
+    if (mat.second->program == -1) {
+      mat.first->info.renderMode = RenderMode::Disabled;
+      return;
+    }
+
     if (lastPipelineChanged) {
       //shader creation
       if (mat.second->program == 0) {
@@ -597,87 +621,100 @@ namespace xe::gpu {
           i = -1;
         }
 
+        bool success = true;
+
         const int32 shaderV = compileShader(GL_VERTEX_SHADER, mat.first->vertShader.c_str());
         const int32 shaderF = compileShader(GL_FRAGMENT_SHADER, mat.first->fragShader.c_str());
         const int32 shaderTC = compileShader(GL_TESS_CONTROL_SHADER, mat.first->tessControlShader.c_str());
         const int32 shaderTE = compileShader(GL_TESS_EVALUATION_SHADER, mat.first->tessEvalShader.c_str());
         const int32 shaderG = compileShader(GL_GEOMETRY_SHADER, mat.first->geomShader.c_str());
         if (!shaderV || !shaderF || !shaderTC || !shaderTE || !shaderG) {
-          return;
+          success = false;
         }
 
         uint programId = 0;
-        GLCHECK(programId = glCreateProgram());
-        if (!programId) {
-          XE_CORE_ERROR("[GL Error] Could not create shader program");
-          return;
+        if (success) {
+          GLCHECK(programId = glCreateProgram());
+          if (!programId) {
+            XE_CORE_ERROR("[GL Error] Could not create shader program");
+            success = false;
+          }
         }
 
         uint bufferSize = 0;
-        if (shaderV != -1) {
+        if (success && shaderV != -1) {
           GLCHECK(glAttachShader(programId, shaderV));
           if (!parseOrError(mat.first->vertShader, mat.second->uniforms,
                             mat.second->usedUniforms, bufferSize)) {
-            return;
+            success = false;
           }
         }
-        if (shaderF != -1) {
+        if (success && shaderF != -1) {
           GLCHECK(glAttachShader(programId, shaderF));
           if (!parseOrError(mat.first->fragShader, mat.second->uniforms,
                             mat.second->usedUniforms, bufferSize)) {
-            return;
+            success = false;
           }
         }
-        if (shaderTC != -1) {
+        if (success && shaderTC != -1) {
           GLCHECK(glAttachShader(programId, shaderTC));
           if (!parseOrError(mat.first->tessControlShader, mat.second->uniforms,
                             mat.second->usedUniforms, bufferSize)) {
-            return;
+            success = false;
           }
         }
-        if (shaderTE != -1) {
+        if (success && shaderTE != -1) {
           GLCHECK(glAttachShader(programId, shaderTE));
           if (!parseOrError(mat.first->tessEvalShader, mat.second->uniforms,
                             mat.second->usedUniforms, bufferSize)) {
-            return;
+            success = false;
           }
         }
-        if (shaderG != -1) {
+        if (success && shaderG != -1) {
           GLCHECK(glAttachShader(programId, shaderG));
           if (!parseOrError(mat.first->geomShader, mat.second->uniforms,
                             mat.second->usedUniforms, bufferSize)) {
-            return;
+            success = false;
           }
         }
 
-        mat.second->uniformData.alloc(bufferSize);
-
-        for (auto i = 0; i < cMaxVertexAttribs; ++i) {
-          const auto &attrib = mat.first->info.attribs[i];
-          if (attrib.format) {
-            GLCHECK(glBindAttribLocation(programId, i, attrib.name));
-          } else {
-            break;
+        if (success) {
+          GLCHECK(glLinkProgram(programId));
+          int32 linkStatus = GL_FALSE;
+          GLCHECK(glGetProgramiv(programId, GL_LINK_STATUS, &linkStatus));
+          if (linkStatus != GL_TRUE) {
+            char log[2048];
+            GLCHECK(glGetProgramInfoLog(programId, 2048, nullptr, log));
+            GLCHECK(glDeleteProgram(programId));
+            XE_CORE_ERROR("[GL Error] Could not link program:\n\t{}", log);
+            success = false;
           }
         }
-
-        GLCHECK(glLinkProgram(programId));
-        int32 linkStatus = GL_FALSE;
-        GLCHECK(glGetProgramiv(programId, GL_LINK_STATUS, &linkStatus));
-        if (linkStatus != GL_TRUE) {
-          char log[2048];
-          GLCHECK(glGetProgramInfoLog(programId, 2048, nullptr, log));
-          GLCHECK(glDeleteProgram(programId));
-          XE_CORE_ERROR("[GL Error] Could not link program:\n\t{}", log);
-          return;
-        }
-        mat.second->program = programId;
 
         if (shaderV != -1) GLCHECK(glDeleteShader(shaderV));
         if (shaderF != -1) GLCHECK(glDeleteShader(shaderF));
         if (shaderTC != -1) GLCHECK(glDeleteShader(shaderTC));
         if (shaderTE != -1) GLCHECK(glDeleteShader(shaderTE));
         if (shaderG != -1) GLCHECK(glDeleteShader(shaderG));
+
+        if (success) {
+          mat.second->uniformData.alloc(bufferSize);
+
+          for (auto i = 0; i < cMaxVertexAttribs; ++i) {
+            const auto &attrib = mat.first->info.attribs[i];
+            if (attrib.format) {
+              GLCHECK(glBindAttribLocation(programId, i, attrib.name));
+            } else {
+              break;
+            }
+          }
+        } else {
+          mat.second->program = -1;
+          mat.first->info.renderMode = RenderMode::Disabled;
+          return;
+        }
+
+        mat.second->program = programId;
 
         //get texture locations
         for (size_t i = 0; i < cMaxTextureUnits; ++i) {
@@ -709,13 +746,14 @@ namespace xe::gpu {
         for (size_t i = 0; i < p->usedUniforms; ++i) {
           GLCHECK(p->uniforms[i].loc = glGetUniformLocation(p->program, p->uniforms[i].name.c_str()));
         }
-      }
+
+      } //shader creation
 
       GLCHECK(glUseProgram(mat.second->program));
 
       if (mat.first->info.blend.enabled) {
         GLCHECK(glEnable(GL_BLEND));
-        vec4 c = mat.first->info.blend.color;
+        const vec4 &c = mat.first->info.blend.color;
         GLCHECK(glBlendColor(c[0], c[1], c[2], c[3]));
         GLCHECK(glBlendEquationSeparate(toGL(mat.first->info.blend.opRgb),
                                         toGL(mat.first->info.blend.opAlpha)));
@@ -790,7 +828,6 @@ namespace xe::gpu {
         }
       }
     }
-
 
     if (d.scissor[2] > 0.0f && d.scissor[3] > 0.0f) {
       GLCHECK(glScissor((int32) d.scissor[0], (int32) d.scissor[1], (int32) d.scissor[2], (int32) d.scissor[3]));

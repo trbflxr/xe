@@ -13,6 +13,7 @@
 #include <mutex>
 #include <algorithm>
 #include <utility>
+#include <sstream>
 
 #include <xe/memory.hpp>
 #include <xe/string.hpp>

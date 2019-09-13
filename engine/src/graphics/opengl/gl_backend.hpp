@@ -35,7 +35,7 @@ namespace xe::gpu {
     };
 
     struct Pipeline {
-      uint program = 0;
+      int32 program = 0;
       int32 textureUniformsLoc[cMaxTextureUnits] = { };
       Uniform uniforms[cMaxShaderUniforms] = { };
       memory<byte> uniformData;

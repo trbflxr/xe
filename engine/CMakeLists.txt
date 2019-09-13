@@ -138,13 +138,5 @@ endif ()
 #pack shaders
 execute_process(COMMAND ${CMAKE_COMMAND}
     "-DSHADERS_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/opengl/shaders"
-    "-Dout_file=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/shaders.hpp"
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShaderPacker.cmake")
-
-add_custom_target(ShaderPacker
-    COMMAND ${CMAKE_COMMAND}
-    "-DSHADERS_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/opengl/shaders"
-    "-Dout_file=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/shaders.hpp"
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShaderPacker.cmake")
-
-add_dependencies(xe ShaderPacker)
+    "-DOUT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/shader_packer.cmake")

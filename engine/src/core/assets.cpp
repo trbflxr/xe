@@ -11,6 +11,17 @@
 
 namespace xe {
 
+  static string makeShader(const std::initializer_list<const char *> &sources) {
+    static const char *version = "#version 330 core\n";
+    string shader = version;
+
+    for (const auto &s : sources) {
+      shader += s;
+    }
+
+    return shader;
+  }
+
   AssetManager::AssetManager() {
 
   }
@@ -20,17 +31,19 @@ namespace xe {
   }
 
   void AssetManager::initDefaultShaders() {
-    auto test = make_ref<gpu::Pipeline::Info::Shader>();
-    test->vert = test_vert;
-    test->frag = test_frag;
+    XE_TRACE_BEGIN("XE", "Default shaders init");
 
+    auto test = make_ref<gpu::Pipeline::Info::Shader>();
+    test->vert = makeShader({camera_ubo_glsl, test_vert});
+    test->frag = makeShader({test_frag});
     addShader("test", test);
 
     auto fb_test = make_ref<gpu::Pipeline::Info::Shader>();
-    fb_test->vert = fb_test_vert;
-    fb_test->frag = fb_test_frag;
-
+    fb_test->vert = makeShader({fb_test_vert});
+    fb_test->frag = makeShader({fb_test_frag});
     addShader("fb_test", fb_test);
+
+    XE_TRACE_END("XE", "Default shaders init");
   }
 
   void AssetManager::addShader(const string &name, const ref_ptr<gpu::Pipeline::Info::Shader> &shader) {

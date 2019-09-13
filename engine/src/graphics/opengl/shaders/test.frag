@@ -1,5 +1,3 @@
-#version 330 core
-
 out vec4 color0;
 out vec4 color1;
 

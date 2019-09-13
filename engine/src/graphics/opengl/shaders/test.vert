@@ -1,5 +1,3 @@
-#version 330 core
-
 in vec3 a_position;
 in vec4 a_color;
 in vec2 a_texCoords;
@@ -7,12 +5,6 @@ in vec4 a_instancePosition;
 
 out vec4 v_color;
 out vec2 v_texCoords;
-
-//layout(std140, row_major) uniform UniformState {
-//  mat4 model;
-//  mat4 view;
-//  mat4 proj;
-//};
 
 uniform mat4 u_model;
 uniform mat4 u_view;

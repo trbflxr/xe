@@ -20,7 +20,6 @@ namespace xe {
   XE_OBJECT(GPU, Object);
     friend class Engine;
   public:
-    GPU();
     ~GPU() override;
 
     inline void setParams(const Params::GPU &params) { params_ = params; }
@@ -41,6 +40,8 @@ namespace xe {
     inline uint usedFramebuffers() const { return usedFramebuffers_; }
 
   protected:
+    GPU();
+
     void init();
     void run();
     void prepareRender();

@@ -10,7 +10,8 @@ namespace xe {
   Engine::Engine() {
     setName("Engine");
 
-    gpu_ = make_ref<GPU>();
+    gpu_.reset(new GPU());
+    assetManager_.reset(new AssetManager());
   }
 
   Engine::~Engine() {
@@ -36,6 +37,7 @@ namespace xe {
     XE_CORE_INFO("[ENGINE] Initializing engine systems");
 
     gpu_->init();
+    assetManager_->init();
 
     XE_TRACE_END("XE", "Engine systems init");
     return true;

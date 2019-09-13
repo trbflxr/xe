@@ -5,6 +5,8 @@
 #ifndef XE_COMMON_HPP
 #define XE_COMMON_HPP
 
+#define XE_SRC_ROOT_DIR XE_CURRENT_SRC_DIR
+
 #ifdef _WIN32
   #define XE_PLATFORM_WINDOWS
 #endif

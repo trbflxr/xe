@@ -7,6 +7,7 @@
 
 #include <xe/memory.hpp>
 #include <xe/core/gpu.hpp>
+#include <xe/core/assets.hpp>
 #include <xe/core/timestep.hpp>
 #include <xe/graphics/window.hpp>
 
@@ -30,6 +31,7 @@ namespace xe {
 
     inline Window &window() { return *gpu_->window_; }
     inline GPU &gpu() { return *gpu_; }
+    inline AssetManager &assetManager() { return *assetManager_; }
 
     static bool isKeyPressed(Keyboard::Key key);
     static bool isMouseButtonPressed(Mouse::Button button);
@@ -57,7 +59,7 @@ namespace xe {
     Params params_;
 
     ref_ptr<GPU> gpu_;
-
+    ref_ptr<AssetManager> assetManager_;
   };
 
 }

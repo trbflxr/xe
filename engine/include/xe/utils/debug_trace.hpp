@@ -8,11 +8,11 @@
 #include <xe/common.hpp>
 
 #ifdef XE_DEBUG_TRACING
-  #define XE_TRACE_INIT(file)              xe::detail::traceInit(file)
-  #define XE_TRACE_SHUTDOWN()              xe::detail::traceShutdown()
-  #define XE_TRACE_BEGIN(category, name)   xe::detail::traceBegin(category, name)
-  #define XE_TRACE_END(category, name)     xe::detail::traceEnd(category, name)
-  #define XE_TRACE_META_THREAD_NAME(name)  xe::detail::traceMetaThreadName(name)
+  #define XE_TRACE_INIT(file)              ::xe::detail::traceInit(file)
+  #define XE_TRACE_SHUTDOWN()              ::xe::detail::traceShutdown()
+  #define XE_TRACE_BEGIN(category, name)   ::xe::detail::traceBegin(category, name)
+  #define XE_TRACE_END(category, name)     ::xe::detail::traceEnd(category, name)
+  #define XE_TRACE_META_THREAD_NAME(name)  ::xe::detail::traceMetaThreadName(name)
 #else
   #define XE_TRACE_INIT(file)
   #define XE_TRACE_SHUTDOWN()

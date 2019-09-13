@@ -159,6 +159,7 @@ namespace std {
     size_t operator()(const xe::string &s) const noexcept { return _Hash_array_representation(s.c_str(), s.size()); }
   };
 #endif
+
 }
 
 #endif //XE_STRING_HPP

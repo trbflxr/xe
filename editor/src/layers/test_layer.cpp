@@ -62,7 +62,8 @@ namespace quad {
 TestLayer::TestLayer(Application &app) :
     Layer(app),
     texData_(nullptr),
-    instances_(static_cast<int32>(State::INSTANCES / 3.0f)) { }
+    instances_(static_cast<int32>(State::INSTANCES / 8.0f)) { }
+
 void TestLayer::onInit() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
 
@@ -89,8 +90,7 @@ void TestLayer::onInit() {
 
   {
     gpu::Pipeline::Info matInfo;
-    VFS::readTextFile("/shaders/test.vert", matInfo.shader.vert);
-    VFS::readTextFile("/shaders/test.frag", matInfo.shader.frag);
+    matInfo.shader = *Engine::ref().assetManager().getShader("test");
 
     matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
     matInfo.attribs[1] = {"a_color", VertexFormat::Float4};
@@ -126,8 +126,7 @@ void TestLayer::onInit() {
 
   {
     gpu::Pipeline::Info matInfo;
-    VFS::readTextFile("/shaders/fb_test.vert", matInfo.shader.vert);
-    VFS::readTextFile("/shaders/fb_test.frag", matInfo.shader.frag);
+    matInfo.shader = *Engine::ref().assetManager().getShader("fb_test");
 
     matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
     matInfo.attribs[1] = {"a_texCoords", VertexFormat::Float2};

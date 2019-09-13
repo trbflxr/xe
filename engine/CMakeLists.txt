@@ -35,14 +35,15 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 
 set(XE_DEFINES
-    -DXE_STATIC)
+    -DXE_STATIC
+    -DXE_CURRENT_SRC_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 
 if (XE_PLATFORM_GL)
-  set(XE_DEFINES "${XE_DEFINES} -DXE_PLATFORM_GL")
+  list(APPEND XE_DEFINES -DXE_PLATFORM_GL)
 endif ()
 
 if (XE_USE_GENERIC_FS)
-  set(XE_DEFINES "${XE_DEFINES} -DXE_GENERIC_FS")
+  list(APPEND XE_DEFINES -DXE_GENERIC_FS)
 endif ()
 
 #status
@@ -133,3 +134,17 @@ endif ()
 if (XE_PLATFORM_WIN32)
   target_link_libraries(xe winmm)
 endif ()
+
+#pack shaders
+execute_process(COMMAND ${CMAKE_COMMAND}
+    "-DSHADERS_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/opengl/shaders"
+    "-Dout_file=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/shaders.hpp"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShaderPacker.cmake")
+
+add_custom_target(ShaderPacker
+    COMMAND ${CMAKE_COMMAND}
+    "-DSHADERS_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/opengl/shaders"
+    "-Dout_file=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/shaders.hpp"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShaderPacker.cmake")
+
+add_dependencies(xe ShaderPacker)

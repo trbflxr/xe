@@ -11,10 +11,10 @@ namespace xe {
   }
 
   mat4::mat4(const Vector &vecX, const Vector &vecY, const Vector &vecZ, const Vector &vecOffset) {
-    _data[0] = vecX;
-    _data[1] = vecY;
-    _data[2] = vecZ;
-    _data[3] = vecOffset;
+    data_[0] = vecX;
+    data_[1] = vecY;
+    data_[2] = vecZ;
+    data_[3] = vecOffset;
   }
 
   mat4 mat4::transpose() const {
@@ -23,24 +23,24 @@ namespace xe {
     float m1[4];
     float m2[4];
     float m3[4];
-    _data[0].store4f(m0);
-    _data[1].store4f(m1);
-    _data[2].store4f(m2);
-    _data[3].store4f(m3);
+    data_[0].store4f(m0);
+    data_[1].store4f(m1);
+    data_[2].store4f(m2);
+    data_[3].store4f(m3);
 
     for (uint i = 0; i < 4; i++) {
-      result._data[i] = Vector::make(m0[i], m1[i], m2[i], m3[i]);
+      result.data_[i] = Vector::make(m0[i], m1[i], m2[i], m3[i]);
     }
 
     return result;
   }
 
   float mat4::determinant4x4() const {
-    return Vector::matrixDeterminant4x4(nullptr, nullptr, _data);
+    return Vector::matrixDeterminant4x4(nullptr, nullptr, data_);
   }
 
   float mat4::determinant3x3() const {
-    return Vector::matrixDeterminant3x3Vector(_data);
+    return Vector::matrixDeterminant3x3Vector(data_);
   }
 
   mat4 mat4::inverse() const {
@@ -51,7 +51,7 @@ namespace xe {
 
   mat4 mat4::applyScale(const Vector &scale) {
     for (uint i = 0; i < 4; i++) {
-      _data[i] = _data[i] * scale;
+      data_[i] = data_[i] * scale;
     }
     return *this;
   }
@@ -59,11 +59,11 @@ namespace xe {
   Vector mat4::removeScale(float errorMargin) {
     Vector invScale = VectorConstants::Zero();
     for (uint i = 0; i < 4; i++) {
-      invScale = invScale + _data[i] * _data[i];
+      invScale = invScale + data_[i] * data_[i];
     }
     invScale = invScale.rsqrt().select(VectorConstants::MaskW(), VectorConstants::One());
     for (uint i = 0; i < 4; i++) {
-      _data[i] = _data[i] * invScale;
+      data_[i] = data_[i] * invScale;
     }
     return invScale.reciprocal();
   }
@@ -71,7 +71,7 @@ namespace xe {
   Vector mat4::getScale() const {
     Vector invScale = VectorConstants::Zero();
     for (uint i = 0; i < 4; i++) {
-      invScale = invScale + _data[i] * _data[i];
+      invScale = invScale + data_[i] * data_[i];
     }
     invScale = invScale.rsqrt().select(VectorConstants::MaskW(), VectorConstants::One());
     return invScale.reciprocal();
@@ -85,7 +85,7 @@ namespace xe {
     temp.removeScale();
 
     for (uint i = 0; i < 4; i++) {
-      temp._data[i].store4f(m[i]);
+      temp.data_[i].store4f(m[i]);
     }
     const float trace = m[0][0] + m[1][1] + m[2][2];
     if (trace > 0) {
@@ -119,7 +119,7 @@ namespace xe {
   }
 
   Vector mat4::getTranslation() const {
-    return Vector::make(_data[0][3], _data[1][3], _data[2][3], _data[3][3]);
+    return Vector::make(data_[0][3], data_[1][3], data_[2][3], data_[3][3]);
   }
 
   Vector mat4::transform(const Vector &vector) const {
@@ -128,7 +128,7 @@ namespace xe {
 
   bool mat4::equals(const mat4 &other, float errorMargin) const {
     for (uint i = 0; i < 4; i++) {
-      if (!(_data[i].notEquals(other._data[i], errorMargin)).isZero4f()) {
+      if (!(data_[i].notEquals(other.data_[i], errorMargin)).isZero4f()) {
         return false;
       }
     }
@@ -182,9 +182,9 @@ namespace xe {
     const float y = axis[1];
     const float z = axis[2];
 
-    m._data[0] = Vector::make(x * x * omc + c, y * x * omc + z * s, x * z * omc - y * s, 0.0f);
-    m._data[1] = Vector::make(x * y * omc - z * s, y * y * omc + c, y * z * omc + x * s, 0.0f);
-    m._data[2] = Vector::make(x * z * omc + y * s, y * z * omc - x * s, z * z * omc + c, 0.0f);
+    m.data_[0] = Vector::make(x * x * omc + c, y * x * omc + z * s, x * z * omc - y * s, 0.0f);
+    m.data_[1] = Vector::make(x * y * omc - z * s, y * y * omc + c, y * z * omc + x * s, 0.0f);
+    m.data_[2] = Vector::make(x * z * omc + y * s, y * z * omc - x * s, z * z * omc + c, 0.0f);
 
     return m;
   }
@@ -209,9 +209,9 @@ namespace xe {
     const float qzqz2 = (qz * qz2);
     const float qzqw2 = (qw * qz2);
 
-    m._data[0] = Vector::make(((1.0f - qyqy2) - qzqz2), (qxqy2 - qzqw2), (qxqz2 + qyqw2), 0.0f);
-    m._data[1] = Vector::make((qxqy2 + qzqw2), ((1.0f - qxqx2) - qzqz2), (qyqz2 - qxqw2), 0.0f);
-    m._data[2] = Vector::make((qxqz2 - qyqw2), (qyqz2 + qxqw2), ((1.0f - qxqx2) - qyqy2), 0.0f);
+    m.data_[0] = Vector::make(((1.0f - qyqy2) - qzqz2), (qxqy2 - qzqw2), (qxqz2 + qyqw2), 0.0f);
+    m.data_[1] = Vector::make((qxqy2 + qzqw2), ((1.0f - qxqx2) - qzqz2), (qyqz2 - qxqw2), 0.0f);
+    m.data_[2] = Vector::make((qxqz2 - qyqw2), (qyqz2 + qxqw2), ((1.0f - qxqx2) - qyqy2), 0.0f);
 
     return m;
   }

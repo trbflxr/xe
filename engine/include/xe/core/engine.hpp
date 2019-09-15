@@ -9,7 +9,9 @@
 #include <xe/core/gpu.hpp>
 #include <xe/core/assets.hpp>
 #include <xe/core/timestep.hpp>
+#include <xe/core/scene.hpp>
 #include <xe/graphics/window.hpp>
+#include <xe/components/transform.hpp>
 
 namespace xe {
 
@@ -29,9 +31,14 @@ namespace xe {
 
     void setUiFunction(const std::function<void(void *)> &function, void *data);
 
+    void loadScene(const ref_ptr<Scene> &scene);
+    inline const ref_ptr<Scene> &scene() { return scene_; }
+
     inline Window &window() { return *gpu_->window_; }
     inline GPU &gpu() { return *gpu_; }
     inline AssetManager &assetManager() { return *assetManager_; }
+
+    inline const ref_ptr<System::Transform> &transform() { return transform_; }
 
     static bool isKeyPressed(Keyboard::Key key);
     static bool isMouseButtonPressed(Mouse::Button button);
@@ -58,8 +65,11 @@ namespace xe {
   private:
     Params params_;
 
+    ref_ptr<Scene> scene_;
     ref_ptr<GPU> gpu_;
     ref_ptr<AssetManager> assetManager_;
+
+    ref_ptr<System::Transform> transform_;
   };
 
 }

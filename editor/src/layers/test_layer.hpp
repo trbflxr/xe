@@ -51,6 +51,8 @@ private:
   State state_;
   void *texData_;
   int32 instances_;
+
+  xe::ref_ptr<xe::GameObject> camera_;
 };
 
 #endif //XE_TEST_LAYER_HPP

@@ -36,6 +36,8 @@ namespace xe {
     XE_TRACE_BEGIN("XE", "Engine systems init");
     XE_CORE_INFO("[ENGINE] Initializing engine systems");
 
+    transform_ = make_ref<System::Transform>();
+
     gpu_->init();
     assetManager_->init();
 
@@ -44,30 +46,62 @@ namespace xe {
   }
 
   void Engine::start() {
+    if (!scene_) return;
+
     startSystems();
   }
 
   void Engine::preUpdate() {
+    if (!scene_) return;
 
+    XE_TRACE_BEGIN("XE", "Engine systems pre update");
+
+    transform_->preUpdate();
+
+    XE_TRACE_END("XE", "Engine systems pre update");
   }
 
   void Engine::update(Timestep ts) {
+    if (!scene_) return;
 
+    XE_TRACE_BEGIN("XE", "Engine systems update");
+
+    XE_TRACE_END("XE", "Engine systems update");
   }
 
   void Engine::postUpdate() {
+    if (!scene_) return;
 
+    XE_TRACE_BEGIN("XE", "Engine systems post update");
+
+    XE_TRACE_END("XE", "Engine systems post update");
   }
 
   void Engine::renderPreUpdate() {
     gpu_->prepareRender();
+
+    if (!scene_) return;
+
+    XE_TRACE_BEGIN("XE", "Engine systems pre render");
+
+    XE_TRACE_END("XE", "Engine systems pre render");
   }
 
   void Engine::renderUpdate() {
+    if (!scene_) return;
 
+    XE_TRACE_BEGIN("XE", "Engine systems render");
+
+    XE_TRACE_END("XE", "Engine systems render");
   }
 
   void Engine::renderPostUpdate() {
+    if (scene_) {
+      XE_TRACE_BEGIN("XE", "Engine systems post render");
+
+      XE_TRACE_END("XE", "Engine systems post render");
+    }
+
     gpu_->execute();
   }
 
@@ -88,6 +122,25 @@ namespace xe {
     XE_CORE_INFO("[ENGINE] Engine stop");
 
     XE_TRACE_END("XE", "Engine systems stop");
+  }
+
+  void Engine::loadScene(const ref_ptr<Scene> &scene) {
+    XE_TRACE_BEGIN("XE", "Load scene");
+
+    if (!scene) {
+      XE_CORE_ERROR("[Engine] Could not load scene (nullptr)");
+      return;
+    }
+
+    stopSystems();
+
+    scene_ = scene;
+
+    transform_->onSceneChanged();
+
+    startSystems();
+
+    XE_TRACE_END("XE", "Load scene");
   }
 
   bool Engine::isExisting() const {

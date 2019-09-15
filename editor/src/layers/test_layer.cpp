@@ -67,6 +67,13 @@ TestLayer::TestLayer(Application &app) :
 void TestLayer::onInit() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
 
+  ref_ptr<Scene> scene = make_ref<Scene>();
+  Engine::ref().loadScene(scene);
+
+  camera_ = make_ref<GameObject>();
+  camera_->setName("Camera");
+  camera_->transform()->setLocalPositionX(2.0f);
+
   state_.cube.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
   state_.cube.view = mat4::transformation({-10, 25, 60},
                                           quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
@@ -247,6 +254,10 @@ void TestLayer::onUpdate(Timestep ts) {
   angle += 45.0f * ts;
 
   state_.quad.model = mat4::transformation(vec3(), {{0, 1, 0}, angle});
+
+  camera_->transform()->rotate({0, ts, 0});
+
+  XE_CORE_CRITICAL(camera_->transform()->localRotation().toEulerAngles());
 }
 
 bool TestLayer::onKeyPressed(const Event::Key &e) {

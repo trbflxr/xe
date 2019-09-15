@@ -17,6 +17,7 @@ namespace xe {
   public:
     explicit quat();
     explicit quat(const Vector &quat);
+    explicit quat(const vec3 &eulerAngle);
     quat(float x, float y, float z, float w);
     quat(const vec3 &axis, float angleDeg);
 
@@ -49,7 +50,11 @@ namespace xe {
 
     bool equals(const quat &other, float errorMargin = 1.e-4f) const;
 
+    vec3 toEulerAngles() const;
+
     inline Vector toVector() const { return data_; }
+
+    static quat lookRotation(const vec3 &forward, const vec3 &up);
 
     inline float operator[](uint index) const { return data_[index]; }
 

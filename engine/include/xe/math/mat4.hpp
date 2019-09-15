@@ -49,7 +49,7 @@ namespace xe {
 
     static mat4 transformation(const vec3 &translation, const quat &rotation, const vec3 &scale = vec3(1.0f));
 
-    Vector operator[](uint index) const { return _data[index]; }
+    Vector operator[](uint index) const { return data_[index]; }
 
     template<typename OStream>
     inline friend OStream &operator<<(OStream &os, const mat4 &q) {
@@ -69,21 +69,23 @@ namespace xe {
     inline bool operator==(const mat4 &other) const;
     inline bool operator!=(const mat4 &other) const;
 
+    inline vec3 operator*(const vec3 &v) const;
+
   private:
-    Vector _data[4];
+    Vector data_[4];
   };
 
   inline mat4 mat4::operator+(const mat4 &other) const {
     mat4 result;
     for (uint i = 0; i < 4; i++) {
-      result._data[i] = _data[i] + other._data[i];
+      result.data_[i] = data_[i] + other.data_[i];
     }
     return result;
   }
 
   inline mat4 &mat4::operator+=(const mat4 &other) {
     for (uint i = 0; i < 4; i++) {
-      _data[i] = _data[i] + other._data[i];
+      data_[i] = data_[i] + other.data_[i];
     }
     return *this;
   }
@@ -103,7 +105,7 @@ namespace xe {
     mat4 result;
     const Vector vecAmt = Vector::load1f(amt);
     for (uint i = 0; i < 4; i++) {
-      result._data[i] = _data[i] * vecAmt;
+      result.data_[i] = data_[i] * vecAmt;
     }
     return result;
   }
@@ -111,14 +113,14 @@ namespace xe {
   inline mat4 &mat4::operator*=(float amt) {
     const Vector vecAmt = Vector::load1f(amt);
     for (uint i = 0; i < 4; i++) {
-      _data[i] = _data[i] * vecAmt;
+      data_[i] = data_[i] * vecAmt;
     }
     return *this;
   }
 
   inline bool mat4::operator==(const mat4 &other) const {
     for (uint i = 0; i < 4; i++) {
-      if (!(_data[i] != other._data[i]).isZero4f()) {
+      if (!(data_[i] != other.data_[i]).isZero4f()) {
         return false;
       }
     }
@@ -129,6 +131,11 @@ namespace xe {
     return !(*this == other);
   }
 
+  inline vec3 mat4::operator*(const vec3 &v) const {
+    return vec3(data_[0][0] * v[0] + data_[0][1] * v[1] + data_[0][2] * v[2] + data_[0][3] * 0.0f,
+                data_[1][0] * v[0] + data_[1][1] * v[1] + data_[1][2] * v[2] + data_[1][3] * 0.0f,
+                data_[2][0] * v[0] + data_[2][1] * v[1] + data_[2][2] * v[2] + data_[2][3] * 0.0f);
+  }
 
 }
 

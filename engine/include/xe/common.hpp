@@ -143,6 +143,12 @@ namespace xe {
     } gpu;
   };
 
+  enum class TransformSpace {
+    Local,
+    Parent,
+    World
+  };
+
   enum class Usage {
     Static,
     Dynamic,

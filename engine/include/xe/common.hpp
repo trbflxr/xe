@@ -12,13 +12,18 @@
 #endif
 
 
-#ifdef XE_PLATFORM_WINDOWS
-  #ifdef XE_STATIC
-    #define XE_API __declspec(dllexport)
-  #else
-    #define XE_API __declspec(dllimport)
+#if 0
+  #ifdef XE_PLATFORM_WINDOWS
+    #ifdef XE_STATIC
+      #define XE_API __declspec(dllexport)
+    #else
+      #define XE_API __declspec(dllimport)
+    #endif
   #endif
 #endif
+
+
+#define XE_API
 
 
 //SIMD levels

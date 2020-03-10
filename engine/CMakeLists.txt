@@ -21,7 +21,6 @@ endmacro()
 set(CMAKE_CXX_STANDARD 17)
 
 #options
-option(XE_BUILD_SHARED_LIB "Build shared lib" ON)
 option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
 option(XE_USE_GENERIC_FS "Use generic filesystem" OFF)
@@ -48,7 +47,6 @@ endif ()
 
 #status
 message(STATUS "XE Configuration:")
-message(STATUS "  XE_BUILD_SHARED_LIB:     " ${XE_BUILD_SHARED_LIB})
 message(STATUS "  XE_PLATFORM_WIN32:       " ${XE_PLATFORM_WIN32})
 message(STATUS "  XE_PLATFORM_GL:          " ${XE_PLATFORM_GL})
 message(STATUS "  XE_USE_GENERIC_FS:       " ${XE_USE_GENERIC_FS})
@@ -63,9 +61,6 @@ set(XE_INCLUDE_DIRS
 #external libs
 add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
-
-add_subdirectory(external/tbb)
-include_directories(external/tbb/include)
 
 add_subdirectory(external/spdlog)
 include_directories(external/spdlog/include)
@@ -114,16 +109,11 @@ add_msvc_pch("xepch.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/xepch/xepch.cpp" ENGIN
 list(APPEND ENGINE_SRC ${ENGINE_EXTERNAL_SRC})
 
 #xe lib
-if (XE_BUILD_SHARED_LIB)
-  add_library(xe SHARED ${ENGINE_SRC})
-else ()
-  add_library(xe STATIC ${ENGINE_SRC})
-endif ()
+add_library(xe STATIC ${ENGINE_SRC})
 
 target_compile_definitions(xe PUBLIC ${XE_DEFINES})
 
 target_link_libraries(xe
-    tbb_static
     spdlog)
 
 #link opengl libs

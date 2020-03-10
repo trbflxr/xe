@@ -23,51 +23,33 @@ namespace xe {
   }
 
   DisplayList::ViewData &DisplayList::setupViewCommand() {
-    SetupViewCommand *cmd = new SetupViewCommand();
-    std::shared_ptr<SetupViewCommand> c;
-    c.reset(cmd);
-    commands_.push_back(c);
-    return cmd->data_;
+    commands_.emplace_back(std::make_shared<SetupViewCommand>());
+    return dynamic_cast<SetupViewCommand &>(*commands_.back()).data_;
   }
 
   DisplayList::ClearData &DisplayList::clearCommand() {
-    ClearCommand *cmd = new ClearCommand();
-    std::shared_ptr<ClearCommand> c;
-    c.reset(cmd);
-    commands_.push_back(c);
-    return cmd->data_;
+    commands_.emplace_back(std::make_shared<ClearCommand>());
+    return dynamic_cast<ClearCommand &>(*commands_.back()).data_;
   }
 
   DisplayList::FillBufferData &DisplayList::fillBufferCommand() {
-    FillBufferCommand *cmd = new FillBufferCommand();
-    std::shared_ptr<FillBufferCommand> c;
-    c.reset(cmd);
-    commands_.push_back(c);
-    return cmd->data_;
+    commands_.emplace_back(std::make_shared<FillBufferCommand>());
+    return dynamic_cast<FillBufferCommand &>(*commands_.back()).data_;
   }
 
   DisplayList::FillTextureData &DisplayList::fillTextureCommand() {
-    FillTextureCommand *cmd = new FillTextureCommand();
-    std::shared_ptr<FillTextureCommand> c;
-    c.reset(cmd);
-    commands_.push_back(c);
-    return cmd->data_;
+    commands_.emplace_back(std::make_shared<FillTextureCommand>());
+    return dynamic_cast<FillTextureCommand &>(*commands_.back()).data_;
   }
 
   DisplayList::SetupPipelineData &DisplayList::setupPipelineCommand() {
-    SetupPipelineCommand *cmd = new SetupPipelineCommand();
-    std::shared_ptr<SetupPipelineCommand> c;
-    c.reset(cmd);
-    commands_.push_back(c);
-    return cmd->data_;
+    commands_.emplace_back(std::make_shared<SetupPipelineCommand>());
+    return dynamic_cast<SetupPipelineCommand &>(*commands_.back()).data_;
   }
 
   DisplayList::RenderData &DisplayList::renderCommand() {
-    RenderCommand *cmd = new RenderCommand();
-    std::shared_ptr<RenderCommand> c;
-    c.reset(cmd);
-    commands_.push_back(c);
-    return cmd->data_;
+    commands_.emplace_back(std::make_shared<RenderCommand>());
+    return dynamic_cast<RenderCommand &>(*commands_.back()).data_;
   }
 
 }

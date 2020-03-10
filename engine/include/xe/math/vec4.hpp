@@ -5,23 +5,25 @@
 #ifndef XE_VEC4_HPP
 #define XE_VEC4_HPP
 
-
 #include <xe/common.hpp>
 #include <xe/math/vecmath.hpp>
+#include <xe/math/vec2.hpp>
 
 namespace xe {
 
-  class vec2;
   class vec3;
 
   class XE_API vec4 {
   public:
     vec4(float x, float y, float z, float w);
-    explicit vec4(const vec2 &vec);
     explicit vec4(const vec3 &vec);
     explicit vec4();
     explicit vec4(float val);
     explicit vec4(const Vector &vecIn);
+
+    template<typename T>
+    explicit vec4(const tvec2 <T> &vec) :
+        data_(Vector::make(static_cast<float>(vec.x), static_cast<float>(vec.y), 0.0f, 0.0f)) { }
 
     void set(float x, float y, float z, float w);
     void set(uint index, float val);
@@ -98,7 +100,7 @@ namespace xe {
   }
 
   inline vec4 vec4::operator/(float amt) const {
-    return vec4(data_ * Vector::load1f(xe::reciprocal(amt)));
+    return vec4(data_ * Vector::load1f(math::reciprocal(amt)));
   }
 
   inline vec4 vec4::operator-() const {
@@ -141,7 +143,7 @@ namespace xe {
   }
 
   inline vec4 vec4::operator/=(float val) {
-    data_ = data_ * Vector::load1f(xe::reciprocal(val));
+    data_ = data_ * Vector::load1f(math::reciprocal(val));
     return *this;
   }
 
@@ -154,6 +156,5 @@ namespace xe {
   }
 
 }
-
 
 #endif //XE_VEC4_HPP

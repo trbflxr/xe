@@ -21,7 +21,7 @@ namespace xe {
     static bool isExisting(Window::Data *data);
     static void forceExit(Window::Data *data);
 
-    static vec2 framebufferSize(Window::Data *data);
+    static vec2u framebufferSize(Window::Data *data);
 
     static void setSize(Window::Data *data);
     static void setTitle(Window::Data *data);

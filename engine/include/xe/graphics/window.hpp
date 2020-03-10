@@ -41,9 +41,9 @@ namespace xe {
 
     void forceExit();
 
-    vec2 framebufferSize() const;
-    vec2 size() const;
-    void setSize(uint width, uint height);
+    vec2u framebufferSize() const;
+    vec2u size() const;
+    void setSize(const vec2u &size);
 
     void setTitle(std::string_view title);
     void setIcon(uint width, uint height, byte *pixels);

@@ -9,7 +9,6 @@
 namespace xe {
 
   vec4::vec4(float x, float y, float z, float w) : data_(Vector::make(x, y, z, w)) { }
-  vec4::vec4(const vec2 &vec) : data_(Vector::make(vec.x, vec.y, 0.0f, 0.0f)) { }
   vec4::vec4(const vec3 &vec) : data_(Vector::make(vec[0], vec[1], vec[2], 0.0f)) { }
   vec4::vec4() : data_(VectorConstants::Zero()) { }
   vec4::vec4(float val) : data_(Vector::make(val, val, val, val)) { }

@@ -5,7 +5,6 @@
 #ifndef XE_VECMATH_HPP
 #define XE_VECMATH_HPP
 
-
 #include <cfloat>
 #include <xe/math/mathfunc.hpp>
 #include <xe/math/platformvecmath.hpp>
@@ -67,12 +66,11 @@ namespace xe {
 
   };
 
-  template<>
-  inline Vector lerp(const Vector &val1, const Vector &val2, const float &amt) {
-    return (val2 - val1) * Vector::load1f(amt) + val1;
-  }
+//  template<>
+//  inline Vector lerp(const Vector &val1, const Vector &val2, const float &amt) {
+//    return (val2 - val1) * Vector::load1f(amt) + val1;
+//  }
 
 }
-
 
 #endif //XE_VECMATH_HPP

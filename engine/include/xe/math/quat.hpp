@@ -83,9 +83,9 @@ namespace xe {
   };
 
   template<>
-  inline quat lerp(const quat &val1, const quat &val2, const float &amt) {
+  inline quat math::lerp(const quat &val1, const quat &val2, const float &amt) {
     float dotAmt = val1.dot(val2);
-    float dir = select(dotAmt, 1.0f, -1.0f);
+    float dir = math::select(dotAmt, 1.0f, -1.0f);
     return (val2 * amt) + val1 * (dir * (1.0f - amt));
   }
 
@@ -126,11 +126,11 @@ namespace xe {
   }
 
   inline quat quat::operator/(float amt) const {
-    return *this * reciprocal(amt);
+    return *this * math::reciprocal(amt);
   }
 
   inline quat quat::operator/=(float amt) {
-    return *this *= reciprocal(amt);
+    return *this *= math::reciprocal(amt);
   }
 
   inline bool quat::operator==(const quat &other) const {

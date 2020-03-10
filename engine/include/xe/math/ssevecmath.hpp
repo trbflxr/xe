@@ -392,10 +392,10 @@ namespace xe::detail {
       float outSinValues[4];
       float outCosValues[4];
 
-      xe::sincos(&outSinValues[0], &outCosValues[0], (*this)[0]);
-      xe::sincos(&outSinValues[1], &outCosValues[1], (*this)[1]);
-      xe::sincos(&outSinValues[2], &outCosValues[2], (*this)[2]);
-      xe::sincos(&outSinValues[3], &outCosValues[3], (*this)[3]);
+      math::sincos(&outSinValues[0], &outCosValues[0], (*this)[0]);
+      math::sincos(&outSinValues[1], &outCosValues[1], (*this)[1]);
+      math::sincos(&outSinValues[2], &outCosValues[2], (*this)[2]);
+      math::sincos(&outSinValues[3], &outCosValues[3], (*this)[3]);
 
       *outSin = SSEVector::load4f(outSinValues);
       *outCos = SSEVector::load4f(outCosValues);

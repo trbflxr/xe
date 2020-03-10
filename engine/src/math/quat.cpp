@@ -28,7 +28,7 @@ namespace xe {
     float values[3];
     float sinAngle;
     float cosAngle;
-    sincos(&sinAngle, &cosAngle, -TO_RAD(angleDeg) * 0.5f);
+    math::sincos(&sinAngle, &cosAngle, -TO_RAD(angleDeg) * 0.5f);
     axis.toVector().store3f(values);
 
     data_ = Vector::make(values[0] * sinAngle, values[1] * sinAngle, values[2] * sinAngle, cosAngle);
@@ -54,19 +54,19 @@ namespace xe {
 
   quat quat::slerp(const quat &dest, float amt, float errorMargin) const {
     const float cosAngleInitial = dot(dest);
-    const float cosAngle = select(cosAngleInitial, cosAngleInitial, -cosAngleInitial);
+    const float cosAngle =  math::select(cosAngleInitial, cosAngleInitial, -cosAngleInitial);
 
     float lerpAmt1 = 1.0f - amt;
     float lerpAmt2 = amt;
     if (cosAngle < (1.0f - errorMargin)) {
-      const float rsinAngle = rsqrt(1.0f - cosAngle * cosAngle);
+      const float rsinAngle =  math::rsqrt(1.0f - cosAngle * cosAngle);
       const float angle = acosf(cosAngle);
 
       lerpAmt1 = sinf(lerpAmt1 * angle) * rsinAngle;
       lerpAmt2 = sinf(lerpAmt2 * angle) * rsinAngle;
     }
 
-    lerpAmt2 = select(cosAngleInitial, lerpAmt2, -lerpAmt2);
+    lerpAmt2 =  math::select(cosAngleInitial, lerpAmt2, -lerpAmt2);
 
     const Vector lerpAmt1Vec = Vector::load1f(lerpAmt1);
     const Vector lerpAmt2Vec = Vector::load1f(lerpAmt2);
@@ -96,7 +96,7 @@ namespace xe {
 
   vec3 quat::getAxis() const {
     float w = data_[3];
-    const float rangleDivisor = rsqrt(max(1.0f - w * w, 0.0f));
+    const float rangleDivisor =  math::rsqrt(std::max(1.0f - w * w, 0.0f));
     return vec3(data_ * Vector::load1f(rangleDivisor));
   }
 

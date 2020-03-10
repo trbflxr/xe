@@ -311,11 +311,11 @@ namespace xe {
     glfwSetWindowShouldClose(data->window, GLFW_TRUE);
   }
 
-  vec2 WindowBackend::framebufferSize(Window::Data *data) {
+  vec2u WindowBackend::framebufferSize(Window::Data *data) {
     int32 w = 0;
     int32 h = 0;
     glfwGetFramebufferSize(data->window, &w, &h);
-    return vec2(static_cast<float>(w), static_cast<float>(h));
+    return vec2u(static_cast<uint32_t>(w), static_cast<uint32_t>(h));
   }
 
   void WindowBackend::setSize(Window::Data *data) {

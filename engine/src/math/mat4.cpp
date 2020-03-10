@@ -89,7 +89,7 @@ namespace xe {
     }
     const float trace = m[0][0] + m[1][1] + m[2][2];
     if (trace > 0) {
-      const float s = 0.5f * rsqrt(trace + 1.0f);
+      const float s = 0.5f * math::rsqrt(trace + 1.0f);
       result[3] = 0.25f / s;
       result[0] = (m[1][2] - m[2][1]) * s;
       result[1] = (m[2][0] - m[0][2]) * s;
@@ -143,9 +143,9 @@ namespace xe {
   }
 
   mat4 mat4::ortho(float left, float right, float bottom, float top, float nearPlane, float farPlane) {
-    const float rwidth = reciprocal(right - left);
-    const float rheight = reciprocal(top - bottom);
-    const float rdepth = reciprocal(farPlane - nearPlane);
+    const float rwidth = math::reciprocal(right - left);
+    const float rheight = math::reciprocal(top - bottom);
+    const float rdepth = math::reciprocal(farPlane - nearPlane);
 
     return mat4(Vector::make(2.0f * rwidth, 0.0f, 0.0f, -(right + left) * rwidth),
                 Vector::make(0.0f, 2.0f * rheight, 0.0f, -(top + bottom) * rheight),

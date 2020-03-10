@@ -125,13 +125,14 @@ namespace xe::ui::impl {
 
     io.DeltaTime = delta;
 
-    const vec2 &windowSize = window.size();
-    const vec2 &fbSize = window.framebufferSize();
+    const vec2u &windowSize = window.size();
+    const vec2u &fbSize = window.framebufferSize();
 
-    io.DisplaySize = windowSize;
+    io.DisplaySize.x = static_cast<float>(windowSize.x);
+    io.DisplaySize.y = static_cast<float>(windowSize.y);
 
-    io.DisplayFramebufferScale = ImVec2(windowSize.x > 0.0f ? ((float) fbSize.x / windowSize.x) : 0.0f,
-                                        windowSize.y > 0.0f ? ((float) fbSize.y / windowSize.y) : 0.0f);
+    io.DisplayFramebufferScale = ImVec2(windowSize.x > 0.0f ? (static_cast<float>(fbSize.x) / windowSize.x) : 0.0f,
+                                        windowSize.y > 0.0f ? (static_cast<float>(fbSize.y) / windowSize.y) : 0.0f);
 
     const vec2 mousePos = Engine::getMousePosition();
     if (windowHasFocus) {

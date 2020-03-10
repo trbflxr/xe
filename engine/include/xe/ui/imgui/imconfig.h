@@ -62,8 +62,8 @@
 // This will be inlined as part of ImVec2 and ImVec4 class declarations.
 
 #define IM_VEC2_CLASS_EXTRA                                                     \
-        ImVec2(const xe::vec2& f) { x = f.x; y = f.y; }                         \
-        operator xe::vec2() const { return xe::vec2(x,y); }
+        ImVec2(const xe::tvec2<float>& f) { x = f.x; y = f.y; }                 \
+        operator xe::tvec2<float>() const { return xe::tvec2<float>(x,y); }
 
 #define IM_VEC4_CLASS_EXTRA                                                     \
         ImVec4(const xe::vec4& f) { x = f[0]; y = f[1]; z = f[2]; w = f[3]; }   \

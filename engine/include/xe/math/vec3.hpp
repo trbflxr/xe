@@ -5,13 +5,12 @@
 #ifndef XE_VEC3_HPP
 #define XE_VEC3_HPP
 
-
 #include <xe/common.hpp>
 #include <xe/math/vecmath.hpp>
+#include <xe/math/vec2.hpp>
 
 namespace xe {
 
-  class vec2;
   class vec4;
 
   class XE_API vec3 {
@@ -19,9 +18,12 @@ namespace xe {
     vec3(float x, float y, float z);
     explicit vec3();
     explicit vec3(float val);
-    explicit vec3(const vec2 &vec);
     explicit vec3(const vec4 &vec);
     explicit vec3(const Vector &vecIn);
+
+    template<typename T>
+    explicit vec3(const tvec2 <T> &vec) :
+        data_(Vector::make(static_cast<float>(vec.x), static_cast<float>(vec.y), 0.0f, 0.0f)) { }
 
     void set(float x, float y, float z);
     void set(uint index, float val);
@@ -139,7 +141,7 @@ namespace xe {
   }
 
   inline vec3 vec3::operator/(float amt) const {
-    return vec3(data_ * Vector::load1f(xe::reciprocal(amt)));
+    return vec3(data_ * Vector::load1f(math::reciprocal(amt)));
   }
 
   inline vec3 vec3::operator-() const {
@@ -182,7 +184,7 @@ namespace xe {
   }
 
   inline vec3 vec3::operator/=(float val) {
-    data_ = data_ * Vector::load1f(xe::reciprocal(val));
+    data_ = data_ * Vector::load1f(math::reciprocal(val));
     return *this;
   }
 
@@ -195,6 +197,5 @@ namespace xe {
   }
 
 }
-
 
 #endif //XE_VEC3_HPP

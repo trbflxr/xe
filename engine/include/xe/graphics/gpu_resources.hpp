@@ -94,7 +94,7 @@ namespace xe {
         Texture::Info colorAttachmentInfo[cMaxFramebufferColorAttachments];
         Texture::Info depthStencilAttachmentInfo;
         uint16 colorAttachmentsSize;
-        vec2 size;
+        vec2u size;
       };
 
       Texture colorAttachment(uint16 index = 0) const;

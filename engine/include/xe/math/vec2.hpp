@@ -1,10 +1,9 @@
 //
-// Created by FLXR on 6/14/2019.
+// Created by trbflxr on 2/29/2020.
 //
 
-#ifndef XE_VEC2_HPP
-#define XE_VEC2_HPP
-
+#ifndef XEVK_VEC2_HPP
+#define XEVK_VEC2_HPP
 
 #include <xe/common.hpp>
 #include <xe/math/vecmath.hpp>
@@ -14,179 +13,150 @@ namespace xe {
   class vec3;
   class vec4;
 
-  class XE_API vec2 {
+  template<typename T>
+  class XE_API tvec2 {
   public:
-    float x;
-    float y;
+    T x = 0;
+    T y = 0;
 
-    vec2(float x, float y);
-    explicit vec2();
-    explicit vec2(float value);
-    explicit vec2(const vec3 &vec);
-    explicit vec2(const vec4 &vec);
+    constexpr tvec2() = default;
+    constexpr tvec2(T x, T y);
+    constexpr explicit tvec2(T value);
+    explicit tvec2(const vec3 &vec);
+    explicit tvec2(const vec4 &vec);
 
-    vec2 normalize(float errorMargin = 1.e-8f) const;
-    bool isNormalized(float errorMargin = 1.e-4f) const;
+    template<typename K>
+    constexpr tvec2(const tvec2<K> &other);
 
-    float max() const;
-    float min() const;
-    float absMax() const;
-    float absMin() const;
+    constexpr auto normalize() const;
+    constexpr bool isNormalized() const;
 
-    vec2 abs() const;
-    vec2 min(const vec2 &other) const;
-    vec2 max(const vec2 &other) const;
+    constexpr auto max() const;
+    constexpr auto min() const;
+    constexpr auto absMax() const;
+    constexpr auto absMin() const;
 
-    void dirAndLength(vec2 &dir, float &length, float errorMargin = 1.e-8f) const;
-    vec2 reciprocal() const;
+    constexpr auto abs() const;
 
-    vec2 rotate(float angle) const;
+    template<typename K>
+    constexpr auto min(const tvec2<K> &other) const;
 
-    vec2 reflect(const vec2 &normal) const;
-    vec2 refract(const vec2 &normal, float indexOfRefraction) const;
+    template<typename K>
+    constexpr auto max(const tvec2<K> &other) const;
 
-    inline float dot(const vec2 &other) const { return x * other.x + y * other.y; }
-    inline vec2 dotToVector(const vec2 &other) const { return vec2(dot(other)); }
+    constexpr auto reciprocal() const;
 
-    inline float cross(const vec2 &other) const { return x * other.y - y * other.x; }
+    constexpr auto rotate(T angle) const;
 
-    inline float dist(const vec2 &other) const { return sqrtf(distSquared(other)); }
-    inline float distSquared(const vec2 &other) const { return (other - *this).lengthSquared(); }
+    template<typename K>
+    constexpr auto dot(const tvec2<K> &other) const;
 
-    inline float length() const { return sqrtf(lengthSquared()); }
-    inline float lengthSquared() const { return dot(*this); }
+    template<typename K>
+    constexpr auto dotToVector(const tvec2<K> &other) const;
 
-    vec2 toDeg() const;
-    vec2 toRad() const;
+    template<typename K>
+    constexpr auto cross(const tvec2<K> &other) const;
 
-    bool equals(const vec2 &other, float errorMargin = 1.e-4f) const;
-    bool equals(float val, float errorMargin = 1.e-4f) const;
+    template<typename K>
+    constexpr auto dist(const tvec2<K> &other) const;
 
-    inline Vector toVector() const { return toVector(0.0f, 0.0f); }
-    inline Vector toVector(float z, float w) const { return toVector(vec2(z, w)); }
-    inline Vector toVector(vec2 other) const { return Vector::make(x, y, other.x, other.y); }
+    template<typename K>
+    constexpr auto distSquared(const tvec2<K> &other) const;
+
+    constexpr auto length() const;
+    constexpr auto lengthSquared() const;
+
+    constexpr auto toDeg() const;
+    constexpr auto toRad() const;
+
+    Vector toVector() const { return toVector(0, 0); }
+
+    template<typename K>
+    Vector toVector(K z, K w) const {
+      return Vector::make(static_cast<float>(x),
+                          static_cast<float>(y),
+                          static_cast<float>(z),
+                          static_cast<float>(w));
+    }
+
+    template<typename K>
+    Vector toVector(const tvec2<K> &other) const {
+      return Vector::make(static_cast<float>(x),
+                          static_cast<float>(y),
+                          static_cast<float>(other.x),
+                          static_cast<float>(other.y));
+    }
 
     template<typename OStream>
-    inline friend OStream &operator<<(OStream &os, const vec2 &v) { return os << "vec2(" << v.x << ", " << v.y << ")"; }
+    friend OStream &operator<<(OStream &os, const tvec2<T> &v) { return os << "vec2(" << v.x << ", " << v.y << ")"; }
 
-    inline vec2 operator+(const vec2 &other) const;
-    inline vec2 operator-(const vec2 &other) const;
-    inline vec2 operator*(const vec2 &other) const;
-    inline vec2 operator/(const vec2 &other) const;
+    template<typename K>
+    constexpr auto operator+(const tvec2<K> &other) const;
 
-    inline vec2 operator+(float amt) const;
-    inline vec2 operator-(float amt) const;
-    inline vec2 operator*(float amt) const;
-    inline vec2 operator/(float amt) const;
+    template<typename K>
+    constexpr auto operator-(const tvec2<K> &other) const;
 
-    inline vec2 operator-() const;
-    inline vec2 operator+=(const vec2 &other);
-    inline vec2 operator-=(const vec2 &other);
-    inline vec2 operator*=(const vec2 &other);
-    inline vec2 operator/=(const vec2 &other);
+    template<typename K>
+    constexpr auto operator*(const tvec2<K> &other) const;
 
-    inline vec2 operator+=(float val);
-    inline vec2 operator-=(float val);
-    inline vec2 operator*=(float val);
-    inline vec2 operator/=(float val);
+    template<typename K>
+    constexpr auto operator/(const tvec2<K> &other) const;
 
-    inline bool operator==(const vec2 &other) const;
-    inline bool operator!=(const vec2 &other) const;
+
+    template<typename K>
+    constexpr auto operator+(K amt) const;
+
+    template<typename K>
+    constexpr auto operator-(K amt) const;
+
+    template<typename K>
+    constexpr auto operator*(K amt) const;
+
+    template<typename K>
+    constexpr auto operator/(K amt) const;
+
+
+    constexpr auto operator-() const;
+
+    template<typename K>
+    constexpr auto operator+=(const tvec2<K> &other);
+
+    template<typename K>
+    constexpr auto operator-=(const tvec2<K> &other);
+
+    template<typename K>
+    constexpr auto operator*=(const tvec2<K> &other);
+
+    template<typename K>
+    constexpr auto operator/=(const tvec2<K> &other);
+
+
+    template<typename K>
+    constexpr auto operator+=(K val);
+
+    template<typename K>
+    constexpr auto operator-=(K val);
+
+    template<typename K>
+    constexpr auto operator*=(K val);
+
+    template<typename K>
+    constexpr auto operator/=(K val);
+
+
+    template<typename K>
+    constexpr bool operator==(const tvec2<K> &other) const;
+
+    template<typename K>
+    constexpr bool operator!=(const tvec2<K> &other) const;
   };
 
-  inline vec2 vec2::operator+(const vec2 &other) const {
-    return vec2(x + other.x, y + other.y);
-  }
-
-  inline vec2 vec2::operator-(const vec2 &other) const {
-    return vec2(x - other.x, y - other.y);
-  }
-
-  inline vec2 vec2::operator*(const vec2 &other) const {
-    return vec2(x * other.x, y * other.y);
-  }
-
-  inline vec2 vec2::operator/(const vec2 &other) const {
-    return vec2(x / other.x, y / other.y);
-  }
-
-  inline vec2 vec2::operator+(float amt) const {
-    return vec2(x + amt, y + amt);
-  }
-
-  inline vec2 vec2::operator-(float amt) const {
-    return vec2(x - amt, y - amt);
-  }
-
-  inline vec2 vec2::operator*(float amt) const {
-    return vec2(x * amt, y * amt);
-  }
-
-  inline vec2 vec2::operator/(float amt) const {
-    return vec2(x / amt, y / amt);
-  }
-
-  inline vec2 vec2::operator-() const {
-    return vec2(-x, -y);
-  }
-
-  inline vec2 vec2::operator+=(const vec2 &other) {
-    x += other.x;
-    y += other.y;
-    return *this;
-  }
-
-  inline vec2 vec2::operator-=(const vec2 &other) {
-    x -= other.x;
-    y -= other.y;
-    return *this;
-  }
-
-  inline vec2 vec2::operator*=(const vec2 &other) {
-    x *= other.x;
-    y *= other.y;
-    return *this;
-  }
-
-  inline vec2 vec2::operator/=(const vec2 &other) {
-    x /= other.x;
-    y /= other.y;
-    return *this;
-  }
-
-  inline vec2 vec2::operator+=(float val) {
-    x += val;
-    y += val;
-    return *this;
-  }
-
-  inline vec2 vec2::operator-=(float val) {
-    x -= val;
-    y -= val;
-    return *this;
-  }
-
-  inline vec2 vec2::operator*=(float val) {
-    x *= val;
-    y *= val;
-    return *this;
-  }
-
-  inline vec2 vec2::operator/=(float val) {
-    x /= val;
-    y /= val;
-    return *this;
-  }
-
-  inline bool vec2::operator==(const vec2 &other) const {
-    return x == other.x && y == other.y;
-  }
-
-  inline bool vec2::operator!=(const vec2 &other) const {
-    return x != other.x || y != other.y;
-  }
+  using vec2  = tvec2<float>;
+  using vec2i = tvec2<int32_t>;
+  using vec2u = tvec2<uint32_t>;
 
 }
 
+#include <xe/math/vec2.inl>
 
-#endif //XE_VEC2_HPP
+#endif //XEVK_VEC2_HPP

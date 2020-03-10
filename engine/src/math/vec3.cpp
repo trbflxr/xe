@@ -12,7 +12,6 @@ namespace xe {
   vec3::vec3(float x, float y, float z) : data_(Vector::make(x, y, z, 0.0f)) { }
   vec3::vec3() : data_(VectorConstants::Zero()) { }
   vec3::vec3(float val) : data_(Vector::make(val, val, val, 0.0f)) { }
-  vec3::vec3(const vec2 &vec) : data_(Vector::make(vec.x, vec.y, 0.0f, 0.0f)) { }
   vec3::vec3(const vec4 &vec) : data_(Vector::make(vec[0], vec[1], vec[2], 0.0f)) { }
   vec3::vec3(const Vector &vecIn) : data_(vecIn) { }
 
@@ -36,25 +35,25 @@ namespace xe {
   float vec3::max() const {
     float values[3];
     data_.store3f(values);
-    return max3(values[0], values[1], values[2]);
+    return math::max3(values[0], values[1], values[2]);
   }
 
   float vec3::min() const {
     float values[3];
     data_.store3f(values);
-    return min3(values[0], values[1], values[2]);
+    return math::min3(values[0], values[1], values[2]);
   }
 
   float vec3::absMax() const {
     float values[3];
     data_.abs().store3f(values);
-    return max3(values[0], values[1], values[2]);
+    return math::max3(values[0], values[1], values[2]);
   }
 
   float vec3::absMin() const {
     float values[3];
     data_.abs().store3f(values);
-    return min3(values[0], values[1], values[2]);
+    return math::min3(values[0], values[1], values[2]);
   }
 
   vec3 vec3::abs() const {
@@ -72,11 +71,11 @@ namespace xe {
   void vec3::dirAndLength(vec3 &dir, float &length) const {
     const Vector rlen = data_.dot3(data_).rsqrt();
     dir = vec3(data_ * rlen);
-    length = xe::reciprocal(rlen[0]);
+    length = math::reciprocal(rlen[0]);
   }
 
   vec3 vec3::project() const {
-    Vector rprojectVal = Vector::load1f(xe::reciprocal(data_[2]));
+    Vector rprojectVal = Vector::load1f(math::reciprocal(data_[2]));
     return vec3(data_ * rprojectVal);
   }
 
@@ -88,7 +87,7 @@ namespace xe {
     float sinAngle;
     float cosAngle;
 
-    sincos(&sinAngle, &cosAngle, -angle);
+    math::sincos(&sinAngle, &cosAngle, -angle);
     const Vector sinVec = Vector::load1f(sinAngle);
     const Vector cosVec = Vector::load1f(cosAngle);
     const Vector oneMinusCosVec = Vector::load1f(1.0f - cosAngle);

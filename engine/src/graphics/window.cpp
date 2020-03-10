@@ -76,17 +76,17 @@ namespace xe {
     return Timestep(static_cast<float>(WindowBackend::uptime(data_)));
   }
 
-  vec2 Window::framebufferSize() const {
+  vec2u Window::framebufferSize() const {
     return WindowBackend::framebufferSize(data_);
   }
 
-  vec2 Window::size() const {
-    return vec2(static_cast<float>(data_->width), static_cast<float>(data_->height));
+  vec2u Window::size() const {
+    return {data_->width, data_->height};
   }
 
-  void Window::setSize(uint width, uint height) {
-    data_->width = width;
-    data_->height = height;
+  void Window::setSize(const vec2u &size) {
+    data_->width = size.x;
+    data_->height = size.y;
     WindowBackend::setSize(data_);
   }
 

@@ -5,7 +5,6 @@
 #ifndef XE_MATHFUNC_HPP
 #define XE_MATHFUNC_HPP
 
-
 #include <cmath>
 
 #define XE_MATH_PI                3.1415926535897932f
@@ -23,14 +22,14 @@
 #define TO_RAD(deg)               ((deg) * XE_MATH_PI / 180.0f)
 #define TO_DEG(rad)               ((rad) * 180.0f / XE_MATH_PI)
 
-namespace xe {
+namespace xe::math {
 
   template<typename T>
-  static constexpr inline T select(const T &cmp, const T &greaterOrEqualToZero, const T &lessZero) {
+  static constexpr T select(const T &cmp, const T &greaterOrEqualToZero, const T &lessZero) {
     return cmp >= (T) (0) ? greaterOrEqualToZero : lessZero;
   }
 
-  static inline void sincos(float *outSin, float *outCos, float angle) {
+  static void sincos(float *outSin, float *outCos, float angle) {
     if ((angle < 0.0f) || (angle >= XE_MATH_TWO_PI)) {
       angle -= floorf(angle * XE_MATH_R_TWO_PI) * XE_MATH_TWO_PI;
     }
@@ -50,39 +49,41 @@ namespace xe {
   }
 
   template<typename T, typename U>
-  static inline T lerp(const T &val1, const T &val2, const U &amt) {
+  static T lerp(const T &val1, const T &val2, const U &amt) {
     return (T) (val1 * ((U) (1) - amt) + val2 * amt);
   }
 
-  static inline float reciprocal(float val) {
-    return 1.0f / val;
-  }
-
-  static inline float rsqrt(float val) {
-    return reciprocal(sqrtf(val));
+  template<typename T>
+  static T reciprocal(T val) {
+    return 1 / val;
   }
 
   template<typename T>
-  static constexpr inline T min(const T &val1, const T &val2) {
-    return val1 <= val2 ? val1 : val2;
+  static T rsqrt(T val) {
+    return reciprocal(std::sqrt(val));
   }
 
   template<typename T>
-  static constexpr inline T min3(const T &val1, const T &val2, const T &val3) {
-    return min(min(val1, val2), val3);
+  static constexpr T min3(const T &val1, const T &val2, const T &val3) {
+    return std::min(std::min(val1, val2), val3);
   }
 
   template<typename T>
-  static constexpr inline T max(const T &val1, const T &val2) {
-    return val1 >= val2 ? val1 : val2;
+  static constexpr T max3(const T &val1, const T &val2, const T &val3) {
+    return std::max(std::max(val1, val2), val3);
+  }
+
+  template<typename T = float, typename K = float>
+  static constexpr auto smoothDamp(const T &current, const T &target, const K &rate) {
+    return current + ((target - current) * rate);
   }
 
   template<typename T>
-  static constexpr inline T max3(const T &val1, const T &val2, const T &val3) {
-    return max(max(val1, val2), val3);
+  static void hashCombine(size_t &seed, const T &v) {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x7a3699b9 + (seed << 4) + (seed >> 6);
   }
 
 }
-
 
 #endif //XE_MATHFUNC_HPP

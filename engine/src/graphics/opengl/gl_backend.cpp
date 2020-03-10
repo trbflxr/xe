@@ -346,8 +346,8 @@ namespace xe::gpu {
   static std::string prettyCodeError(const char *src) {
     std::stringstream ss;
 
-    size_t i = 0;
-    size_t line = 1;
+    uint32_t i = 0;
+    uint32_t line = 1;
     char ch = 0;
     ss << line++ << "\t|  ";
     while ((ch = src[i]) != '\0') {
@@ -378,7 +378,7 @@ namespace xe::gpu {
     GLCHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled));
 
     if (!compiled) {
-      static const size_t maxLength = 2048;
+      static const uint32_t maxLength = 2048;
       char buffer[maxLength];
       GLCHECK(glGetShaderInfoLog(shader, maxLength, nullptr, buffer));
       std::string code = prettyCodeError(src);
@@ -389,7 +389,7 @@ namespace xe::gpu {
     return shader;
   }
 
-  static bool parseOrError(std::string_view source, Backend::Uniform *uniforms, size_t &outUsedUniforms, size_t &outSize) {
+  static bool parseOrError(std::string_view source, Backend::Uniform *uniforms, uint32_t &outUsedUniforms, uint32_t &outSize) {
     if (!GLShaderParser::parse(source, uniforms, outUsedUniforms, outSize)) {
       XE_CORE_ERROR("[GL Error] Max shader uniforms reached ({}/{})", cMaxShaderUniforms, outUsedUniforms);
     }
@@ -486,7 +486,7 @@ namespace xe::gpu {
           }
         }
       } else {
-        for (uint32_t i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+        for (uint16_t i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
                                                 &fb.first->colorAttachments[i].ctx->backend_->textures_);
@@ -641,32 +641,28 @@ namespace xe::gpu {
           }
         }
 
-        size_t bufferSize = 0;
+        uint32_t bufferSize = 0;
         if (success && shaderV != -1) {
           GLCHECK(glAttachShader(programId, shaderV));
-          if (!parseOrError(mat.first->vertShader, mat.second->uniforms,
-                            mat.second->usedUniforms, bufferSize)) {
+          if (!parseOrError(mat.first->vertShader, mat.second->uniforms, mat.second->usedUniforms, bufferSize)) {
             success = false;
           }
         }
         if (success && shaderF != -1) {
           GLCHECK(glAttachShader(programId, shaderF));
-          if (!parseOrError(mat.first->fragShader, mat.second->uniforms,
-                            mat.second->usedUniforms, bufferSize)) {
+          if (!parseOrError(mat.first->fragShader, mat.second->uniforms, mat.second->usedUniforms, bufferSize)) {
             success = false;
           }
         }
         if (success && shaderTC != -1) {
           GLCHECK(glAttachShader(programId, shaderTC));
-          if (!parseOrError(mat.first->tessControlShader, mat.second->uniforms,
-                            mat.second->usedUniforms, bufferSize)) {
+          if (!parseOrError(mat.first->tessControlShader, mat.second->uniforms, mat.second->usedUniforms, bufferSize)) {
             success = false;
           }
         }
         if (success && shaderTE != -1) {
           GLCHECK(glAttachShader(programId, shaderTE));
-          if (!parseOrError(mat.first->tessEvalShader, mat.second->uniforms,
-                            mat.second->usedUniforms, bufferSize)) {
+          if (!parseOrError(mat.first->tessEvalShader, mat.second->uniforms, mat.second->usedUniforms, bufferSize)) {
             success = false;
           }
         }
@@ -717,16 +713,16 @@ namespace xe::gpu {
         mat.second->program = programId;
 
         //get texture locations
-        for (size_t i = 0; i < cMaxTextureUnits; ++i) {
+        for (uint32_t i = 0; i < cMaxTextureUnits; ++i) {
           char name[32];
           switch (mat.first->info.textures[i]) {
-            case TextureType::T1D: snprintf(name, 32, "u_tex1d%d", i);
+            case TextureType::T1D: snprintf(name, 32, "u_tex1d%i", i);
               break;
-            case TextureType::T2D: snprintf(name, 32, "u_tex2d%d", i);
+            case TextureType::T2D: snprintf(name, 32, "u_tex2d%i", i);
               break;
-            case TextureType::T3D: snprintf(name, 32, "u_tex3d%d", i);
+            case TextureType::T3D: snprintf(name, 32, "u_tex3d%i", i);
               break;
-            case TextureType::CubeMap: snprintf(name, 32, "u_texCube%d", i);
+            case TextureType::CubeMap: snprintf(name, 32, "u_texCube%i", i);
               break;
             default: break;
           }
@@ -743,7 +739,7 @@ namespace xe::gpu {
         }
 
         auto &&p = mat.second;
-        for (size_t i = 0; i < p->usedUniforms; ++i) {
+        for (uint32_t i = 0; i < p->usedUniforms; ++i) {
           GLCHECK(p->uniforms[i].loc = glGetUniformLocation(p->program, p->uniforms[i].name.c_str()));
         }
 
@@ -788,7 +784,7 @@ namespace xe::gpu {
         GLCHECK(glDisable(GL_DEPTH_TEST));
       }
 
-      for (size_t i = 0; i < cMaxVertexAttribs; ++i) {
+      for (uint32_t i = 0; i < cMaxVertexAttribs; ++i) {
         const auto &attrib = mat.first->info.attribs[i];
         if (attrib.format) {
           GLCHECK(glEnableVertexAttribArray(i));
@@ -803,11 +799,11 @@ namespace xe::gpu {
         }
       }
 
-      for (size_t i = 0; i < cMaxUniformBuffers; ++i) {
-        if (d.uniformBuffer[i].id) {
-          auto ubo = RenderContext::getResource(d.uniformBuffer[i].id, &d.pipeline.ctx->buffers_,
-                                                &d.pipeline.ctx->backend_->buffers_);
+      for (auto &ub : d.uniformBuffer) {
+        if (ub.id) {
+          auto ubo = RenderContext::getResource(ub.id, &d.pipeline.ctx->buffers_, &d.pipeline.ctx->backend_->buffers_);
           uint32_t uniformIndex = 0;
+
           GLCHECK(uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name_));
           GLCHECK(glUniformBlockBinding(mat.second->program, uniformIndex, ubo.second->buffer));
         }
@@ -854,7 +850,7 @@ namespace xe::gpu {
 
     auto &pipeline = d.indexBuffer.ctx->lastPipeline_;
 
-    size_t texUnit = 0;
+    uint32_t texUnit = 0;
     for (uint32_t i = 0; i < cMaxTextureUnits; ++i) {
       if (mat.second->textureUniformsLoc[i] >= 0) {
         auto tex = RenderContext::getResource(pipeline.texture[i].id, &d.indexBuffer.ctx->textures_,
@@ -886,8 +882,8 @@ namespace xe::gpu {
     for (auto i = 0; i < cMaxVertexAttribs; ++i) {
       const uint32_t attribFormat = mat.first->info.attribs[i].format;
       if (attribFormat) {
-        const size_t bufferIndex = mat.first->info.attribs[i].bufferIndex;
-        const size_t bufferId = pipeline.buffer[bufferIndex].id;
+        const uint32_t bufferIndex = mat.first->info.attribs[i].bufferIndex;
+        const uint32_t bufferId = pipeline.buffer[bufferIndex].id;
         if (!bufferId) {
           XE_CORE_ERROR("[GL Error] Expected valid buffer (see pipeline declaration)");
           return;
@@ -904,8 +900,8 @@ namespace xe::gpu {
         const uint8_t attrNormalized = (attribFormat & VertexFormat::Normalized) ? GL_TRUE : GL_FALSE;
         const int32_t attrStride = mat.first->info.attribs[i].stride;
         const int32_t attrOffset = mat.first->info.attribs[i].offset;
-        GLCHECK(glVertexAttribPointer(i, attrSize, attrType, attrNormalized, attrStride, (void *) attrOffset));
-        glEnableVertexAttribArray(i);
+        GLCHECK(glVertexAttribPointer(i, attrSize, attrType, attrNormalized, attrStride, reinterpret_cast<void *>((size_t) attrOffset)));
+        GLCHECK(glEnableVertexAttribArray(i));
       } else {
         break;
       }
@@ -916,14 +912,14 @@ namespace xe::gpu {
         GLCHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
         GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
         GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
-                                        d.count, toGL(d.type), (void *) d.offset, d.instances));
+                                        d.count, toGL(d.type), reinterpret_cast<void *>((size_t) d.offset), d.instances));
         break;
       }
       case RenderMode::Wireframe: {
         GLCHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
         GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
         GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
-                                        d.count, toGL(d.type), (void *) d.offset, d.instances));
+                                        d.count, toGL(d.type), reinterpret_cast<void *>((size_t) d.offset), d.instances));
         break;
       }
       default: break;

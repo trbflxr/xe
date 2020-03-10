@@ -2,8 +2,8 @@
 // Created by trbflxr on 3/5/2020.
 //
 
-#ifndef XEVK_VEC2_INL
-#define XEVK_VEC2_INL
+#ifndef XE_VEC2_INL
+#define XE_VEC2_INL
 
 namespace xe {
 
@@ -257,4 +257,4 @@ namespace xe {
 
 }
 
-#endif //XEVK_VEC2_INL
+#endif //XE_VEC2_INL

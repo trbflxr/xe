@@ -39,7 +39,7 @@ namespace xe::gpu {
       int32_t textureUniformsLoc[cMaxTextureUnits] = { };
       Uniform uniforms[cMaxShaderUniforms] = { };
       memory<uint8_t> uniformData;
-      size_t usedUniforms = 0;
+      uint32_t usedUniforms = 0;
     };
 
     struct Framebuffer {

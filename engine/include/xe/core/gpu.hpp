@@ -50,10 +50,10 @@ namespace xe {
 
     void submitCommands(DisplayList &&dl);
 
-    inline bool isExisting() const { return existing_; }
+    inline bool isExisting() const { return shouldClose_; }
 
   protected:
-    bool existing_;
+    bool shouldClose_ = false;
     Params::GPU params_{ };
 
     std::shared_ptr<Window> window_;
@@ -72,12 +72,12 @@ namespace xe {
     } threadSync_;
 
   private:
-    RenderContext *ctx_;
+    RenderContext *ctx_ = nullptr;
 
-    mutable uint32_t usedBuffers_;
-    mutable uint32_t usedTextures_;
-    mutable uint32_t usedPipelines_;
-    mutable uint32_t usedFramebuffers_;
+    mutable uint32_t usedBuffers_ = 0;
+    mutable uint32_t usedTextures_ = 0;
+    mutable uint32_t usedPipelines_ = 0;
+    mutable uint32_t usedFramebuffers_ = 0;
   };
 
 }

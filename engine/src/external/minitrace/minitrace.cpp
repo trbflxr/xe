@@ -289,13 +289,13 @@ void mtr_flush() {
 		// On Windows, we often end up with backslashes in category.
 		char temp[256];
 		{
-			int len = (int)strlen(cat);
-			int i;
-			if (len > 255) len = 255;
-			for (i = 0; i < len; i++) {
-				temp[i] = cat[i] == '\\' ? '/' : cat[i];
+			int len1 = (int)strlen(cat);
+			int i1;
+			if (len1 > 255) len1 = 255;
+			for (i1 = 0; i1 < len1; i1++) {
+				temp[i1] = cat[i1] == '\\' ? '/' : cat[i1];
 			}
-			temp[len] = 0;
+			temp[len1] = 0;
 			cat = temp;
 		}
 #endif

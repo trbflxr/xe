@@ -45,7 +45,7 @@ namespace xe {
     vec2u size() const;
     void setSize(const vec2u &size);
 
-    void setTitle(std::string_view title);
+    void setTitle(std::string title);
     void setIcon(uint32_t width, uint32_t height, uint8_t *pixels);
     void setSwapInterval(bool enabled);
 
@@ -55,7 +55,7 @@ namespace xe {
     bool isCursorVisible() const;
     void setCursorVisible(bool visible) const;
 
-    bool isExisting() const;
+    bool shouldClose() const;
     Timestep uptime() const;
 
     inline Params::Window params() const { return params_; }

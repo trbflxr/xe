@@ -11,8 +11,7 @@ namespace xe {
 
   Engine *Engine::instance_ = nullptr;
 
-  Engine::Engine(const Params &params, int32_t argc, char **argv) :
-      params_(params) {
+  Engine::Engine(int32_t argc, char **argv) {
     setName("Engine");
 
     XE_ASSERT(!instance_, "[Engine] Engine is already created");
@@ -22,21 +21,34 @@ namespace xe {
       args_.emplace_back(argv[i]);
     }
 
+    XE_TRACE_BEGIN("XE", "Creating modules");
+    vfs_.reset(new VFS());
     gpu_.reset(new GPU());
     assetManager_.reset(new AssetManager());
-
-    gpu_->setParams(params_.gpu);
-    gpu_->window_->setParams(params_.window);
-
-    XE_TRACE_BEGIN("XE", "Register modules");
-    VFS::registerModule();
-    XE_TRACE_END("XE", "Register modules");
+    XE_TRACE_END("XE", "Creating modules");
   }
 
   Engine::~Engine() {
-    XE_TRACE_BEGIN("XE", "Delete modules");
-    Module::registry().clear();
-    XE_TRACE_END("XE", "Delete modules");
+
+  }
+
+  bool Engine::isExisting() const {
+    return gpu_->isExisting();
+  }
+
+  void Engine::submitDrawList(DisplayList &&dl) {
+    gpu_->submitCommands(std::move(dl));
+  }
+
+  void Engine::setParams(const Params &params) {
+    params_ = params;
+    gpu_->setParams(params_.gpu);
+    gpu_->window_->setParams(params_.window);
+  }
+
+  void Engine::setUiFunction(const std::function<void(void *)> &function, void *data) {
+    gpu_->window_->ui_ = function;
+    gpu_->window_->uiData_ = data;
   }
 
   bool Engine::init() {
@@ -68,7 +80,7 @@ namespace xe {
     XE_TRACE_END("XE", "Engine systems pre update");
   }
 
-  void Engine::update(Timestep ts) {
+  void Engine::update(Timestep /*ts*/) {
     if (!scene_) return;
 
     XE_TRACE_BEGIN("XE", "Engine systems update");
@@ -148,19 +160,6 @@ namespace xe {
     startSystems();
 
     XE_TRACE_END("XE", "Load scene");
-  }
-
-  bool Engine::isExisting() const {
-    return gpu_->isExisting();
-  }
-
-  void Engine::submitDrawList(DisplayList &&dl) {
-    gpu_->submitCommands(std::move(dl));
-  }
-
-  void Engine::setUiFunction(const std::function<void(void *)> &function, void *data) {
-    gpu_->window_->ui_ = function;
-    gpu_->window_->uiData_ = data;
   }
 
   bool Engine::isKeyPressed(Keyboard::Key key) {

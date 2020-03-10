@@ -2,21 +2,20 @@
 // Created by trbflxr on 3/3/2020.
 //
 
-#ifndef XEVK_VFS_HPP
-#define XEVK_VFS_HPP
+#ifndef XE_VFS_HPP
+#define XE_VFS_HPP
 
+#include <vector>
 #include <string>
 #include <optional>
-#include <xe/core/module.hpp>
+#include <xe/common.hpp>
 
 namespace xe {
 
-  class XE_API VFS : public Module::Registrar<VFS, Module::Stage::Post> {
+  class XE_API VFS {
+    friend class Engine;
   public:
-    explicit VFS();
-    ~VFS() override;
-
-    void update() override { /*nothing*/ }
+    ~VFS();
 
     void mount(std::string_view dir);
     void unmount(std::string_view dir);
@@ -42,9 +41,12 @@ namespace xe {
     static std::vector<std::string> filesInDir(std::string_view dir, bool recursive = true);
 
   private:
+    VFS();
+
+  private:
     std::vector<std::string> mountPoints_;
   };
 
 }
 
-#endif //XEVK_VFS_HPP
+#endif //XE_VFS_HPP

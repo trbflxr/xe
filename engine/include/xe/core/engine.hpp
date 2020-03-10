@@ -6,6 +6,7 @@
 #define XE_ENGINE_HPP
 
 #include <memory>
+#include <xe/core/vfs.hpp>
 #include <xe/core/gpu.hpp>
 #include <xe/core/assets.hpp>
 #include <xe/core/timestep.hpp>
@@ -19,7 +20,7 @@ namespace xe {
   XE_OBJECT(Engine, Object);
     friend class Application;
   public:
-    explicit Engine(const Params &params, int32_t argc, char **argv);
+    explicit Engine(int32_t argc, char **argv);
     ~Engine() override;
 
     static Engine &ref() { return *instance_; }
@@ -28,13 +29,16 @@ namespace xe {
 
     void submitDrawList(DisplayList &&dl);
 
+    void setParams(const Params &params);
+
     void setUiFunction(const std::function<void(void *)> &function, void *data);
 
     void loadScene(const std::shared_ptr<Scene> &scene);
     const std::shared_ptr<Scene> &scene() { return scene_; }
 
-    Window &window() { return *gpu_->window_; }
+    VFS &vfs() { return *vfs_; }
     GPU &gpu() { return *gpu_; }
+    Window &window() { return *gpu_->window_; }
     AssetManager &assetManager() { return *assetManager_; }
 
     const std::shared_ptr<System::Transform> &transform() { return transform_; }
@@ -69,8 +73,10 @@ namespace xe {
     std::vector<std::string> args_;
 
     std::shared_ptr<Scene> scene_;
-    std::shared_ptr<GPU> gpu_;
-    std::shared_ptr<AssetManager> assetManager_;
+
+    std::unique_ptr<VFS> vfs_;
+    std::unique_ptr<GPU> gpu_;
+    std::unique_ptr<AssetManager> assetManager_;
 
     std::shared_ptr<System::Transform> transform_;
   };

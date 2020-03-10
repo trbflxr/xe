@@ -18,7 +18,9 @@ namespace xe {
   }
 
   RenderContext::~RenderContext() {
-    gpu::Backend::destroyBackend(&backend_);
+    if (initialized_) {
+      gpu::Backend::destroyBackend(&backend_);
+    }
   }
 
   void RenderContext::init(const Params::GPU &params) {
@@ -35,6 +37,8 @@ namespace xe {
                  "\t- maxPipelines\t\t({})\n"
                  "\t- maxFramebuffers\t({})",
                  params.maxBuffers, params.maxTextures, params.maxPipelines, params.maxFramebuffers);
+
+    initialized_ = true;
   }
 
   uint32_t RenderContext::index(uint32_t id) {
@@ -47,7 +51,7 @@ namespace xe {
     return {pos, version};
   }
 
-  size_t RenderContext::computeSize(VertexFormat::Enum type) {
+  uint32_t RenderContext::computeSize(VertexFormat::Enum type) {
     switch (type) {
       case VertexFormat::Int8:
       case VertexFormat::Uint8: return 1;

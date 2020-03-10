@@ -18,24 +18,29 @@ namespace xe::gpu {
     return VertexFormat::Undefined;
   }
 
-  bool GLShaderParser::parse(std::string_view source, Backend::Uniform *uniforms, size_t &outUsedUniforms, size_t &outSize) {
+  bool GLShaderParser::parse(std::string_view source, Backend::Uniform *uniforms, uint32_t &outUsedUniforms, uint32_t &outSize) {
     const char *token;
     const char *sourcePtr;
 
     //uniforms
-    size_t index = outUsedUniforms;
+    uint32_t index = outUsedUniforms;
     sourcePtr = source.data();
-    while ((token = string::findToken(sourcePtr, "uniform"))) {
-      if (index >= cMaxShaderUniforms) return false;
+
+    token = string::findToken(sourcePtr, "uniform");
+    while (token) {
+      if (index >= cMaxShaderUniforms) {
+        return false;
+      }
       parseUniform(string::getStatement(token, &sourcePtr), uniforms, index, outSize);
+      token = string::findToken(sourcePtr, "uniform");
     }
     outUsedUniforms += index;
     return true;
   }
 
-  void GLShaderParser::parseUniform(std::string_view statement, Backend::Uniform *uniforms, size_t &index, size_t &outSize) {
+  void GLShaderParser::parseUniform(std::string_view statement, Backend::Uniform *uniforms, uint32_t &index, uint32_t &outSize) {
     auto tokens = string::tokenize(statement);
-    size_t i = tokens.size() - 1;
+    uint32_t i = static_cast<uint32_t>(tokens.size() - 1);
 
     if (tokens[2][0] == '{') return; // uniform buffer
 
@@ -48,7 +53,9 @@ namespace xe::gpu {
     }
 
     const VertexFormat::Enum t = stringToShaderDataTypeGL(typeStr);
-    if (t == VertexFormat::Undefined) return;
+    if (t == VertexFormat::Undefined) {
+      return;
+    }
 
     uint32_t offset = 0;
     if (index > 0) {

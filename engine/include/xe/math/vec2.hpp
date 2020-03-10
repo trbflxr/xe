@@ -2,8 +2,8 @@
 // Created by trbflxr on 2/29/2020.
 //
 
-#ifndef XEVK_VEC2_HPP
-#define XEVK_VEC2_HPP
+#ifndef XE_VEC2_HPP
+#define XE_VEC2_HPP
 
 #include <xe/common.hpp>
 #include <xe/math/vecmath.hpp>
@@ -159,4 +159,4 @@ namespace xe {
 
 #include <xe/math/vec2.inl>
 
-#endif //XEVK_VEC2_HPP
+#endif //XE_VEC2_HPP

@@ -24,20 +24,20 @@ namespace xe {
     virtual void onRender() { }
 
     virtual void onPreUpdate() { }
-    virtual void onUpdate(Timestep ts) { }
+    virtual void onUpdate(Timestep /*ts*/) { }
     virtual void onPostUpdate() { }
 
-    virtual bool onKeyPressed(const Event::Key &e) { return false; }
-    virtual bool onKeyReleased(const Event::Key &e) { return false; }
-    virtual bool onKeyRepeated(const Event::Key &e) { return false; }
-    virtual bool onTextEntered(const Event::Text &e) { return false; }
+    virtual bool onKeyPressed(const Event::Key &/*e*/) { return false; }
+    virtual bool onKeyReleased(const Event::Key &/*e*/) { return false; }
+    virtual bool onKeyRepeated(const Event::Key &/*e*/) { return false; }
+    virtual bool onTextEntered(const Event::Text &/*e*/) { return false; }
 
-    virtual bool onMousePressed(const Event::MouseButton &e) { return false; }
-    virtual bool onMouseReleased(const Event::MouseButton &e) { return false; }
-    virtual bool onMouseScrolled(const Event::MouseWheel &e) { return false; }
-    virtual bool onMouseMoved(const Event::MouseMove &e) { return false; }
+    virtual bool onMousePressed(const Event::MouseButton &/*e*/) { return false; }
+    virtual bool onMouseReleased(const Event::MouseButton &/*e*/) { return false; }
+    virtual bool onMouseScrolled(const Event::MouseWheel &/*e*/) { return false; }
+    virtual bool onMouseMoved(const Event::MouseMove &/*e*/) { return false; }
 
-    virtual bool onResize(const Event::SizeEvent &e) { return false; }
+    virtual bool onResize(const Event::SizeEvent &/*e*/) { return false; }
 
     virtual void onMouseEntered() { }
     virtual void onMouseLeft() { }

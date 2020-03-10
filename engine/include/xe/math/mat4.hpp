@@ -24,7 +24,7 @@ namespace xe {
     mat4 inverse() const;
 
     mat4 applyScale(const Vector &scale);
-    Vector removeScale(float errorMargin = 1.e-8f);
+    Vector removeScale();
 
     Vector getScale() const;
     quat getRotation() const;

@@ -162,7 +162,7 @@ namespace xe {
 
     glfwSetWindowUserPointer(data->window, data);
 
-    glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32_t key, int32_t scanCode, int32_t action, int32_t mods) {
+    glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32_t key, int32_t /*scanCode*/, int32_t action, int32_t mods) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
       Event e{ };
@@ -229,7 +229,7 @@ namespace xe {
 
     glfwSetWindowSizeCallback(data->window, [](GLFWwindow *window, int32_t width, int32_t height) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
-
+//todo:cast
       Event e{ };
       e.type = Event::Resized;
       e.size.width = static_cast<uint32_t>(width);
@@ -288,7 +288,7 @@ namespace xe {
     glfwSwapBuffers(data->window);
   }
 
-  void WindowBackend::pollEvents(Window::Data *data) {
+  void WindowBackend::pollEvents(Window::Data * /*data*/) {
     glfwPollEvents();
   }
 
@@ -299,7 +299,7 @@ namespace xe {
     glfwTerminate();
   }
 
-  double WindowBackend::uptime(Window::Data *data) {
+  double WindowBackend::uptime(Window::Data * /*data*/) {
     return glfwGetTime();
   }
 
@@ -598,8 +598,8 @@ namespace xe {
   }
 
   vec2 WindowBackend::getMousePosition(Window::Data *data) {
-    double x;
-    double y;
+    double x = 0.0;
+    double y = 0.0;
     glfwGetCursorPos(data->window, &x, &y);
     return vec2(static_cast<float>(x), static_cast<float>(y));
   }

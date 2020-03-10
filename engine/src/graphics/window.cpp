@@ -46,7 +46,7 @@ namespace xe {
     WindowBackend::initContext(data_, params_.srgb);
   }
 
-  bool Window::isExisting() const {
+  bool Window::shouldClose() const {
     return WindowBackend::isExisting(data_);
   }
 
@@ -90,8 +90,8 @@ namespace xe {
     WindowBackend::setSize(data_);
   }
 
-  void Window::setTitle(std::string_view title) {
-    data_->title = title;
+  void Window::setTitle(std::string title) {
+    data_->title = std::move(title);
     WindowBackend::setTitle(data_);
   }
 

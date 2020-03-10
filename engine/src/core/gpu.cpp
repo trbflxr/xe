@@ -8,7 +8,7 @@
 #include <xe/graphics/window.hpp>
 #include <xe/graphics/render_context.hpp>
 
-namespace xe {
+namespace xe::detail {
 
   template<class T>
   static uint32_t acquireResource(memory<T> *pool) {
@@ -26,19 +26,15 @@ namespace xe {
     return 0;
   }
 
+}
+
+namespace xe {
+
   GPU::GPU() :
-      existing_(false),
-      usedBuffers_(0),
-      usedTextures_(0),
-      usedPipelines_(0),
-      usedFramebuffers_(0) {
-
+      window_(std::make_shared<Window>()),
+      logicFrame_(std::make_unique<DisplayList>()),
+      ctx_(new RenderContext()) {
     setName("GPU");
-    window_ = std::make_shared<Window>();
-
-    ctx_ = new RenderContext();
-
-    logicFrame_ = std::make_unique<DisplayList>();
   }
 
   GPU::~GPU() {
@@ -58,6 +54,7 @@ namespace xe {
   void GPU::run() {
     XE_TRACE_META_THREAD_NAME("Render thread");
     window_->initContext();
+    shouldClose_ = window_->shouldClose();
 
     threadSync_.initialized = true;
     threadSync_.cvL.notify_one();
@@ -65,7 +62,9 @@ namespace xe {
     XE_TRACE_BEGIN("XE", "Frame");
     XE_TRACE_BEGIN("XE", "Waiting (render)");
 
-    while (!(existing_ = window_->isExisting())) {
+    while (!shouldClose_) {
+      shouldClose_ = window_->shouldClose();
+
       XE_CORE_TRACE("[GPU] GPU Synchronization (render waiting)");
       std::unique_lock<std::mutex> lock(threadSync_.mxR);
       threadSync_.cvR.wait(lock, [this] { return renderFrame_.commands_.empty(); });
@@ -101,7 +100,7 @@ namespace xe {
     XE_TRACE_BEGIN("XE", "Waiting (update)");
     XE_CORE_TRACE("[GPU] GPU Synchronization (update waiting)");
     std::unique_lock<std::mutex> lock(threadSync_.mxL);
-    threadSync_.cvL.wait(lock, [this] { return existing_ || threadSync_.nextFrame.commands_.empty(); });
+    threadSync_.cvL.wait(lock, [this] { return shouldClose_ || threadSync_.nextFrame.commands_.empty(); });
     XE_CORE_TRACE("[GPU] GPU Synchronization (update start)");
     XE_TRACE_END("XE", "Waiting (update)");
   }
@@ -130,7 +129,7 @@ namespace xe {
   }
 
   gpu::Buffer GPU::createBuffer(const gpu::Buffer::Info &info) const {
-    const uint32_t id = acquireResource(&ctx_->buffers_);
+    const uint32_t id = detail::acquireResource(&ctx_->buffers_);
     const uint32_t loc = RenderContext::index(id);
     gpu::BufferInstance &inst = ctx_->buffers_[loc];
     inst.info = info;
@@ -148,7 +147,7 @@ namespace xe {
       tex = Embedded::defaultTextureInfo();
     }
 
-    const uint32_t id = acquireResource(&ctx_->textures_);
+    const uint32_t id = detail::acquireResource(&ctx_->textures_);
     const uint32_t loc = RenderContext::index(id);
     gpu::TextureInstance &inst = ctx_->textures_[loc];
     inst.info = tex;
@@ -175,7 +174,7 @@ namespace xe {
   }
 
   gpu::Pipeline GPU::createPipeline(const gpu::Pipeline::Info &info) const {
-    const uint32_t id = acquireResource(&ctx_->pipelines_);
+    const uint32_t id = detail::acquireResource(&ctx_->pipelines_);
     const uint32_t loc = RenderContext::index(id);
     gpu::PipelineInstance &inst = ctx_->pipelines_[loc];
     inst.info = info;
@@ -186,14 +185,14 @@ namespace xe {
     inst.geomShader = info.shader.geom;
     inst.fragShader = info.shader.frag;
 
-    inst.info.shader.vert = inst.vertShader.c_str();
-    inst.info.shader.tessControl = inst.tessControlShader.c_str();
-    inst.info.shader.tessEval = inst.tessEvalShader.c_str();
-    inst.info.shader.geom = inst.geomShader.c_str();
-    inst.info.shader.frag = inst.fragShader.c_str();
+    inst.info.shader.vert = inst.vertShader;
+    inst.info.shader.tessControl = inst.tessControlShader;
+    inst.info.shader.tessEval = inst.tessEvalShader;
+    inst.info.shader.geom = inst.geomShader;
+    inst.info.shader.frag = inst.fragShader;
 
-    size_t stride[cMaxVertexAttribs] = { };
-    for (size_t i = 0; i < cMaxVertexAttribs; ++i) {
+    uint32_t stride[cMaxVertexAttribs] = { };
+    for (uint32_t i = 0; i < cMaxVertexAttribs; ++i) {
       const char *name = info.attribs[i].name;
       if (name) {
         inst.attributes[i] = name;
@@ -217,7 +216,7 @@ namespace xe {
   }
 
   gpu::Framebuffer GPU::createFramebuffer(const gpu::Framebuffer::Info &info) const {
-    const uint32_t id = acquireResource(&ctx_->framebuffers_);
+    const uint32_t id = detail::acquireResource(&ctx_->framebuffers_);
     const uint32_t pos = RenderContext::index(id);
     gpu::FramebufferInstance &inst = ctx_->framebuffers_[pos];
     inst.info = info;

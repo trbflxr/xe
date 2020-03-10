@@ -19,8 +19,8 @@ public:
 
 protected:
   void init() override {
-    VFS::get()->mount(".");
-    VFS::get()->mount("assets");
+    Engine::ref().vfs().mount(".");
+    Engine::ref().vfs().mount("assets");
 
     std::shared_ptr<TestLayer> l = std::make_shared<TestLayer>(*this);
     std::shared_ptr<TestOverlay> o = std::make_shared<TestOverlay>(*this);
@@ -37,7 +37,8 @@ int32_t main(int32_t argc, char **argv) {
                        0, 0, nullptr},
                    {128, 128, 64, 128}};
 
-  Engine engine(params, argc, argv);
+  Engine engine(argc, argv);
+  engine.setParams(params);
 
   Editor app;
   return app.run();

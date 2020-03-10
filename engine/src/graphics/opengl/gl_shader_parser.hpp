@@ -11,10 +11,10 @@ namespace xe::gpu {
 
   class GLShaderParser : NonCopyable {
   public:
-    static bool parse(std::string_view source, Backend::Uniform *uniforms, size_t &outUsedUniforms, size_t &outSize);
+    static bool parse(std::string_view source, Backend::Uniform *uniforms, uint32_t &outUsedUniforms, uint32_t &outSize);
 
   private:
-    static void parseUniform(std::string_view statement, Backend::Uniform *uniforms, size_t &index, size_t &outSize);
+    static void parseUniform(std::string_view statement, Backend::Uniform *uniforms, uint32_t &index, uint32_t &outSize);
   };
 
 }

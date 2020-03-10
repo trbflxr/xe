@@ -19,7 +19,7 @@ namespace xe {
 
   void GameObject::setActive(bool active) {
     active_ = active;
-    for (size_t i = 0; i < transform_->childrenSize(); i++) {
+    for (uint32_t i = 0; i < transform_->childrenSize(); i++) {
       transform_->child(i)->gameObject()->setActive(active);
     }
   }

@@ -348,8 +348,8 @@ namespace xe::ui::impl {
                       (int32_t) (clipRect.z - clipRect.x), (int32_t) (clipRect.w - clipRect.y));
 
             // Bind texture, Draw
-            glBindTexture(GL_TEXTURE_2D, (uint32_t) pcmd->TextureId);
-            glDrawElements(GL_TRIANGLES, (int32_t) pcmd->ElemCount, GL_UNSIGNED_SHORT, idxBufferOffset);
+            glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<const uint32_t*>(&pcmd->TextureId));
+            glDrawElements(GL_TRIANGLES, static_cast<int32_t>(pcmd->ElemCount), GL_UNSIGNED_SHORT, idxBufferOffset);
           }
         }
         idxBufferOffset += pcmd->ElemCount;
@@ -395,7 +395,7 @@ namespace xe::ui::impl {
     glScissor(lastScissorBox[0], lastScissorBox[1], (int32_t) lastScissorBox[2], (int32_t) lastScissorBox[3]);
   }
 
-  void stop(Window::Data *data) {
+  void stop(Window::Data * /*data*/) {
     destroyDeviceObjects();
   }
 
@@ -417,7 +417,7 @@ namespace xe::ui::impl {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
     // Store our identifier
-    io.Fonts->TexID = (ImTextureID) (int32_t) gFontTexture;
+    io.Fonts->TexID = *(ImTextureID*) &gFontTexture;
 
     // Restore state
     glBindTexture(GL_TEXTURE_2D, lastTexture);

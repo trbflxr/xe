@@ -93,12 +93,12 @@
 
 namespace xe {
 
-  static constexpr size_t cMaxTextureUnits = 16;
-  static constexpr size_t cMaxVertexAttribs = 16;
-  static constexpr size_t cMaxFramebufferColorAttachments = 16;
+  static constexpr uint32_t cMaxTextureUnits = 16;
+  static constexpr uint32_t cMaxVertexAttribs = 16;
+  static constexpr uint32_t cMaxFramebufferColorAttachments = 16;
 
-  static constexpr size_t cMaxUniformBuffers = 16;
-  static constexpr size_t cMaxShaderUniforms = 32;
+  static constexpr uint32_t cMaxUniformBuffers = 16;
+  static constexpr uint32_t cMaxShaderUniforms = 32;
 
   struct Params {
     struct Window {

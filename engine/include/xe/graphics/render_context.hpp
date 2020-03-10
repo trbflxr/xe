@@ -31,7 +31,7 @@ namespace xe {
     static uint32_t index(uint32_t id);
     static std::pair<uint32_t, uint32_t> indexAndVersion(uint32_t id);
 
-    static size_t computeSize(VertexFormat::Enum type);
+    static uint32_t computeSize(VertexFormat::Enum type);
 
     template<class T>
     static bool checkValidResource(uint32_t id, const memory<T> *pool) {
@@ -56,6 +56,8 @@ namespace xe {
     }
 
   private:
+    bool initialized_ = false;
+
     gpu::Backend *backend_;
 
     memory<gpu::BufferInstance> buffers_;

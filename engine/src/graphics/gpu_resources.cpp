@@ -68,8 +68,8 @@ namespace xe::gpu {
       return nullptr;
     }
 
-    tex.width = width;
-    tex.height = height;
+    tex.width = static_cast<uint16_t>(width);
+    tex.height = static_cast<uint16_t>(height);
 
     switch (bpp) {
       case 1: {
@@ -99,10 +99,10 @@ namespace xe::gpu {
     return data;
   }
 
-  std::vector<void *> Texture::loadCubemapFromFile(std::string_view rt, std::string_view lf,
-                                                   std::string_view up, std::string_view dn,
-                                                   std::string_view bk, std::string_view ft,
-                                                   Texture::Info &tex, bool flip) {
+  std::vector<void *> Texture::loadCubemapFromFile(std::string_view /*rt*/, std::string_view /*lf*/,
+                                                   std::string_view /*up*/, std::string_view /*dn*/,
+                                                   std::string_view /*bk*/, std::string_view /*ft*/,
+                                                   Texture::Info &/*tex*/, bool /*flip*/) {
 
     XE_ASSERT(false, "Not supported yet");
     return std::vector<void *>();

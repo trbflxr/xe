@@ -7,11 +7,6 @@
 
 #define XE_SRC_ROOT_DIR XE_CURRENT_SRC_DIR
 
-#ifdef _WIN32
-  #define XE_PLATFORM_WINDOWS
-#endif
-
-
 #if 0
   #ifdef XE_PLATFORM_WINDOWS
     #ifdef XE_STATIC

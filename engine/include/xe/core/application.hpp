@@ -31,7 +31,7 @@ namespace xe {
     inline Timestep delta() const { return framerate_.timeStep; }
     inline uint fps() const { return framerate_.fps; }
 
-    int32 run(int32 argc, char **argv);
+    int32 run();
 
   protected:
     virtual void init() { }

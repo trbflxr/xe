@@ -19,11 +19,10 @@ namespace xe {
   XE_OBJECT(Engine, Object);
     friend class Application;
   public:
+    explicit Engine(const Params &params, int32 argc, char **argv);
     ~Engine() override;
 
-    static Engine &ref();
-
-    void setParams(const Params &params);
+    static Engine &ref() { return *instance_; }
 
     bool isExisting() const;
 
@@ -32,13 +31,15 @@ namespace xe {
     void setUiFunction(const std::function<void(void *)> &function, void *data);
 
     void loadScene(const std::shared_ptr<Scene> &scene);
-    inline const std::shared_ptr<Scene> &scene() { return scene_; }
+    const std::shared_ptr<Scene> &scene() { return scene_; }
 
-    inline Window &window() { return *gpu_->window_; }
-    inline GPU &gpu() { return *gpu_; }
-    inline AssetManager &assetManager() { return *assetManager_; }
+    Window &window() { return *gpu_->window_; }
+    GPU &gpu() { return *gpu_; }
+    AssetManager &assetManager() { return *assetManager_; }
 
-    inline const std::shared_ptr<System::Transform> &transform() { return transform_; }
+    const std::shared_ptr<System::Transform> &transform() { return transform_; }
+
+    const std::vector<std::string> &getArgs() const { return args_; }
 
     static bool isKeyPressed(Keyboard::Key key);
     static bool isMouseButtonPressed(Mouse::Button button);
@@ -47,8 +48,6 @@ namespace xe {
     static void setMousePosition(const vec2 &position);
 
   private:
-    Engine();
-
     bool init();
     void start();
     void preUpdate();
@@ -63,7 +62,11 @@ namespace xe {
     void stopSystems();
 
   private:
+    static Engine *instance_;
+
     Params params_;
+
+    std::vector<std::string> args_;
 
     std::shared_ptr<Scene> scene_;
     std::shared_ptr<GPU> gpu_;

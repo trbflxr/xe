@@ -51,7 +51,7 @@ namespace xe {
         TextureType type = TextureType::T2D;
       };
 
-      static void *loadFromFile(const char *file, Texture::Info &tex, bool flip = true);
+      static void *loadFromFile(std::string_view file, Texture::Info &tex, bool flip = true);
       static std::vector<void *> loadCubemapFromFile(std::string_view rt, std::string_view lf, std::string_view up,
                                                      std::string_view dn, std::string_view bk, std::string_view ft,
                                                      Texture::Info &tex, bool flip = true);

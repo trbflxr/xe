@@ -15,20 +15,12 @@ XE_OBJECT(Editor, Application);
 public:
   Editor() {
     xe::Logger::setLogLevel(LogLevel::Info, LogLevel::Info);
-
-    Params params = {{800, 600,
-                                "test / жопа",
-                                    true, true,
-                         0, 0, nullptr},
-                     {128, 128, 64, 128}};
-
-    Engine::ref().setParams(params);
   }
 
 protected:
   void init() override {
-    VFS::mount("shaders", "assets/shaders/");
-    VFS::mount("textures", "assets/textures/");
+    VFS::get()->mount(".");
+    VFS::get()->mount("assets");
 
     std::shared_ptr<TestLayer> l = std::make_shared<TestLayer>(*this);
     std::shared_ptr<TestOverlay> o = std::make_shared<TestOverlay>(*this);
@@ -39,6 +31,14 @@ protected:
 };
 
 int32 main(int32 argc, char **argv) {
+  Params params = {{800, 600,
+                              "test / жопа",
+                                  true, true,
+                       0, 0, nullptr},
+                   {128, 128, 64, 128}};
+
+  Engine engine(params, argc, argv);
+
   Editor app;
-  return app.run(argc, argv);
+  return app.run();
 }

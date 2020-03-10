@@ -1,41 +1,50 @@
 //
-// Created by FLXR on 6/18/2019.
+// Created by trbflxr on 3/3/2020.
 //
 
-#ifndef XE_VFS_HPP
-#define XE_VFS_HPP
+#ifndef XEVK_VFS_HPP
+#define XEVK_VFS_HPP
 
-#include <memory>
-#include <vector>
-#include <unordered_map>
-#include <xe/string.hpp>
-#include <xe/utils/noncopyable.hpp>
-#include <xe/core/filesystem.hpp>
+#include <string>
+#include <optional>
+#include <xe/core/module.hpp>
 
 namespace xe {
 
-  class XE_API VFS : NonCopyable {
+  class XE_API VFS : public Module::Registrar<VFS, Module::Stage::Post> {
   public:
-    static void mount(std::string_view virtualPath, std::string_view physicalPath);
-    static void unmount(std::string_view virtualPath, std::string_view physicalPath);
-    static void unmount(std::string_view virtualPath);
+    explicit VFS();
+    ~VFS() override;
 
-    static bool resolvePhysicalPath(std::string_view path, std::string &outPhysicalPath);
+    void update() override { /*nothing*/ }
 
-    static byte *readFile(std::string_view path, int64 *outSize = nullptr);
-    static bool readTextFile(std::string_view path, std::string &outString);
+    void mount(std::string_view dir);
+    void unmount(std::string_view dir);
+    void unmountAll();
 
-    static bool writeFile(std::string_view path, byte *buffer, size_t size);
+    static bool mounted(std::string_view dir);
+
+    static bool exists(std::string_view file);
+
+    static bool isDirectory(std::string_view path);
+    static bool isRegularFile(std::string_view path);
+
+    static std::optional<std::string> readText(std::string_view file);
+    static std::vector<uint8_t> readBytes(std::string_view file);
+
+    static std::optional<std::string> getWriteDir();
+    static bool setWriteDir(std::string_view dir);
+
+    static bool write(std::string_view file, void *data, size_t size, bool append = false);
+
+    static bool mkdir(std::string_view dir);
+
+    static std::vector<std::string> filesInDir(std::string_view dir, bool recursive = true);
 
   private:
-    VFS() = default;
-
-    static VFS &ref();
-
-  private:
-    std::unordered_map<std::string, std::vector<std::string>> mountPoints_;
+    std::vector<std::string> mountPoints_;
   };
 
 }
 
-#endif //XE_VFS_HPP
+#endif //XEVK_VFS_HPP

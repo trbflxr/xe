@@ -4,6 +4,7 @@
 
 #include "xepch.hpp"
 #include <xe/graphics/gpu_resources.hpp>
+
 #include <xe/graphics/render_context.hpp>
 #include <xe/core/vfs.hpp>
 
@@ -14,25 +15,19 @@
 
 namespace xe::gpu {
 
-  static constexpr const char *vfsBasePath = "/textures/";
+  void *Texture::loadFromFile(std::string_view file, Texture::Info &tex, bool flip) {
+#if XE_DEBUG_TRACING
+    const std::string name = std::string("Texture load file: ") + file.data();
+#else
+    static const std::string name("Texture load");
+#endif
+    XE_TRACE_BEGIN("XE", name.c_str());
+    XE_CORE_TRACE("Loading: ", file);
 
-  void *Texture::loadFromFile(const char *file, Texture::Info &tex, bool flip) {
-    XE_TRACE_BEGIN("XE", "Texture load");
-
-    std::string path(file);
-
-    if (!FileSystem::exists(path)) {
-      path.insert(0, vfsBasePath);
-    }
-
-    XE_CORE_TRACE("Loading: ", path);
-
-    int64 memorySize;
-    byte *memory = VFS::readFile(path, &memorySize);
-
-    if (!memory) {
-      XE_CORE_ERROR("[TEXTURE / Loader] Texture load failed. Unable to load image ({})", path);
-      XE_TRACE_END("XE", "Texture load");
+    auto memory = VFS::readBytes(file);
+    if (memory.empty()) {
+      XE_CORE_ERROR("[Texture / Loader] Texture load failed. Unable to load image '{}'", file);
+      XE_TRACE_END("XE", name.c_str());
       return nullptr;
     }
 
@@ -46,30 +41,30 @@ namespace xe::gpu {
     std::string extension = string::getFileExt(file);
 
     if (extension == "hdr") {
-      data = stbi_loadf_from_memory(memory, static_cast<int32>(memorySize), &width, &height, &channels, 0);
+      data = stbi_loadf_from_memory(memory.data(), static_cast<int32>(memory.size()), &width, &height, &channels, 0);
+
       hdr = true;
       bpp = channels * sizeof(float);
     } else {
-      data = stbi_load_from_memory(memory, static_cast<int32>(memorySize), &width, &height, &channels, 0);
+      data = stbi_load_from_memory(memory.data(), static_cast<int32>(memory.size()), &width, &height, &channels, 0);
       bpp = channels * sizeof(byte);
     }
-
-    delete[] memory;
 
     if (flip) {
       stbi__vertical_flip(data, width, height, bpp);
     }
 
     if (!data) {
-      XE_CORE_ERROR("[TEXTURE / Loader] Texture load failed. Unsupported format ({})", path);
-      XE_TRACE_END("XE", "Texture load");
+      XE_CORE_ERROR("[Texture / Loader] Texture load failed. Unsupported format '{}'", file);
+      XE_TRACE_END("XE", name.c_str());
       return nullptr;
     }
 
     if (width < 1 || height < 1) {
       stbi_image_free(data);
-      XE_CORE_ERROR("[TEXTURE / Loader] Texture load failed. Invalid texture data ({})", path);
-      XE_TRACE_END("XE", "Texture load");
+
+      XE_CORE_ERROR("[Texture / Loader] Texture load failed. Invalid texture data '{}'", file);
+      XE_TRACE_END("XE", name.c_str());
       return nullptr;
     }
 
@@ -92,15 +87,15 @@ namespace xe::gpu {
         break;
       }
       default: {
-        XE_CORE_ERROR("[TEXTURE / Loader] Texture load failed. Invalid texture channels ({})", path);
-        XE_TRACE_END("XE", "Texture load");
+        XE_CORE_ERROR("[Texture / Loader] Texture load failed. Invalid texture channels '{}'", file);
+        XE_TRACE_END("XE", name.c_str());
         return nullptr;
       }
     }
 
-    XE_CORE_INFO("[TEXTURE / Loader] Texture loaded ({})", path);
+    XE_CORE_INFO("[Texture / Loader] Texture loaded '{}'", file);
 
-    XE_TRACE_END("XE", "Texture load");
+    XE_TRACE_END("XE", name.c_str());
     return data;
   }
 

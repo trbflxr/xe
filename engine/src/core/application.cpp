@@ -110,7 +110,7 @@ namespace xe {
     return Engine::ref().isExisting();
   }
 
-  int32 Application::run(int32 argc, char **argv) {
+  int32 Application::run() {
     XE_TRACE_INIT("xetrace.json");
     XE_TRACE_META_THREAD_NAME("Update thread");
 

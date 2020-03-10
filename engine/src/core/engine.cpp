@@ -5,31 +5,38 @@
 #include "xepch.hpp"
 #include <xe/core/engine.hpp>
 
+#include <xe/core/vfs.hpp>
+
 namespace xe {
 
-  Engine::Engine() {
+  Engine *Engine::instance_ = nullptr;
+
+  Engine::Engine(const Params &params, int32 argc, char **argv) :
+      params_(params) {
     setName("Engine");
+
+    XE_ASSERT(!instance_, "[Engine] Engine is already created");
+    instance_ = this;
+
+    for (int32_t i = 0; i < argc; ++i) {
+      args_.emplace_back(argv[i]);
+    }
 
     gpu_.reset(new GPU());
     assetManager_.reset(new AssetManager());
+
+    gpu_->setParams(params_.gpu);
+    gpu_->window_->setParams(params_.window);
+
+    XE_TRACE_BEGIN("XE", "Register modules");
+    VFS::registerModule();
+    XE_TRACE_END("XE", "Register modules");
   }
 
   Engine::~Engine() {
-
-  }
-
-  Engine &Engine::ref() {
-    static std::unique_ptr<Engine> e;
-    if (!e) {
-      e.reset(new Engine());
-    }
-    return *e;
-  }
-
-  void Engine::setParams(const Params &params) {
-    params_ = params;
-    gpu_->setParams(params_.gpu);
-    gpu_->window_->setParams(params_.window);
+    XE_TRACE_BEGIN("XE", "Delete modules");
+    Module::registry().clear();
+    XE_TRACE_END("XE", "Delete modules");
   }
 
   bool Engine::init() {

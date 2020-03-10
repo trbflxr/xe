@@ -9,7 +9,7 @@
 
 struct State {
   xe::gpu::Framebuffer fb;
-  static constexpr uint INSTANCES = 500000;
+  static constexpr uint INSTANCES = 50000;
   struct {
     xe::vec4 instancePositions[INSTANCES];
     xe::gpu::Pipeline material;

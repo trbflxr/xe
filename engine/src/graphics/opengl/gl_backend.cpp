@@ -641,7 +641,7 @@ namespace xe::gpu {
           }
         }
 
-        uint bufferSize = 0;
+        size_t bufferSize = 0;
         if (success && shaderV != -1) {
           GLCHECK(glAttachShader(programId, shaderV));
           if (!parseOrError(mat.first->vertShader, mat.second->uniforms,

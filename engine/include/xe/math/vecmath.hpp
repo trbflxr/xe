@@ -40,36 +40,36 @@ namespace xe {
     }
 
     static const Vector &MaskX() {
-      static Vector v = Vector::make((uint) 0, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+      static Vector v = Vector::make(static_cast<uint32_t>(0), 0xffffffff, 0xffffffff, 0xffffffff);
       return v;
     }
 
     static const Vector &MaskY() {
-      static Vector v = Vector::make((uint) 0xFFFFFFFF, 0, 0xFFFFFFFF, 0xFFFFFFFF);
+      static Vector v = Vector::make(static_cast<uint32_t>(0xffffffff), 0, 0xffffffff, 0xffffffff);
       return v;
     }
 
     static const Vector &MaskZ() {
-      static Vector v = Vector::make((uint) 0xFFFFFFFF, 0xFFFFFFFF, 0, 0xFFFFFFFF);
+      static Vector v = Vector::make(static_cast<uint32_t>(0xffffffff), 0xffffffff, 0, 0xffffffff);
       return v;
     }
 
     static const Vector &MaskW() {
-      static Vector v = Vector::make((uint) 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0);
+      static Vector v = Vector::make(static_cast<uint32_t>(0xffffffff), 0xffffffff, 0xffffffff, 0);
       return v;
     }
 
     static const Vector &SignMask() {
-      static Vector v = Vector::make((uint) 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
+      static Vector v = Vector::make(static_cast<uint32_t>(0x7fffffff), 0x7fffffff, 0x7fffffff, 0x7fffffff);
       return v;
     }
 
   };
 
-//  template<>
-//  inline Vector lerp(const Vector &val1, const Vector &val2, const float &amt) {
-//    return (val2 - val1) * Vector::load1f(amt) + val1;
-//  }
+  template<>
+  inline Vector math::lerp(const Vector &val1, const Vector &val2, const float &amt) {
+    return (val2 - val1) * Vector::load1f(amt) + val1;
+  }
 
 }
 

@@ -82,7 +82,7 @@ namespace xe::detail {
 
     static inline float matrixDeterminant3x3Vector(const SSEVector *m) {
       float M[4][4];
-      for (uint i = 0; i < 4; i++) {
+      for (uint32_t i = 0; i < 4; i++) {
         m[i].store4f(M[i]);
       }
       return M[0][0] * (M[1][1] * M[2][2] - M[1][2] * M[2][1]) -
@@ -99,7 +99,7 @@ namespace xe::detail {
 
       const SSEVector *m = static_cast<const SSEVector *>(matrix);
       float mat[4][4];
-      for (uint i = 0; i < 4; i++) {
+      for (uint32_t i = 0; i < 4; i++) {
         m[i].store4f(mat[i]);
       }
 
@@ -166,7 +166,7 @@ namespace xe::detail {
     static inline void
     createTransformMatrix(void *dest, const SSEVector &translation, const SSEVector &rot, const SSEVector &scale) {
 
-      static const SSEVector MASK_W(SSEVector::make((uint) 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0));
+      static const SSEVector MASK_W(SSEVector::make((uint32_t) 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0));
 
       const SSEVector rot2 = rot + rot;
       const SSEVector rs12 = rot * rot2;
@@ -192,7 +192,7 @@ namespace xe::detail {
       mat[3] = make(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    static inline SSEVector make(uint x, uint y, uint z, uint w) {
+    static inline SSEVector make(uint32_t x, uint32_t y, uint32_t z, uint32_t w) {
       union {
         __m128 vecf;
         __m128i veci;
@@ -204,11 +204,11 @@ namespace xe::detail {
       return result;
     }
 
-    static inline const SSEVector mask(uint index) {
-      static const SSEVector masks[4] = {SSEVector::make((uint) 0, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF),
-                                         SSEVector::make((uint) 0xFFFFFFFF, 0, 0xFFFFFFFF, 0xFFFFFFFF),
-                                         SSEVector::make((uint) 0xFFFFFFFF, 0xFFFFFFFF, 0, 0xFFFFFFFF),
-                                         SSEVector::make((uint) 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0)};
+    static inline const SSEVector mask(uint32_t index) {
+      static const SSEVector masks[4] = {SSEVector::make((uint32_t) 0, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF),
+                                         SSEVector::make((uint32_t) 0xFFFFFFFF, 0, 0xFFFFFFFF, 0xFFFFFFFF),
+                                         SSEVector::make((uint32_t) 0xFFFFFFFF, 0xFFFFFFFF, 0, 0xFFFFFFFF),
+                                         SSEVector::make((uint32_t) 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0)};
       return masks[index];
     }
 
@@ -268,12 +268,12 @@ namespace xe::detail {
       _mm_stream_ps(result, data_);
     }
 
-    inline SSEVector replicate(uint index) const {
+    inline SSEVector replicate(uint32_t index) const {
       return SSEVector::load1f((*this)[index]);
     }
 
     inline SSEVector abs() const {
-      static const SSEVector SIGN_MASK(SSEVector::make((uint) 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF));
+      static const SSEVector SIGN_MASK(SSEVector::make((uint32_t) 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF));
 
       SSEVector vec{ };
       vec.data_ = _mm_and_ps(data_, SIGN_MASK.data_);
@@ -282,7 +282,7 @@ namespace xe::detail {
     }
 
     inline SSEVector sign() const {
-      static const SSEVector SIGN_MASK(SSEVector::make((uint) 0x80000000, 0x80000000, 0x80000000, 0x80000000));
+      static const SSEVector SIGN_MASK(SSEVector::make((uint32_t) 0x80000000, 0x80000000, 0x80000000, 0x80000000));
 
       SSEVector vec{ };
       vec.data_ = _mm_and_ps(data_, SIGN_MASK.data_);
@@ -542,7 +542,7 @@ namespace xe::detail {
       return vec;
     }
 
-    inline float operator[](uint index) const {
+    inline float operator[](uint32_t index) const {
       return ((float *) &data_)[index];
     }
 

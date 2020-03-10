@@ -46,7 +46,7 @@ namespace xe {
     void setSize(const vec2u &size);
 
     void setTitle(std::string_view title);
-    void setIcon(uint width, uint height, byte *pixels);
+    void setIcon(uint32_t width, uint32_t height, uint8_t *pixels);
     void setSwapInterval(bool enabled);
 
     void setCursor(Cursor::Enum cursor) const;

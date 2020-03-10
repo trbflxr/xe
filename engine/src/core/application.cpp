@@ -110,7 +110,7 @@ namespace xe {
     return Engine::ref().isExisting();
   }
 
-  int32 Application::run() {
+  int32_t Application::run() {
     XE_TRACE_INIT("xetrace.json");
     XE_TRACE_META_THREAD_NAME("Update thread");
 
@@ -133,8 +133,8 @@ namespace xe {
     Timestep lastTime = Engine::ref().window().uptime();
     Timestep accumulator;
     Timestep uptime;
-    uint updates = 0;
-    uint frames = 0;
+    uint32_t updates = 0;
+    uint32_t frames = 0;
 
     while (!isExisting()) {
       XE_TRACE_BEGIN("XE", "Frame");

@@ -10,17 +10,17 @@
 namespace xe::ui::impl {
 
   // OpenGL Data
-  static uint gFontTexture = 0;
-  static uint gShaderHandle = 0;
-  static uint gVertHandle = 0;
-  static uint gFragHandle = 0;
-  static int32 gTex2d0Loc = 0;
-  static int32 gProjLoc = 0;
-  static int32 gAttrPosition = 0;
-  static int32 gAttrTexCoord = 0;
-  static int32 gAttrColor = 0;
-  static uint gVboHandle = 0;
-  static uint gElementsHandle = 0;
+  static uint32_t gFontTexture = 0;
+  static uint32_t gShaderHandle = 0;
+  static uint32_t gVertHandle = 0;
+  static uint32_t gFragHandle = 0;
+  static int32_t gTex2d0Loc = 0;
+  static int32_t gProjLoc = 0;
+  static int32_t gAttrPosition = 0;
+  static int32_t gAttrTexCoord = 0;
+  static int32_t gAttrColor = 0;
+  static uint32_t gVboHandle = 0;
+  static uint32_t gElementsHandle = 0;
   static bool windowHasFocus = false;
   static bool mousePressed[3] = {false, false, false};
 
@@ -33,9 +33,9 @@ namespace xe::ui::impl {
     glfwSetClipboardString((GLFWwindow *) userData, text);
   }
 
-  static bool checkShader(uint handle, const char *desc) {
-    int32 status = 0;
-    int32 logLength = 0;
+  static bool checkShader(uint32_t handle, const char *desc) {
+    int32_t status = 0;
+    int32_t logLength = 0;
     glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
     glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &logLength);
     if (status == GL_FALSE) {
@@ -43,16 +43,16 @@ namespace xe::ui::impl {
     }
     if (logLength > 0) {
       ImVector<char> buff;
-      buff.resize((int32) (logLength + 1));
+      buff.resize((int32_t) (logLength + 1));
       glGetShaderInfoLog(handle, logLength, nullptr, (char *) buff.begin());
       XE_CORE_CRITICAL("[GL / ImGui] {}", buff.begin());
     }
     return status == GL_TRUE;
   }
 
-  static bool checkProgram(uint handle, const char *desc) {
-    int32 status = 0;
-    int32 logLength = 0;
+  static bool checkProgram(uint32_t handle, const char *desc) {
+    int32_t status = 0;
+    int32_t logLength = 0;
     glGetProgramiv(handle, GL_LINK_STATUS, &status);
     glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &logLength);
     if (status == GL_FALSE) {
@@ -60,7 +60,7 @@ namespace xe::ui::impl {
     }
     if (logLength > 0) {
       ImVector<char> buff;
-      buff.resize((int32) (logLength + 1));
+      buff.resize((int32_t) (logLength + 1));
       glGetProgramInfoLog(handle, logLength, nullptr, (char *) buff.begin());
       XE_CORE_CRITICAL("[GL / ImGui] {}", buff.begin());
     }
@@ -141,7 +141,7 @@ namespace xe::ui::impl {
       } else {
         io.MousePos = mousePos;
       }
-      for (uint i = 0; i < 3; i++) {
+      for (uint32_t i = 0; i < 3; i++) {
         io.MouseDown[i] = mousePressed[i] || Engine::isMouseButtonPressed((Mouse::Button) i);
         mousePressed[i] = false;
       }
@@ -195,7 +195,7 @@ namespace xe::ui::impl {
       switch (e.type) {
         case Event::MouseButtonPressed: // fall-through
         case Event::MouseButtonReleased: {
-          const int32 button = e.mouseButton.button;
+          const int32_t button = e.mouseButton.button;
           if (e.type == Event::MouseButtonPressed && button >= 0 && button < 3) {
             mousePressed[e.mouseButton.button] = true;
             return io.WantCaptureKeyboard;
@@ -232,49 +232,49 @@ namespace xe::ui::impl {
 
   void draw(ImDrawData *drawData) {
     ImGuiIO &io = ImGui::GetIO();
-    const int32 fbWidth = (int32) (drawData->DisplaySize.x * io.DisplayFramebufferScale.x);
-    const int32 fbHeight = (int32) (drawData->DisplaySize.y * io.DisplayFramebufferScale.y);
+    const int32_t fbWidth = (int32_t) (drawData->DisplaySize.x * io.DisplayFramebufferScale.x);
+    const int32_t fbHeight = (int32_t) (drawData->DisplaySize.y * io.DisplayFramebufferScale.y);
     if (fbWidth <= 0 || fbHeight <= 0) {
       return;
     }
     drawData->ScaleClipRects(io.DisplayFramebufferScale);
 
     // Backup GL state
-    uint lastActiveTexture;
-    glGetIntegerv(GL_ACTIVE_TEXTURE, (int32 *) &lastActiveTexture);
+    uint32_t lastActiveTexture;
+    glGetIntegerv(GL_ACTIVE_TEXTURE, (int32_t *) &lastActiveTexture);
     glActiveTexture(GL_TEXTURE0);
-    int32 lastProgram;
+    int32_t lastProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
-    int32 lastTexture;
+    int32_t lastTexture;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
 #ifdef GL_SAMPLER_BINDING
-    int32 lastSampler;
+    int32_t lastSampler;
     glGetIntegerv(GL_SAMPLER_BINDING, &lastSampler);
 #endif
-    int32 lastArrayBuffer;
+    int32_t lastArrayBuffer;
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
-    int32 lastVertexArray;
+    int32_t lastVertexArray;
     glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);
 #ifdef GL_POLYGON_MODE
-    int32 lastPolygonMode[2];
+    int32_t lastPolygonMode[2];
     glGetIntegerv(GL_POLYGON_MODE, lastPolygonMode);
 #endif
-    int32 lastViewport[4];
+    int32_t lastViewport[4];
     glGetIntegerv(GL_VIEWPORT, lastViewport);
-    int32 lastScissorBox[4];
+    int32_t lastScissorBox[4];
     glGetIntegerv(GL_SCISSOR_BOX, lastScissorBox);
-    uint lastBlendSrcRgb;
-    glGetIntegerv(GL_BLEND_SRC_RGB, (int32 *) &lastBlendSrcRgb);
-    uint lastBlendDstRgb;
-    glGetIntegerv(GL_BLEND_DST_RGB, (int32 *) &lastBlendDstRgb);
-    uint lastBlendSrcAlpha;
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, (int32 *) &lastBlendSrcAlpha);
-    uint lastBlendDstAlpha;
-    glGetIntegerv(GL_BLEND_DST_ALPHA, (int32 *) &lastBlendDstAlpha);
-    uint lastBlendEquationRgb;
-    glGetIntegerv(GL_BLEND_EQUATION_RGB, (int32 *) &lastBlendEquationRgb);
-    uint lastBlendEquationAlpha;
-    glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (int32 *) &lastBlendEquationAlpha);
+    uint32_t lastBlendSrcRgb;
+    glGetIntegerv(GL_BLEND_SRC_RGB, (int32_t *) &lastBlendSrcRgb);
+    uint32_t lastBlendDstRgb;
+    glGetIntegerv(GL_BLEND_DST_RGB, (int32_t *) &lastBlendDstRgb);
+    uint32_t lastBlendSrcAlpha;
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, (int32_t *) &lastBlendSrcAlpha);
+    uint32_t lastBlendDstAlpha;
+    glGetIntegerv(GL_BLEND_DST_ALPHA, (int32_t *) &lastBlendDstAlpha);
+    uint32_t lastBlendEquationRgb;
+    glGetIntegerv(GL_BLEND_EQUATION_RGB, (int32_t *) &lastBlendEquationRgb);
+    uint32_t lastBlendEquationAlpha;
+    glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (int32_t *) &lastBlendEquationAlpha);
     GLboolean lastEnableBlend = glIsEnabled(GL_BLEND);
     GLboolean lastEnableCullFace = glIsEnabled(GL_CULL_FACE);
     GLboolean lastEnableDepthTest = glIsEnabled(GL_DEPTH_TEST);
@@ -290,7 +290,7 @@ namespace xe::ui::impl {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
 
-    glViewport(0, 0, (int32) fbWidth, (int32) fbHeight);
+    glViewport(0, 0, (int32_t) fbWidth, (int32_t) fbHeight);
     const float L = drawData->DisplayPos.x;
     const float R = drawData->DisplayPos.x + drawData->DisplaySize.x;
     const float T = drawData->DisplayPos.y;
@@ -308,7 +308,7 @@ namespace xe::ui::impl {
     glBindSampler(0, 0);
 #endif
 
-    uint vaoHandle = 0;
+    uint32_t vaoHandle = 0;
     glGenVertexArrays(1, &vaoHandle);
     glBindVertexArray(vaoHandle);
     glBindBuffer(GL_ARRAY_BUFFER, gVboHandle);
@@ -324,19 +324,19 @@ namespace xe::ui::impl {
 
     // Draw
     ImVec2 pos = drawData->DisplayPos;
-    for (int32 n = 0; n < drawData->CmdListsCount; n++) {
+    for (int32_t n = 0; n < drawData->CmdListsCount; n++) {
       const ImDrawList *cmdList = drawData->CmdLists[n];
       const ImDrawIdx *idxBufferOffset = nullptr;
 
       glBindBuffer(GL_ARRAY_BUFFER, gVboHandle);
-      glBufferData(GL_ARRAY_BUFFER, (int32) cmdList->VtxBuffer.Size * sizeof(ImDrawVert),
+      glBufferData(GL_ARRAY_BUFFER, (int32_t) cmdList->VtxBuffer.Size * sizeof(ImDrawVert),
                    (const void *) cmdList->VtxBuffer.Data, GL_STREAM_DRAW);
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gElementsHandle);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, (int32) cmdList->IdxBuffer.Size * sizeof(ImDrawIdx),
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, (int32_t) cmdList->IdxBuffer.Size * sizeof(ImDrawIdx),
                    (const void *) cmdList->IdxBuffer.Data, GL_STREAM_DRAW);
 
-      for (int32 cmd_i = 0; cmd_i < cmdList->CmdBuffer.Size; cmd_i++) {
+      for (int32_t cmd_i = 0; cmd_i < cmdList->CmdBuffer.Size; cmd_i++) {
         const ImDrawCmd *pcmd = &cmdList->CmdBuffer[cmd_i];
         if (pcmd->UserCallback) {
           pcmd->UserCallback(cmdList, pcmd);
@@ -344,12 +344,12 @@ namespace xe::ui::impl {
           ImVec4 clipRect = ImVec4(pcmd->ClipRect.x - pos.x, pcmd->ClipRect.y - pos.y,
                                    pcmd->ClipRect.z - pos.x, pcmd->ClipRect.w - pos.y);
           if (clipRect.x < fbWidth && clipRect.y < fbHeight && clipRect.z >= 0.0f && clipRect.w >= 0.0f) {
-            glScissor((int32) clipRect.x, (int32) (fbHeight - clipRect.w),
-                      (int32) (clipRect.z - clipRect.x), (int32) (clipRect.w - clipRect.y));
+            glScissor((int32_t) clipRect.x, (int32_t) (fbHeight - clipRect.w),
+                      (int32_t) (clipRect.z - clipRect.x), (int32_t) (clipRect.w - clipRect.y));
 
             // Bind texture, Draw
-            glBindTexture(GL_TEXTURE_2D, (uint) pcmd->TextureId);
-            glDrawElements(GL_TRIANGLES, (int32) pcmd->ElemCount, GL_UNSIGNED_SHORT, idxBufferOffset);
+            glBindTexture(GL_TEXTURE_2D, (uint32_t) pcmd->TextureId);
+            glDrawElements(GL_TRIANGLES, (int32_t) pcmd->ElemCount, GL_UNSIGNED_SHORT, idxBufferOffset);
           }
         }
         idxBufferOffset += pcmd->ElemCount;
@@ -389,10 +389,10 @@ namespace xe::ui::impl {
       glDisable(GL_SCISSOR_TEST);
     }
 #ifdef GL_POLYGON_MODE
-    glPolygonMode(GL_FRONT_AND_BACK, (uint) lastPolygonMode[0]);
+    glPolygonMode(GL_FRONT_AND_BACK, (uint32_t) lastPolygonMode[0]);
 #endif
-    glViewport(lastViewport[0], lastViewport[1], (int32) lastViewport[2], (int32) lastViewport[3]);
-    glScissor(lastScissorBox[0], lastScissorBox[1], (int32) lastScissorBox[2], (int32) lastScissorBox[3]);
+    glViewport(lastViewport[0], lastViewport[1], (int32_t) lastViewport[2], (int32_t) lastViewport[3]);
+    glScissor(lastScissorBox[0], lastScissorBox[1], (int32_t) lastScissorBox[2], (int32_t) lastScissorBox[3]);
   }
 
   void stop(Window::Data *data) {
@@ -402,12 +402,12 @@ namespace xe::ui::impl {
   bool createFontTexture() {
     // Build texture atlas
     ImGuiIO &io = ImGui::GetIO();
-    byte *pixels;
-    int32 width;
-    int32 height;
+    uint8_t *pixels;
+    int32_t width;
+    int32_t height;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     // Upload texture to graphics system
-    int32 lastTexture;
+    int32_t lastTexture;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
     glGenTextures(1, &gFontTexture);
     glBindTexture(GL_TEXTURE_2D, gFontTexture);
@@ -417,7 +417,7 @@ namespace xe::ui::impl {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
     // Store our identifier
-    io.Fonts->TexID = (ImTextureID) (int32) gFontTexture;
+    io.Fonts->TexID = (ImTextureID) (int32_t) gFontTexture;
 
     // Restore state
     glBindTexture(GL_TEXTURE_2D, lastTexture);
@@ -436,9 +436,9 @@ namespace xe::ui::impl {
 
   bool createDeviceObjects() {
     // Backup GL state
-    int32 lastTexture;
-    int32 lastArrayBuffer;
-    int32 lastVertexArray;
+    int32_t lastTexture;
+    int32_t lastArrayBuffer;
+    int32_t lastVertexArray;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
     glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);

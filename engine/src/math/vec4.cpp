@@ -18,7 +18,7 @@ namespace xe {
     data_ = Vector::make(x, y, z, w);
   }
 
-  void vec4::set(uint index, float val) {
+  void vec4::set(uint32_t index, float val) {
     data_ = data_.select(Vector::mask(index), Vector::load1f(val));
   }
 

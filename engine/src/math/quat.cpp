@@ -14,7 +14,7 @@ namespace xe {
   quat::quat(const vec3 &eulerAngle) {
     float c[3];
     float s[3];
-    for (byte i = 0; i < 3; ++i) {
+    for (uint8_t i = 0; i < 3; ++i) {
       c[i] = cosf(TO_RAD(eulerAngle[i]) * 0.5f);
       s[i] = sinf(TO_RAD(eulerAngle[i]) * 0.5f);
     }

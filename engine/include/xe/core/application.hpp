@@ -26,18 +26,18 @@ namespace xe {
     bool isExisting() const;
 
     inline void setTimestep(float step) { framerate_.timeStep = step; }
-    inline void setMaxSteps(uint steps) { framerate_.maxSteps = steps; }
+    inline void setMaxSteps(uint32_t steps) { framerate_.maxSteps = steps; }
 
     inline Timestep delta() const { return framerate_.timeStep; }
-    inline uint fps() const { return framerate_.fps; }
+    inline uint32_t fps() const { return framerate_.fps; }
 
-    int32 run();
+    int32_t run();
 
   protected:
     virtual void init() { }
     virtual void start() { }
     virtual void preUpdate() { }
-    virtual void update(Timestep ts) { }
+    virtual void update(Timestep /*ts*/) { }
     virtual void postUpdate() { }
     virtual void preRender() { }
     virtual void render() { }
@@ -64,8 +64,8 @@ namespace xe {
 
     struct Framerate {
       float timeStep;
-      uint maxSteps;
-      uint fps;
+      uint32_t maxSteps;
+      uint32_t fps;
     } framerate_;
   };
 

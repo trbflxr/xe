@@ -388,7 +388,7 @@ namespace xe {
     return parent_;
   }
 
-  const std::shared_ptr<Transform> &Transform::child(uint index) const {
+  const std::shared_ptr<Transform> &Transform::child(uint32_t index) const {
     static const std::shared_ptr<Transform> empty;
     if (index > children_.size() - 1) {
       XE_CORE_ERROR("[Transform] Could not find child with index {} (index out of range). Returning nullptr.", index);
@@ -397,7 +397,7 @@ namespace xe {
     return children_[index];
   }
 
-  uint Transform::childrenSize() const {
+  uint32_t Transform::childrenSize() const {
     return static_cast<uint32_t>(children_.size());
   }
 

@@ -49,7 +49,7 @@ namespace xe {
 
     static mat4 transformation(const vec3 &translation, const quat &rotation, const vec3 &scale = vec3(1.0f));
 
-    Vector operator[](uint index) const { return data_[index]; }
+    Vector operator[](uint32_t index) const { return data_[index]; }
 
     template<typename OStream>
     inline friend OStream &operator<<(OStream &os, const mat4 &q) {
@@ -77,14 +77,14 @@ namespace xe {
 
   inline mat4 mat4::operator+(const mat4 &other) const {
     mat4 result;
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       result.data_[i] = data_[i] + other.data_[i];
     }
     return result;
   }
 
   inline mat4 &mat4::operator+=(const mat4 &other) {
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       data_[i] = data_[i] + other.data_[i];
     }
     return *this;
@@ -104,7 +104,7 @@ namespace xe {
   inline mat4 mat4::operator*(float amt) const {
     mat4 result;
     const Vector vecAmt = Vector::load1f(amt);
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       result.data_[i] = data_[i] * vecAmt;
     }
     return result;
@@ -112,14 +112,14 @@ namespace xe {
 
   inline mat4 &mat4::operator*=(float amt) {
     const Vector vecAmt = Vector::load1f(amt);
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       data_[i] = data_[i] * vecAmt;
     }
     return *this;
   }
 
   inline bool mat4::operator==(const mat4 &other) const {
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       if (!(data_[i] != other.data_[i]).isZero4f()) {
         return false;
       }

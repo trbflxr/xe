@@ -17,7 +17,7 @@ namespace xe {
 
   struct Uniform {
     const char *name = nullptr;
-    byte data[64] = { };
+    uint8_t data[64] = { };
 
     Uniform() : name(nullptr) { }
 
@@ -47,28 +47,28 @@ namespace xe {
 #define PROP_ARRAY(type, count, name) \
     type name[count] = {};\
     Self &set_##name(size_t i, const type &c) { name[i] = c; return *this; }\
-    Self &set_v_##name(const std::vector<type> &c) { for (uint i = 0; i < c.size(); ++i) { set_##name(i, c[i]); } return *this; }
+    Self &set_v_##name(const std::vector<type> &c) { for (uint32_t i = 0; i < c.size(); ++i) { set_##name(i, c[i]); } return *this; }
 
     struct ViewData {
       typedef ViewData Self;
       struct Viewport {
-        uint x;
-        uint y;
-        uint width;
-        uint height;
+        uint32_t x;
+        uint32_t y;
+        uint32_t width;
+        uint32_t height;
       };
       PROP(Viewport, viewport, { });
       PROP(gpu::Framebuffer, framebuffer, { });
       PROP_ARRAY(bool, cMaxFramebufferColorAttachments, colorAttachment);
       PROP(CubemapTarget, cubemapTarget, CubemapTarget::Invalid);
-      PROP(uint, mipLevel, 0);
+      PROP(uint32_t, mipLevel, 0);
     };
 
     struct ClearData {
       typedef ClearData Self;
       PROP(Color, color, { 0.0f, 0.0f, 0.0f, 1.0f });
       PROP(float, depth, 1.0f);
-      PROP(int32, stencil, 0);
+      PROP(int32_t, stencil, 0);
       PROP(bool, clearColor, true);
       PROP(bool, clearDepth, true);
       PROP(bool, clearStencil, false);
@@ -77,20 +77,20 @@ namespace xe {
     struct FillBufferData {
       typedef FillBufferData Self;
       PROP(gpu::Buffer, buffer, { });
-      PROP(uint, offset, 0);
-      PROP(uint, size, 0);
+      PROP(uint32_t, offset, 0);
+      PROP(uint32_t, size, 0);
       PROP_PTR(void, data);
     };
 
     struct FillTextureData {
       typedef FillTextureData Self;
       PROP(gpu::Texture, texture, { });
-      PROP(uint16, offsetX, 0);
-      PROP(uint16, offsetY, 0);
-      PROP(uint16, offsetZ, 0);
-      PROP(uint16, width, 0);
-      PROP(uint16, height, 0);
-      PROP(uint16, depth, 0);
+      PROP(uint16_t, offsetX, 0);
+      PROP(uint16_t, offsetY, 0);
+      PROP(uint16_t, offsetZ, 0);
+      PROP(uint16_t, width, 0);
+      PROP(uint16_t, height, 0);
+      PROP(uint16_t, depth, 0);
       PROP(bool, buildMipmap, false);
       PROP_PTR(void, data0);
       PROP_PTR(void, data1);
@@ -113,9 +113,9 @@ namespace xe {
     struct RenderData {
       typedef RenderData Self;
       PROP(gpu::Buffer, indexBuffer, { });
-      PROP(uint, offset, 0);
-      PROP(uint, count, 0);
-      PROP(uint, instances, 1);
+      PROP(uint32_t, offset, 0);
+      PROP(uint32_t, count, 0);
+      PROP(uint32_t, instances, 1);
       PROP(IndexFormat, type, IndexFormat::Uint16);
     };
 

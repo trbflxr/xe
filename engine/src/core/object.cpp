@@ -7,7 +7,7 @@
 namespace xe {
 
   Object::Object() {
-    static uint id;
+    static uint32_t id;
     id_ = ++id;
     name_ = "Object";
   }

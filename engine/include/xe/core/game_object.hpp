@@ -21,7 +21,7 @@ namespace xe {
     void setActive(bool active);
     inline bool active() const { return active_; }
 
-    inline uint sceneId() const { return sceneId_; }
+    inline uint32_t sceneId() const { return sceneId_; }
 
     inline const std::vector<std::shared_ptr<Component>> &getComponents() const { return components_; }
 
@@ -71,7 +71,7 @@ namespace xe {
     std::shared_ptr<Transform> transform_;
     std::vector<std::shared_ptr<Component>> components_;
 
-    uint sceneId_ = 0;
+    uint32_t sceneId_ = 0;
     bool active_ = true;
   };
 

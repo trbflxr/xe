@@ -24,25 +24,25 @@ namespace xe {
 
       RenderContext *ctx;
       ResourceType type;
-      uint id;
+      uint32_t id;
     };
 
     struct Buffer : public Resource {
-      Buffer(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Buffer, id} { }
+      Buffer(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Buffer, id} { }
       struct Info {
         BufferType type_;
         Usage usage_;
-        uint size_;
+        uint32_t size_;
         const char *name_;
       };
     };
 
     struct XE_API Texture : public Resource {
-      Texture(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Texture, id} { }
+      Texture(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Texture, id} { }
       struct Info {
-        uint16 width = 1;
-        uint16 height = 1;
-        uint16 depth = 1;
+        uint16_t width = 1;
+        uint16_t height = 1;
+        uint16_t depth = 1;
         TextureMinFilter minFilter = TextureMinFilter::Linear;
         TextureMagFilter magFilter = TextureMagFilter::Linear;
         TextureWrap wrapping[3] = {TextureWrap::Clamp, TextureWrap::Clamp, TextureWrap::Clamp};
@@ -58,7 +58,7 @@ namespace xe {
     };
 
     struct Pipeline : public Resource {
-      Pipeline(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Pipeline, id} { }
+      Pipeline(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Pipeline, id} { }
       struct Info {
         struct Shader {
           std::string vert;
@@ -89,18 +89,18 @@ namespace xe {
     };
 
     struct XE_API Framebuffer : public Resource {
-      Framebuffer(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Framebuffer, id} { }
+      Framebuffer(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Framebuffer, id} { }
       struct Info {
         Texture::Info colorAttachmentInfo[cMaxFramebufferColorAttachments];
         Texture::Info depthStencilAttachmentInfo;
-        uint16 colorAttachmentsSize;
+        uint16_t colorAttachmentsSize;
         vec2u size;
       };
 
-      Texture colorAttachment(uint16 index = 0) const;
+      Texture colorAttachment(uint16_t index = 0) const;
       Texture depthStencilAttachment() const;
 
-      void setColorAttachment(Texture t, uint16 index = 0);
+      void setColorAttachment(Texture t, uint16_t index = 0);
       void setDepthStencilAttachment(Texture t);
     };
 

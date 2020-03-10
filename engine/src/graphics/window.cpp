@@ -95,7 +95,7 @@ namespace xe {
     WindowBackend::setTitle(data_);
   }
 
-  void Window::setIcon(uint width, uint height, byte *pixels) {
+  void Window::setIcon(uint32_t width, uint32_t height, uint8_t *pixels) {
     data_->icon.width = width;
     data_->icon.height = height;
     data_->icon.pixels = pixels;

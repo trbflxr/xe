@@ -8,7 +8,7 @@
 
 namespace xe {
 
-  static Keyboard::Key glfwKeyToXe(int32 key) {
+  static Keyboard::Key glfwKeyToXe(int32_t key) {
     switch (key) {
       case GLFW_KEY_A: return Keyboard::A;
       case GLFW_KEY_B: return Keyboard::B;
@@ -123,7 +123,7 @@ namespace xe {
     return Keyboard::Unknown;
   }
 
-  static Mouse::Button glfwButtonToXe(int32 button) {
+  static Mouse::Button glfwButtonToXe(int32_t button) {
     switch (button) {
       case GLFW_MOUSE_BUTTON_1: return Mouse::Left;
       case GLFW_MOUSE_BUTTON_2: return Mouse::Right;
@@ -162,7 +162,7 @@ namespace xe {
 
     glfwSetWindowUserPointer(data->window, data);
 
-    glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32 key, int32 scanCode, int32 action, int32 mods) {
+    glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32_t key, int32_t scanCode, int32_t action, int32_t mods) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
       Event e{ };
@@ -181,7 +181,7 @@ namespace xe {
       data.pushEvent(e);
     });
 
-    glfwSetMouseButtonCallback(data->window, [](GLFWwindow *window, int32 button, int32 action, int32 mods) {
+    glfwSetMouseButtonCallback(data->window, [](GLFWwindow *window, int32_t button, int32_t action, int32_t mods) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
       Event e{ };
@@ -218,7 +218,7 @@ namespace xe {
       data.pushEvent(e);
     });
 
-    glfwSetCharCallback(data->window, [](GLFWwindow *window, uint ch) {
+    glfwSetCharCallback(data->window, [](GLFWwindow *window, uint32_t ch) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
       Event e{ };
@@ -227,17 +227,17 @@ namespace xe {
       data.pushEvent(e);
     });
 
-    glfwSetWindowSizeCallback(data->window, [](GLFWwindow *window, int32 width, int32 height) {
+    glfwSetWindowSizeCallback(data->window, [](GLFWwindow *window, int32_t width, int32_t height) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
       Event e{ };
       e.type = Event::Resized;
-      e.size.width = static_cast<uint>(width);
-      e.size.height = static_cast<uint>(height);
+      e.size.width = static_cast<uint32_t>(width);
+      e.size.height = static_cast<uint32_t>(height);
       data.pushEvent(e);
     });
 
-    glfwSetCursorEnterCallback(data->window, [](GLFWwindow *window, int32 entered) {
+    glfwSetCursorEnterCallback(data->window, [](GLFWwindow *window, int32_t entered) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
       Event e{ };
@@ -245,7 +245,7 @@ namespace xe {
       data.pushEvent(e);
     });
 
-    glfwSetWindowFocusCallback(data->window, [](GLFWwindow *window, int32 focused) {
+    glfwSetWindowFocusCallback(data->window, [](GLFWwindow *window, int32_t focused) {
       Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
 
       Event e{ };
@@ -257,7 +257,7 @@ namespace xe {
   void WindowBackend::initContext(Window::Data *data, bool srgb) {
     glfwMakeContextCurrent(data->window);
 
-    const int32 status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    const int32_t status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     if (!status) {
       XE_CORE_CRITICAL("[WindowBackend / GL] Failed to initialize Glad");
       return;
@@ -272,9 +272,9 @@ namespace xe {
       glDisable(GL_FRAMEBUFFER_SRGB);
     }
 
-    const byte *version = glGetString(GL_VERSION);
-    const byte *vendor = glGetString(GL_VENDOR);
-    const byte *renderer = glGetString(GL_RENDERER);
+    const uint8_t *version = glGetString(GL_VERSION);
+    const uint8_t *vendor = glGetString(GL_VENDOR);
+    const uint8_t *renderer = glGetString(GL_RENDERER);
 
     XE_CORE_INFO("[WindowBackend / GL] Window initialized successful:\n"
                  "\t- glVersion \t\t({})\n"
@@ -312,14 +312,14 @@ namespace xe {
   }
 
   vec2u WindowBackend::framebufferSize(Window::Data *data) {
-    int32 w = 0;
-    int32 h = 0;
+    int32_t w = 0;
+    int32_t h = 0;
     glfwGetFramebufferSize(data->window, &w, &h);
     return vec2u(static_cast<uint32_t>(w), static_cast<uint32_t>(h));
   }
 
   void WindowBackend::setSize(Window::Data *data) {
-    glfwSetWindowSize(data->window, static_cast<int32>(data->width), static_cast<int32>(data->height));
+    glfwSetWindowSize(data->window, static_cast<int32_t>(data->width), static_cast<int32_t>(data->height));
   }
 
   void WindowBackend::setTitle(Window::Data *data) {
@@ -348,7 +348,7 @@ namespace xe {
   }
 
   bool WindowBackend::isKeyPressed(Window::Data *data, Keyboard::Key key) {
-    int32 glfwCode = 0;
+    int32_t glfwCode = 0;
     switch (key) {
       case Keyboard::A: glfwCode = GLFW_KEY_A;
         break;
@@ -567,12 +567,12 @@ namespace xe {
       default: break;
     }
 
-    const int32 state = glfwGetKey(data->window, glfwCode);
+    const int32_t state = glfwGetKey(data->window, glfwCode);
     return state == GLFW_PRESS;
   }
 
   bool WindowBackend::isMouseButtonPressed(Window::Data *data, Mouse::Button button) {
-    int32 glfwButton = 0;
+    int32_t glfwButton = 0;
     switch (button) {
       case Mouse::Left: glfwButton = GLFW_MOUSE_BUTTON_1;
         break;
@@ -593,7 +593,7 @@ namespace xe {
       default: break;
     }
 
-    const int32 state = glfwGetMouseButton(data->window, glfwButton);
+    const int32_t state = glfwGetMouseButton(data->window, glfwButton);
     return state == GLFW_PRESS;
   }
 

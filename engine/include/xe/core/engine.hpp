@@ -19,7 +19,7 @@ namespace xe {
   XE_OBJECT(Engine, Object);
     friend class Application;
   public:
-    explicit Engine(const Params &params, int32 argc, char **argv);
+    explicit Engine(const Params &params, int32_t argc, char **argv);
     ~Engine() override;
 
     static Engine &ref() { return *instance_; }

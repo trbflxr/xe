@@ -28,7 +28,7 @@ namespace xe {
     data_[2].store4f(m2);
     data_[3].store4f(m3);
 
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       result.data_[i] = Vector::make(m0[i], m1[i], m2[i], m3[i]);
     }
 
@@ -50,7 +50,7 @@ namespace xe {
   }
 
   mat4 mat4::applyScale(const Vector &scale) {
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       data_[i] = data_[i] * scale;
     }
     return *this;
@@ -58,11 +58,11 @@ namespace xe {
 
   Vector mat4::removeScale(float errorMargin) {
     Vector invScale = VectorConstants::Zero();
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       invScale = invScale + data_[i] * data_[i];
     }
     invScale = invScale.rsqrt().select(VectorConstants::MaskW(), VectorConstants::One());
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       data_[i] = data_[i] * invScale;
     }
     return invScale.reciprocal();
@@ -70,7 +70,7 @@ namespace xe {
 
   Vector mat4::getScale() const {
     Vector invScale = VectorConstants::Zero();
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       invScale = invScale + data_[i] * data_[i];
     }
     invScale = invScale.rsqrt().select(VectorConstants::MaskW(), VectorConstants::One());
@@ -84,7 +84,7 @@ namespace xe {
     mat4 temp(*this);
     temp.removeScale();
 
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       temp.data_[i].store4f(m[i]);
     }
     const float trace = m[0][0] + m[1][1] + m[2][2];
@@ -127,7 +127,7 @@ namespace xe {
   }
 
   bool mat4::equals(const mat4 &other, float errorMargin) const {
-    for (uint i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       if (!(data_[i].notEquals(other.data_[i], errorMargin)).isZero4f()) {
         return false;
       }

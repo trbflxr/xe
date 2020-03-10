@@ -28,27 +28,27 @@ namespace xe {
 
     void init(const Params::GPU &params);
 
-    static uint index(uint id);
-    static std::pair<uint, uint> indexAndVersion(uint id);
+    static uint32_t index(uint32_t id);
+    static std::pair<uint32_t, uint32_t> indexAndVersion(uint32_t id);
 
     static size_t computeSize(VertexFormat::Enum type);
 
     template<class T>
-    static bool checkValidResource(uint id, const memory<T> *pool) {
+    static bool checkValidResource(uint32_t id, const memory<T> *pool) {
       auto pv = indexAndVersion(id);
-      uint loc = pv.first;
-      uint version = pv.second;
+      uint32_t loc = pv.first;
+      uint32_t version = pv.second;
       const T *result = &(*pool)[loc];
-      uint realVersion = (result->state.load() & 0xFFF);
+      uint32_t realVersion = (result->state.load() & 0xFFF);
 
       return realVersion == version;
     }
 
   private:
     template<class T, class B>
-    static std::pair<T *, B *> getResource(uint id, memory<T> *instanceArray, memory<B> *backendArray) {
+    static std::pair<T *, B *> getResource(uint32_t id, memory<T> *instanceArray, memory<B> *backendArray) {
       if (checkValidResource(id, instanceArray)) {
-        uint i = index(id);
+        uint32_t i = index(id);
         return {&(*instanceArray)[i], &(*backendArray)[i]};
       }
       XE_CORE_ERROR("[RenderContext] Invalid resource (id: {})", id);

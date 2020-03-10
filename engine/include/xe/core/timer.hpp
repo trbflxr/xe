@@ -23,7 +23,7 @@ namespace xe {
     Timestep elapsed();
 
   private:
-    byte _reserved[32];
+    uint8_t _reserved[32];
     TimerMembers *_members;
   };
 

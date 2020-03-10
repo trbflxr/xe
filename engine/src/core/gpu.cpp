@@ -11,13 +11,13 @@
 namespace xe {
 
   template<class T>
-  static uint acquireResource(memory<T> *pool) {
-    uint tryCount = 10;
+  static uint32_t acquireResource(memory<T> *pool) {
+    uint32_t tryCount = 10;
     while (tryCount--) {
-      for (uint i = 0; i < pool->size; ++i) {
+      for (uint32_t i = 0; i < pool->size; ++i) {
         if ((*pool)[i].acquire()) {
-          const uint version = (*pool)[i].version;
-          const uint result = i | (version << 20);
+          const uint32_t version = (*pool)[i].version;
+          const uint32_t result = i | (version << 20);
           return result;
         }
       }
@@ -130,8 +130,8 @@ namespace xe {
   }
 
   gpu::Buffer GPU::createBuffer(const gpu::Buffer::Info &info) const {
-    const uint id = acquireResource(&ctx_->buffers_);
-    const uint loc = RenderContext::index(id);
+    const uint32_t id = acquireResource(&ctx_->buffers_);
+    const uint32_t loc = RenderContext::index(id);
     gpu::BufferInstance &inst = ctx_->buffers_[loc];
     inst.info = info;
 
@@ -148,8 +148,8 @@ namespace xe {
       tex = Embedded::defaultTextureInfo();
     }
 
-    const uint id = acquireResource(&ctx_->textures_);
-    const uint loc = RenderContext::index(id);
+    const uint32_t id = acquireResource(&ctx_->textures_);
+    const uint32_t loc = RenderContext::index(id);
     gpu::TextureInstance &inst = ctx_->textures_[loc];
     inst.info = tex;
 
@@ -175,8 +175,8 @@ namespace xe {
   }
 
   gpu::Pipeline GPU::createPipeline(const gpu::Pipeline::Info &info) const {
-    const uint id = acquireResource(&ctx_->pipelines_);
-    const uint loc = RenderContext::index(id);
+    const uint32_t id = acquireResource(&ctx_->pipelines_);
+    const uint32_t loc = RenderContext::index(id);
     gpu::PipelineInstance &inst = ctx_->pipelines_[loc];
     inst.info = info;
 
@@ -217,11 +217,11 @@ namespace xe {
   }
 
   gpu::Framebuffer GPU::createFramebuffer(const gpu::Framebuffer::Info &info) const {
-    const uint id = acquireResource(&ctx_->framebuffers_);
-    const uint pos = RenderContext::index(id);
+    const uint32_t id = acquireResource(&ctx_->framebuffers_);
+    const uint32_t pos = RenderContext::index(id);
     gpu::FramebufferInstance &inst = ctx_->framebuffers_[pos];
     inst.info = info;
-    for (uint i = 0; i < info.colorAttachmentsSize; ++i) {
+    for (uint32_t i = 0; i < info.colorAttachmentsSize; ++i) {
       inst.colorAttachments[i] = createTexture(info.colorAttachmentInfo[i]);
     }
     inst.depthAttachment = createTexture(info.depthStencilAttachmentInfo);

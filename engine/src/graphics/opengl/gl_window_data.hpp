@@ -24,8 +24,8 @@ namespace xe {
 
     std::atomic<bool> swapInterval;
 
-    std::atomic<uint> width;
-    std::atomic<uint> height;
+    std::atomic<uint32_t> width;
+    std::atomic<uint32_t> height;
 
     std::queue<Event> events;
 

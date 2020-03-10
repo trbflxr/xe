@@ -49,7 +49,7 @@ namespace xe {
       virtual void init() { };
       virtual void start() { };
       virtual void preUpdate() { };
-      virtual void update(Timestep ts) { };
+      virtual void update(Timestep /*ts*/) { };
       virtual void postUpdate() { };
       virtual void renderPreUpdate() { };
       virtual void renderUpdate() { };

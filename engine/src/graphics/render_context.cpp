@@ -4,6 +4,7 @@
 
 #include "xepch.hpp"
 #include <xe/graphics/render_context.hpp>
+
 #ifdef XE_PLATFORM_GL
   #include "graphics/opengl/gl_backend.hpp"
 #else
@@ -36,13 +37,13 @@ namespace xe {
                  params.maxBuffers, params.maxTextures, params.maxPipelines, params.maxFramebuffers);
   }
 
-  uint RenderContext::index(uint id) {
-    return id & 0x000FFFFF;
+  uint32_t RenderContext::index(uint32_t id) {
+    return id & 0x000fffff;
   }
 
-  std::pair<uint, uint> RenderContext::indexAndVersion(uint id) {
-    const uint pos = id & 0x000FFFFF;
-    const uint version = (id & 0xFFF00000) >> 20;
+  std::pair<uint32_t, uint32_t> RenderContext::indexAndVersion(uint32_t id) {
+    const uint32_t pos = id & 0x000fffff;
+    const uint32_t version = (id & 0xfff00000) >> 20;
     return {pos, version};
   }
 

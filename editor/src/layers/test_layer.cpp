@@ -22,7 +22,7 @@ namespace cube {
       -1.0,  1.0, -1.0,  0.0f, 1.0f,  1.0f, 0.0f, 1.0f, 1.0f
   };
 
-  uint16 indexData[] = {
+  uint16_t indexData[] = {
       0, 1, 2,
       2, 3, 0,
 
@@ -50,13 +50,13 @@ namespace quad {
       1.0, 1.0, 0.0, 1.0, 1.0,
       -1.0, 1.0, 0.0, 0.0, 1.0
   };
-  uint16 indexData[] = {0, 2, 1, 0, 3, 2};
+  uint16_t indexData[] = {0, 2, 1, 0, 3, 2};
 }
 
 TestLayer::TestLayer(Application &app) :
     Layer(app),
     texData_(nullptr),
-    instances_(static_cast<int32>(State::INSTANCES / 8.0f)) { }
+    instances_(static_cast<int32_t>(State::INSTANCES / 8.0f)) { }
 
 void TestLayer::onInit() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
@@ -202,7 +202,7 @@ void TestLayer::onRender() {
       .set_texture(0, state_.cube.texture);
   frame.renderCommand()
       .set_indexBuffer(state_.cube.indexBuff)
-      .set_count(sizeof(cube::indexData) / sizeof(uint16))
+      .set_count(sizeof(cube::indexData) / sizeof(uint16_t))
       .set_type(IndexFormat::Uint16)
       .set_instances(instances_);
 
@@ -226,7 +226,7 @@ void TestLayer::onRender() {
       .set_texture(1, state_.fb.colorAttachment(1));
   frame.renderCommand()
       .set_indexBuffer(state_.quad.indexBuff)
-      .set_count(sizeof(quad::indexData) / sizeof(uint16))
+      .set_count(sizeof(quad::indexData) / sizeof(uint16_t))
       .set_type(IndexFormat::Uint16);
 
   Engine::ref().submitDrawList(std::move(frame));
@@ -262,7 +262,7 @@ bool TestLayer::onKeyPressed(const Event::Key &e) {
 void TestLayer::uiFunc(void *data) {
   TestLayer *tl = (TestLayer *) data;
 
-  static const uint flags = ImGuiWindowFlags_NoDocking |
+  static const uint32_t flags = ImGuiWindowFlags_NoDocking |
                             ImGuiWindowFlags_MenuBar |
                             ImGuiWindowFlags_NoTitleBar |
                             ImGuiWindowFlags_NoResize |
@@ -274,7 +274,7 @@ void TestLayer::uiFunc(void *data) {
 
 
   const float DISTANCE = 10.0f;
-  static int32 corner = 0;
+  static int32_t corner = 0;
 
   static bool showDemo = false;
 
@@ -314,9 +314,9 @@ void TestLayer::uiFunc(void *data) {
   ImGui::SliderInt("Instances", &tl->instances_, 1, State::INSTANCES);
   ImGui::Dummy({10.0f, 0.0f});
 
-  static const uint TIMES_SIZE = 90;
+  static const uint32_t TIMES_SIZE = 90;
   static float times[TIMES_SIZE] = {0};
-  static uint index = 0;
+  static uint32_t index = 0;
 
   index = index >= TIMES_SIZE ? 0 : index;
   times[index++] = io.DeltaTime * 1000.0f;

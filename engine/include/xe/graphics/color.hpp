@@ -16,11 +16,11 @@ namespace xe {
     Color(const Color &o);
     explicit Color(const vec4 &rgba);
     Color(float r, float g, float b, float a);
-    explicit Color(uint hex);
+    explicit Color(uint32_t hex);
 
     inline vec4 rgba() const { return vec4(r, g, b, a); }
     inline vec3 rgb() const { return vec3(r, g, b); }
-    uint hex() const;
+    uint32_t hex() const;
 
     float luminance() const;
     Color desaturate(float factor) const;

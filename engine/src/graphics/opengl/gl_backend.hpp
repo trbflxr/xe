@@ -15,35 +15,35 @@ namespace xe::gpu {
   XE_OBJECT(Backend, Object);
   public:
     struct Uniform {
-      int32 loc = -1;
+      int32_t loc = -1;
       std::string name;
       VertexFormat::Enum type = VertexFormat::Undefined;
-      uint size = 0;
-      uint offset = 0;
+      uint32_t size = 0;
+      uint32_t offset = 0;
     };
 
     struct Buffer {
-      uint buffer = 0;
+      uint32_t buffer = 0;
     };
 
     struct Texture {
-      uint texture = 0;
-      uint format = 0;
-      uint internalFormat = 0;
-      uint type = 0;
-      uint target = 0;
+      uint32_t texture = 0;
+      uint32_t format = 0;
+      uint32_t internalFormat = 0;
+      uint32_t type = 0;
+      uint32_t target = 0;
     };
 
     struct Pipeline {
-      int32 program = 0;
-      int32 textureUniformsLoc[cMaxTextureUnits] = { };
+      int32_t program = 0;
+      int32_t textureUniformsLoc[cMaxTextureUnits] = { };
       Uniform uniforms[cMaxShaderUniforms] = { };
-      memory<byte> uniformData;
+      memory<uint8_t> uniformData;
       size_t usedUniforms = 0;
     };
 
     struct Framebuffer {
-      uint framebuffer = 0;
+      uint32_t framebuffer = 0;
     };
 
   public:

@@ -31,23 +31,23 @@ namespace xe::gpu {
       return nullptr;
     }
 
-    int32 width = 0;
-    int32 height = 0;
-    int32 channels = 0;
-    int32 bpp = 0;
+    int32_t width = 0;
+    int32_t height = 0;
+    int32_t channels = 0;
+    int32_t bpp = 0;
     void *data = nullptr;
     bool hdr = false;
 
     std::string extension = string::getFileExt(file);
 
     if (extension == "hdr") {
-      data = stbi_loadf_from_memory(memory.data(), static_cast<int32>(memory.size()), &width, &height, &channels, 0);
+      data = stbi_loadf_from_memory(memory.data(), static_cast<int32_t>(memory.size()), &width, &height, &channels, 0);
 
       hdr = true;
       bpp = channels * sizeof(float);
     } else {
-      data = stbi_load_from_memory(memory.data(), static_cast<int32>(memory.size()), &width, &height, &channels, 0);
-      bpp = channels * sizeof(byte);
+      data = stbi_load_from_memory(memory.data(), static_cast<int32_t>(memory.size()), &width, &height, &channels, 0);
+      bpp = channels * sizeof(uint8_t);
     }
 
     if (flip) {
@@ -108,12 +108,12 @@ namespace xe::gpu {
     return std::vector<void *>();
   }
 
-  Texture Framebuffer::colorAttachment(uint16 index) const {
+  Texture Framebuffer::colorAttachment(uint16_t index) const {
     if (!ctx) {
       return Texture();
     }
     RenderContext::checkValidResource(id, &ctx->framebuffers_);
-    const uint loc = RenderContext::index(id);
+    const uint32_t loc = RenderContext::index(id);
     return ctx->framebuffers_[loc].colorAttachments[index];
   }
 
@@ -122,16 +122,16 @@ namespace xe::gpu {
       return Texture();
     }
     RenderContext::checkValidResource(id, &ctx->framebuffers_);
-    const uint loc = RenderContext::index(id);
+    const uint32_t loc = RenderContext::index(id);
     return ctx->framebuffers_[loc].depthAttachment;
   }
 
-  void Framebuffer::setColorAttachment(Texture t, uint16 index) {
+  void Framebuffer::setColorAttachment(Texture t, uint16_t index) {
     if (!ctx) {
       return;
     }
     RenderContext::checkValidResource(id, &ctx->framebuffers_);
-    const uint loc = RenderContext::index(id);
+    const uint32_t loc = RenderContext::index(id);
     ctx->framebuffers_[loc].colorAttachments[index] = t;
   }
 
@@ -140,7 +140,7 @@ namespace xe::gpu {
       return;
     }
     RenderContext::checkValidResource(id, &ctx->framebuffers_);
-    const uint loc = RenderContext::index(id);
+    const uint32_t loc = RenderContext::index(id);
     ctx->framebuffers_[loc].depthAttachment = t;
   }
 

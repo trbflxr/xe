@@ -11,7 +11,7 @@
 
 namespace xe::gpu {
 
-  static uint toGL(Usage e) {
+  static uint32_t toGL(Usage e) {
     switch (e) {
       case Usage::Dynamic: return GL_DYNAMIC_DRAW;
       case Usage::Stream: return GL_STREAM_DRAW;
@@ -20,7 +20,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(BufferType e) {
+  static uint32_t toGL(BufferType e) {
     switch (e) {
       case BufferType::Index: return GL_ELEMENT_ARRAY_BUFFER;
       case BufferType::Uniform: return GL_UNIFORM_BUFFER;
@@ -29,7 +29,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(TextureMinFilter e) {
+  static uint32_t toGL(TextureMinFilter e) {
     switch (e) {
       case TextureMinFilter::Nearest: return GL_NEAREST;
       case TextureMinFilter::NearestMipmapNearest: return GL_NEAREST_MIPMAP_NEAREST;
@@ -41,7 +41,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(TextureMagFilter e) {
+  static uint32_t toGL(TextureMagFilter e) {
     switch (e) {
       case TextureMagFilter::Nearest: return GL_NEAREST;
       case TextureMagFilter::Linear:
@@ -49,7 +49,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(TextureWrap e) {
+  static uint32_t toGL(TextureWrap e) {
     switch (e) {
       case TextureWrap::Repeat: return GL_REPEAT;
       case TextureWrap::MirroredRepeat: return GL_MIRRORED_REPEAT;
@@ -58,7 +58,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(BlendFactor e) {
+  static uint32_t toGL(BlendFactor e) {
     switch (e) {
       case BlendFactor::One: return GL_ONE;
       case BlendFactor::SrcColor: return GL_SRC_COLOR;
@@ -79,7 +79,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(BlendOp e) {
+  static uint32_t toGL(BlendOp e) {
     switch (e) {
       case BlendOp::Substract: return GL_FUNC_SUBTRACT;
       case BlendOp::ReverseSubstract: return GL_FUNC_REVERSE_SUBTRACT;
@@ -90,7 +90,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(CompareFunc e) {
+  static uint32_t toGL(CompareFunc e) {
     switch (e) {
       case CompareFunc::Never: return GL_NEVER;
       case CompareFunc::Less: return GL_LESS;
@@ -107,7 +107,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(IndexFormat e) {
+  static uint32_t toGL(IndexFormat e) {
     switch (e) {
       case IndexFormat::Uint16: return GL_UNSIGNED_SHORT;
       case IndexFormat::Uint32: return GL_UNSIGNED_INT;
@@ -116,7 +116,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(Primitive e) {
+  static uint32_t toGL(Primitive e) {
     switch (e) {
       case Primitive::Lines: return GL_LINES;
       case Primitive::Points: return GL_POINTS;
@@ -125,7 +125,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint toGL(CubemapTarget e) {
+  static uint32_t toGL(CubemapTarget e) {
     switch (e) {
       case CubemapTarget::PositiveX: return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
       case CubemapTarget::NegativeX: return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
@@ -140,7 +140,7 @@ namespace xe::gpu {
     }
   }
 
-  static uint vertexTypeToGL(uint format) {
+  static uint32_t vertexTypeToGL(uint32_t format) {
     format = format & VertexFormat::TypeMask;
     switch (format) {
       case VertexFormat::Float: return GL_FLOAT;
@@ -158,7 +158,7 @@ namespace xe::gpu {
   }
 
   static void checkGLError(const char *operation) {
-    int32 error = glGetError();
+    int32_t error = glGetError();
     if (error) {
       XE_CORE_CRITICAL("[GL Error] {} ({})", error, operation);
       return;
@@ -169,20 +169,20 @@ namespace xe::gpu {
 #define GLCHECK_STR(A) GLCHECK_STR_STR(A)
 #define GLCHECK(...) {__VA_ARGS__; checkGLError(__FILE__  ":" GLCHECK_STR(__LINE__) "\n\t-> " #__VA_ARGS__);}
 
-  static void initTextureParams(uint target, const Texture::Info &info) {
+  static void initTextureParams(uint32_t target, const Texture::Info &info) {
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, toGL(info.minFilter)));
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, toGL(info.magFilter)));
     GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_S, toGL(info.wrapping[0])));
-    if (target > (uint) TextureType::T1D) {
+    if (target > (uint32_t) TextureType::T1D) {
       GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_T, toGL(info.wrapping[1])));
     }
-    if (target > (uint) TextureType::T2D) {
+    if (target > (uint32_t) TextureType::T2D) {
       GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, toGL(info.wrapping[2])));
     }
   }
 
   static void initTexture(std::pair<TextureInstance *, Backend::Texture *> t) {
-    uint id = t.second->texture;
+    uint32_t id = t.second->texture;
     auto &backEnd = t.second;
     if (!id) {
       GLCHECK(glGenTextures(1, &id));
@@ -293,7 +293,7 @@ namespace xe::gpu {
         case TextureType::CubeMap: {
           t.second->target = GL_TEXTURE_CUBE_MAP;
           GLCHECK(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
-          for (uint i = 0; i < 6; ++i) {
+          for (uint32_t i = 0; i < 6; ++i) {
             GLCHECK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, backEnd->internalFormat, t.first->info.width,
                                  t.first->info.height, 0, backEnd->format, backEnd->type, nullptr));
           }
@@ -305,7 +305,7 @@ namespace xe::gpu {
     }
   }
 
-  static void setupFramebufferTexture(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel, uint16 i) {
+  static void setupFramebufferTexture(std::pair<TextureInstance *, Backend::Texture *> t, uint32_t mipLevel, uint16_t i) {
     switch (t.second->target) {
       case GL_TEXTURE_2D: {
         GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
@@ -319,7 +319,7 @@ namespace xe::gpu {
     }
   }
 
-  static void setupFramebufferDepth(std::pair<TextureInstance *, Backend::Texture *> t, uint mipLevel) {
+  static void setupFramebufferDepth(std::pair<TextureInstance *, Backend::Texture *> t, uint32_t mipLevel) {
     if (t.second->target != GL_TEXTURE_2D) {
       XE_CORE_ERROR("[GL Error] Invalid texture type, expected texture 2D (depth/stencil)");
       return;
@@ -361,18 +361,18 @@ namespace xe::gpu {
     return ss.str();
   }
 
-  static int32 compileShader(uint type, const char *src) {
+  static int32_t compileShader(uint32_t type, const char *src) {
     if (src[0] == '\0') {
       return -1;
     }
 
-    int32 shader = 0;
+    int32_t shader = 0;
     GLCHECK(shader = glCreateShader(type));
     if (!shader) {
       XE_CORE_ERROR("[GL Error] Could not create shader program");
       return 0;
     }
-    int32 compiled = 0;
+    int32_t compiled = 0;
     GLCHECK(glShaderSource(shader, 1, &src, nullptr));
     GLCHECK(glCompileShader(shader));
     GLCHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled));
@@ -396,7 +396,7 @@ namespace xe::gpu {
     return true;
   }
 
-  static void setUniform(int32 loc, VertexFormat::Enum type, const void *data) {
+  static void setUniform(int32_t loc, VertexFormat::Enum type, const void *data) {
     switch (type) {
       case VertexFormat::Float: {
         GLCHECK(glUniform1f(loc, *(float *) data));
@@ -418,7 +418,7 @@ namespace xe::gpu {
         break;
       }
       case VertexFormat::Int32: {
-        glUniform1i(loc, *(int32 *) data);
+        glUniform1i(loc, *(int32_t *) data);
         break;
       }
       case VertexFormat::Mat4: {
@@ -444,7 +444,7 @@ namespace xe::gpu {
   }
 
   void Backend::clear(const DisplayList::ClearData &d) {
-    uint mask = 0;
+    uint32_t mask = 0;
     if (d.clearColor) {
       GLCHECK(glClearColor(d.color.r, d.color.g, d.color.b, d.color.a));
       mask |= GL_COLOR_BUFFER_BIT;
@@ -466,7 +466,7 @@ namespace xe::gpu {
     if (d.framebuffer.id != 0) {
       auto fb = RenderContext::getResource(d.framebuffer.id, &d.framebuffer.ctx->framebuffers_,
                                            &d.framebuffer.ctx->backend_->framebuffers_);
-      uint fbId = fb.second->framebuffer;
+      uint32_t fbId = fb.second->framebuffer;
       if (!fbId) {
         GLCHECK(glGenFramebuffers(1, &fbId));
         fb.second->framebuffer = fbId;
@@ -475,7 +475,7 @@ namespace xe::gpu {
       GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbId));
 
       if (d.cubemapTarget != CubemapTarget::Invalid) {
-        for (uint i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+        for (uint32_t i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
                                                 &fb.first->colorAttachments[i].ctx->backend_->textures_);
@@ -486,7 +486,7 @@ namespace xe::gpu {
           }
         }
       } else {
-        for (uint i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+        for (uint32_t i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
           auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
                                                 &fb.first->colorAttachments[i].ctx->textures_,
                                                 &fb.first->colorAttachments[i].ctx->backend_->textures_);
@@ -503,10 +503,10 @@ namespace xe::gpu {
         }
       }
 
-      memory<uint> buffers;
+      memory<uint32_t> buffers;
       buffers.alloc(fb.first->info.colorAttachmentsSize);
-      uint count = 0;
-      for (uint i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
+      uint32_t count = 0;
+      for (uint32_t i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
         if (d.colorAttachment[i]) {
           buffers[count] = GL_COLOR_ATTACHMENT0 + i;
           ++count;
@@ -531,8 +531,8 @@ namespace xe::gpu {
 
   void Backend::fillBuffer(DisplayList::FillBufferData &d) {
     auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backend_->buffers_);
-    uint id = b.second->buffer;
-    const uint target = toGL(b.first->info.type_);
+    uint32_t id = b.second->buffer;
+    const uint32_t target = toGL(b.first->info.type_);
 
     if (!id) {
       GLCHECK(glGenBuffers(1, &id));
@@ -591,7 +591,7 @@ namespace xe::gpu {
       case TextureType::CubeMap: {
         void *data[6] = {(void *) d.data0, (void *) d.data1, (void *) d.data2,
                          (void *) d.data3, (void *) d.data4, (void *) d.data5};
-        for (uint i = 0; i < 6; ++i) {
+        for (uint32_t i = 0; i < 6; ++i) {
           GLCHECK(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, d.offsetX, d.offsetY, d.width, d.height,
                                   backEnd.format, backEnd.type, !data[i] ? Embedded::defaultTextureData() : data[i]));
         }
@@ -617,22 +617,22 @@ namespace xe::gpu {
     if (lastPipelineChanged) {
       //shader creation
       if (mat.second->program == 0) {
-        for (int32 &i : mat.second->textureUniformsLoc) {
+        for (int32_t &i : mat.second->textureUniformsLoc) {
           i = -1;
         }
 
         bool success = true;
 
-        const int32 shaderV = compileShader(GL_VERTEX_SHADER, mat.first->vertShader.c_str());
-        const int32 shaderF = compileShader(GL_FRAGMENT_SHADER, mat.first->fragShader.c_str());
-        const int32 shaderTC = compileShader(GL_TESS_CONTROL_SHADER, mat.first->tessControlShader.c_str());
-        const int32 shaderTE = compileShader(GL_TESS_EVALUATION_SHADER, mat.first->tessEvalShader.c_str());
-        const int32 shaderG = compileShader(GL_GEOMETRY_SHADER, mat.first->geomShader.c_str());
+        const int32_t shaderV = compileShader(GL_VERTEX_SHADER, mat.first->vertShader.c_str());
+        const int32_t shaderF = compileShader(GL_FRAGMENT_SHADER, mat.first->fragShader.c_str());
+        const int32_t shaderTC = compileShader(GL_TESS_CONTROL_SHADER, mat.first->tessControlShader.c_str());
+        const int32_t shaderTE = compileShader(GL_TESS_EVALUATION_SHADER, mat.first->tessEvalShader.c_str());
+        const int32_t shaderG = compileShader(GL_GEOMETRY_SHADER, mat.first->geomShader.c_str());
         if (!shaderV || !shaderF || !shaderTC || !shaderTE || !shaderG) {
           success = false;
         }
 
-        uint programId = 0;
+        uint32_t programId = 0;
         if (success) {
           GLCHECK(programId = glCreateProgram());
           if (!programId) {
@@ -680,7 +680,7 @@ namespace xe::gpu {
 
         if (success) {
           GLCHECK(glLinkProgram(programId));
-          int32 linkStatus = GL_FALSE;
+          int32_t linkStatus = GL_FALSE;
           GLCHECK(glGetProgramiv(programId, GL_LINK_STATUS, &linkStatus));
           if (linkStatus != GL_TRUE) {
             char log[2048];
@@ -731,8 +731,8 @@ namespace xe::gpu {
             default: break;
           }
 
-          if ((uint) mat.first->info.textures[i]) {
-            int32 loc;
+          if ((uint32_t) mat.first->info.textures[i]) {
+            int32_t loc;
             GLCHECK(loc = glGetUniformLocation(programId, name));
             if (loc != -1) {
               mat.second->textureUniformsLoc[i] = loc;
@@ -776,8 +776,8 @@ namespace xe::gpu {
           break;
       }
 
-      const byte colorWrite = (mat.first->info.rgbaWrite) ? GL_TRUE : GL_FALSE;
-      const byte depthWrite = (mat.first->info.depthWrite) ? GL_TRUE : GL_FALSE;
+      const uint8_t colorWrite = (mat.first->info.rgbaWrite) ? GL_TRUE : GL_FALSE;
+      const uint8_t depthWrite = (mat.first->info.depthWrite) ? GL_TRUE : GL_FALSE;
       GLCHECK(glColorMask(colorWrite, colorWrite, colorWrite, colorWrite));
       GLCHECK(glDepthMask(depthWrite));
 
@@ -807,7 +807,7 @@ namespace xe::gpu {
         if (d.uniformBuffer[i].id) {
           auto ubo = RenderContext::getResource(d.uniformBuffer[i].id, &d.pipeline.ctx->buffers_,
                                                 &d.pipeline.ctx->backend_->buffers_);
-          uint uniformIndex = 0;
+          uint32_t uniformIndex = 0;
           GLCHECK(uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name_));
           GLCHECK(glUniformBlockBinding(mat.second->program, uniformIndex, ubo.second->buffer));
         }
@@ -819,7 +819,7 @@ namespace xe::gpu {
       if (!u.name) {
         break;
       }
-      for (uint i = 0; i < mat.second->usedUniforms; ++i) {
+      for (uint32_t i = 0; i < mat.second->usedUniforms; ++i) {
         auto &&mu = mat.second->uniforms[i];
         if (mu.name == u.name) {
           memcpy(mat.second->uniformData.data.get() + mu.offset, u.data, mu.size);
@@ -830,7 +830,7 @@ namespace xe::gpu {
     }
 
     if (d.scissor[2] > 0.0f && d.scissor[3] > 0.0f) {
-      GLCHECK(glScissor((int32) d.scissor[0], (int32) d.scissor[1], (int32) d.scissor[2], (int32) d.scissor[3]));
+      GLCHECK(glScissor((int32_t) d.scissor[0], (int32_t) d.scissor[1], (int32_t) d.scissor[2], (int32_t) d.scissor[3]));
       GLCHECK(glEnable(GL_SCISSOR_TEST));
     } else {
       GLCHECK(glDisable(GL_SCISSOR_TEST));
@@ -855,7 +855,7 @@ namespace xe::gpu {
     auto &pipeline = d.indexBuffer.ctx->lastPipeline_;
 
     size_t texUnit = 0;
-    for (uint i = 0; i < cMaxTextureUnits; ++i) {
+    for (uint32_t i = 0; i < cMaxTextureUnits; ++i) {
       if (mat.second->textureUniformsLoc[i] >= 0) {
         auto tex = RenderContext::getResource(pipeline.texture[i].id, &d.indexBuffer.ctx->textures_,
                                               &d.indexBuffer.ctx->backend_->textures_);
@@ -884,7 +884,7 @@ namespace xe::gpu {
     }
 
     for (auto i = 0; i < cMaxVertexAttribs; ++i) {
-      const uint attribFormat = mat.first->info.attribs[i].format;
+      const uint32_t attribFormat = mat.first->info.attribs[i].format;
       if (attribFormat) {
         const size_t bufferIndex = mat.first->info.attribs[i].bufferIndex;
         const size_t bufferId = pipeline.buffer[bufferIndex].id;
@@ -899,11 +899,11 @@ namespace xe::gpu {
         }
 
         GLCHECK(glBindBuffer(GL_ARRAY_BUFFER, buffer.second->buffer));
-        const int32 attrSize = (attribFormat & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
-        const uint attrType = vertexTypeToGL(attribFormat);
-        const byte attrNormalized = (attribFormat & VertexFormat::Normalized) ? GL_TRUE : GL_FALSE;
-        const int32 attrStride = mat.first->info.attribs[i].stride;
-        const int32 attrOffset = mat.first->info.attribs[i].offset;
+        const int32_t attrSize = (attribFormat & VertexFormat::NumComponentsMask) >> VertexFormat::NumComponentsShift;
+        const uint32_t attrType = vertexTypeToGL(attribFormat);
+        const uint8_t attrNormalized = (attribFormat & VertexFormat::Normalized) ? GL_TRUE : GL_FALSE;
+        const int32_t attrStride = mat.first->info.attribs[i].stride;
+        const int32_t attrOffset = mat.first->info.attribs[i].offset;
         GLCHECK(glVertexAttribPointer(i, attrSize, attrType, attrNormalized, attrStride, (void *) attrOffset));
         glEnableVertexAttribArray(i);
       } else {

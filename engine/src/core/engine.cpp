@@ -11,7 +11,7 @@ namespace xe {
 
   Engine *Engine::instance_ = nullptr;
 
-  Engine::Engine(const Params &params, int32 argc, char **argv) :
+  Engine::Engine(const Params &params, int32_t argc, char **argv) :
       params_(params) {
     setName("Engine");
 

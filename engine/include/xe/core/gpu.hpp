@@ -29,15 +29,15 @@ namespace xe {
     gpu::Pipeline createPipeline(const gpu::Pipeline::Info &info) const;
     gpu::Framebuffer createFramebuffer(const gpu::Framebuffer::Info &info) const;
 
-    inline uint maxBuffers() const { return params_.maxBuffers; }
-    inline uint maxTextures() const { return params_.maxTextures; }
-    inline uint maxPipelines() const { return params_.maxPipelines; }
-    inline uint maxFramebuffers() const { return params_.maxFramebuffers; }
+    inline uint32_t maxBuffers() const { return params_.maxBuffers; }
+    inline uint32_t maxTextures() const { return params_.maxTextures; }
+    inline uint32_t maxPipelines() const { return params_.maxPipelines; }
+    inline uint32_t maxFramebuffers() const { return params_.maxFramebuffers; }
 
-    inline uint usedBuffers() const { return usedBuffers_; }
-    inline uint usedTextures() const { return usedTextures_; }
-    inline uint usedPipelines() const { return usedPipelines_; }
-    inline uint usedFramebuffers() const { return usedFramebuffers_; }
+    inline uint32_t usedBuffers() const { return usedBuffers_; }
+    inline uint32_t usedTextures() const { return usedTextures_; }
+    inline uint32_t usedPipelines() const { return usedPipelines_; }
+    inline uint32_t usedFramebuffers() const { return usedFramebuffers_; }
 
   protected:
     GPU();
@@ -74,10 +74,10 @@ namespace xe {
   private:
     RenderContext *ctx_;
 
-    mutable uint usedBuffers_;
-    mutable uint usedTextures_;
-    mutable uint usedPipelines_;
-    mutable uint usedFramebuffers_;
+    mutable uint32_t usedBuffers_;
+    mutable uint32_t usedTextures_;
+    mutable uint32_t usedPipelines_;
+    mutable uint32_t usedFramebuffers_;
   };
 
 }

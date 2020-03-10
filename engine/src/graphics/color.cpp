@@ -10,20 +10,20 @@ namespace xe {
   Color::Color(const Color &o) : r(o.r), g(o.g), b(o.b), a(o.a) { }
   Color::Color(const vec4 &rgba) : r(rgba[0]), g(rgba[1]), b(rgba[2]), a(rgba[3]) { }
   Color::Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) { }
-  Color::Color(uint hex) {
+  Color::Color(uint32_t hex) {
     b = ((hex >> 0) & 255) / 255.0f;
     g = ((hex >> 8) & 255) / 255.0f;
     r = ((hex >> 16) & 255) / 255.0f;
     a = ((hex >> 24) & 255) / 255.0f;
   }
 
-  uint Color::hex() const {
-    const uint r1 = static_cast<uint>(r * 255);
-    const uint g1 = static_cast<uint>(g * 255);
-    const uint b1 = static_cast<uint>(b * 255);
-    const uint a1 = static_cast<uint>(a * 255);
+  uint32_t Color::hex() const {
+    const uint32_t r1 = static_cast<uint32_t>(r * 255);
+    const uint32_t g1 = static_cast<uint32_t>(g * 255);
+    const uint32_t b1 = static_cast<uint32_t>(b * 255);
+    const uint32_t a1 = static_cast<uint32_t>(a * 255);
 
-    const uint result = a1 << 24 | r1 << 16 | g1 << 8 | b1;
+    const uint32_t result = a1 << 24 | r1 << 16 | g1 << 8 | b1;
     return result;
   }
 

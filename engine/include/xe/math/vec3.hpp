@@ -26,7 +26,7 @@ namespace xe {
         data_(Vector::make(static_cast<float>(vec.x), static_cast<float>(vec.y), 0.0f, 0.0f)) { }
 
     void set(float x, float y, float z);
-    void set(uint index, float val);
+    void set(uint32_t index, float val);
 
     vec3 normalize(float errorMargin = 1.e-8f) const;
     bool isNormalized(float errorMargin = 1.e-4f) const;
@@ -77,7 +77,7 @@ namespace xe {
     static const vec3 &unitZN();
     static const vec3 &zero();
 
-    inline float operator[](uint index) const { return data_[index]; }
+    inline float operator[](uint32_t index) const { return data_[index]; }
 
     template<typename OStream>
     inline friend OStream &operator<<(OStream &os, const vec3 &v) {

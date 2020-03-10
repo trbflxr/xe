@@ -56,7 +56,7 @@ namespace xe {
 
     static quat lookRotation(const vec3 &forward, const vec3 &up);
 
-    inline float operator[](uint index) const { return data_[index]; }
+    inline float operator[](uint32_t index) const { return data_[index]; }
 
     template<typename OStream>
     inline friend OStream &operator<<(OStream &os, const quat &q) {

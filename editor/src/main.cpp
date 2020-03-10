@@ -30,7 +30,7 @@ protected:
 
 };
 
-int32 main(int32 argc, char **argv) {
+int32_t main(int32_t argc, char **argv) {
   Params params = {{800, 600,
                               "test / жопа",
                                   true, true,

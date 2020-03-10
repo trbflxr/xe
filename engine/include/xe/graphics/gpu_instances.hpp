@@ -11,15 +11,15 @@
 namespace xe::gpu {
 
   struct InstanceBase {
-    uint version = 0;
-    std::atomic<uint> state = 0;
+    uint32_t version = 0;
+    std::atomic<uint32_t> state = 0;
 
     bool acquire() {
-      uint v = (version + 1);
+      uint32_t v = (version + 1);
       if (!v) {
         v = 1;
       }
-      uint e = 0;
+      uint32_t e = 0;
       if (state.compare_exchange_weak(e, v)) {
         version = v;
         return true;
@@ -39,7 +39,7 @@ namespace xe::gpu {
   struct TextureInstance : public InstanceBase {
     Texture::Info info;
     size_t bpp;
-    uint id;
+    uint32_t id;
   };
 
   struct PipelineInstance : public InstanceBase {

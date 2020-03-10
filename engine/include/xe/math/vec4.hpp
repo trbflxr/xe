@@ -26,7 +26,7 @@ namespace xe {
         data_(Vector::make(static_cast<float>(vec.x), static_cast<float>(vec.y), 0.0f, 0.0f)) { }
 
     void set(float x, float y, float z, float w);
-    void set(uint index, float val);
+    void set(uint32_t index, float val);
 
     inline float dot(const vec4 &other) const { return data_.dot4(other.data_)[0]; }
 
@@ -35,7 +35,7 @@ namespace xe {
     bool equals(const vec4 &other, float errorMargin = 1.e-4f) const;
     bool equals(float val, float errorMargin = 1.e-4f) const;
 
-    inline float operator[](uint index) const { return data_[index]; }
+    inline float operator[](uint32_t index) const { return data_[index]; }
 
     template<typename OStream>
     inline friend OStream &operator<<(OStream &os, const vec4 &v) {

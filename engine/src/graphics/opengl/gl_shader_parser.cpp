@@ -50,11 +50,11 @@ namespace xe::gpu {
     const VertexFormat::Enum t = stringToShaderDataTypeGL(typeStr);
     if (t == VertexFormat::Undefined) return;
 
-    uint offset = 0;
+    uint32_t offset = 0;
     if (index > 0) {
       offset = uniforms[index - 1].offset + uniforms[index - 1].size;
     }
-    const uint size = RenderContext::computeSize(t);
+    const uint32_t size = RenderContext::computeSize(t);
     outSize += size;
     uniforms[index++] = {-1, name, t, size, offset};
   }

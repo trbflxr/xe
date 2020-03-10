@@ -8,7 +8,7 @@
 
 namespace xe {
 
-  void sleep(uint time) {
+  void sleep(uint32_t time) {
     TIMECAPS tc;
     timeGetDevCaps(&tc, sizeof(TIMECAPS));
 

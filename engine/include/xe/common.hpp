@@ -5,6 +5,8 @@
 #ifndef XE_COMMON_HPP
 #define XE_COMMON_HPP
 
+#include <cstdint>
+
 #define XE_SRC_ROOT_DIR XE_CURRENT_SRC_DIR
 
 #if 0
@@ -77,10 +79,8 @@
 
 #define BIT(x) (1 << (x))
 
-
 #define XE_CORE       BIT(0)
 #define XE_CLIENT     BIT(1)
-
 
 #if defined(__clang__) || defined(__GNUC__)
   #define XE_FMT_ARGS(fmt)      __attribute__((format(printf, fmt, fmt + 1)))
@@ -88,28 +88,6 @@
 #else
   #define XE_FMT_ARGS(fmt)
   #define XE_FMT_LIST(fmt)
-#endif
-
-
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
-typedef long long int64;
-
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned uint32;
-typedef unsigned long long uint64;
-
-typedef uint8 byte;
-typedef uint32 uint;
-
-#ifdef _WIN32
-  #ifdef _WIN64
-typedef uint64 size_t;
-  #else
-typedef uint32 size_t;
-  #endif
 #endif
 
 
@@ -124,22 +102,22 @@ namespace xe {
 
   struct Params {
     struct Window {
-      uint width;
-      uint height;
-      const char *title;
-      bool swapInterval;
-      bool srgb;
+      uint32_t width = 0;
+      uint32_t height = 0;
+      std::string_view title = "xe";
+      bool swapInterval = false;
+      bool srgb = true;
 
-      uint iconWidth;
-      uint iconHeight;
-      byte *iconPixels = nullptr;
+      uint32_t iconWidth = 0;
+      uint32_t iconHeight = 0;
+      uint8_t *iconPixels = nullptr;
     } window;
 
     struct GPU {
-      uint maxBuffers;
-      uint maxTextures;
-      uint maxPipelines;
-      uint maxFramebuffers;
+      uint32_t maxBuffers = 64;
+      uint32_t maxTextures = 64;
+      uint32_t maxPipelines = 32;
+      uint32_t maxFramebuffers = 64;
     } gpu;
   };
 
@@ -312,11 +290,11 @@ namespace xe {
   struct VertexDeclaration {
     const char *name;
     VertexFormat::Enum format;
-    uint bufferIndex;
+    uint32_t bufferIndex;
     VertexStep vertexStep;
 
-    uint offset;
-    uint stride;
+    uint32_t offset;
+    uint32_t stride;
   };
 
   enum class IndexFormat {

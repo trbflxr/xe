@@ -12,8 +12,8 @@ namespace xe {
 
   struct Event {
     struct SizeEvent {
-      uint width;
-      uint height;
+      uint32_t width;
+      uint32_t height;
     };
 
     struct Key {
@@ -25,7 +25,7 @@ namespace xe {
     };
 
     struct Text {
-      uint unicode;
+      uint32_t unicode;
     };
 
     struct MouseMove {

@@ -25,14 +25,14 @@ public:                                                                   \
     void setName(std::string_view name) { name_ = name; }
     std::string_view name() const { return name_; }
 
-    uint id() const { return id_; }
+    uint32_t id() const { return id_; }
 
     virtual std::string_view type() const = 0;
     virtual std::string_view baseType() const = 0;
 
   private:
     std::string name_;
-    uint id_;
+    uint32_t id_;
   };
 
 }

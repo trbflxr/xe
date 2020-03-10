@@ -79,8 +79,8 @@ namespace xe {
 
     void setParent(const std::shared_ptr<Transform> &parent);
     const std::shared_ptr<Transform> &parent() const;
-    const std::shared_ptr<Transform> &child(uint index = 0) const;
-    uint childrenSize() const;
+    const std::shared_ptr<Transform> &child(uint32_t index = 0) const;
+    uint32_t childrenSize() const;
 
     void updateWorldTransform() const;
 

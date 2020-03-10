@@ -9,7 +9,7 @@
 
 struct State {
   xe::gpu::Framebuffer fb;
-  static constexpr uint INSTANCES = 50000;
+  static constexpr uint32_t INSTANCES = 50000;
   struct {
     xe::vec4 instancePositions[INSTANCES];
     xe::gpu::Pipeline material;
@@ -50,7 +50,7 @@ private:
 private:
   State state_;
   void *texData_;
-  int32 instances_;
+  int32_t instances_;
 
   std::shared_ptr<xe::GameObject> camera_;
 };

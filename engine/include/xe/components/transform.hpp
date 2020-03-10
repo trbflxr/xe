@@ -52,8 +52,8 @@ namespace xe {
 
     void rotateAround(const vec3 &point, const quat &delta, TransformSpace space = TransformSpace::Local);
     void rotateAround(const vec3 &point, const vec3 &delta, TransformSpace space = TransformSpace::Local);
-    void rotateAround(const ref_ptr<GameObject> &obj, const quat &delta, TransformSpace space = TransformSpace::Local);
-    void rotateAround(const ref_ptr<GameObject> &obj, const vec3 &delta, TransformSpace space = TransformSpace::Local);
+    void rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, TransformSpace space = TransformSpace::Local);
+    void rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, TransformSpace space = TransformSpace::Local);
 
     void lookAt(const vec3 &target, const vec3 &up = vec3::unitY(), TransformSpace space = TransformSpace::World);
 
@@ -77,9 +77,9 @@ namespace xe {
 
     mat4 worldTransform() const;
 
-    void setParent(const ref_ptr<Transform> &parent);
-    const ref_ptr<Transform> &parent() const;
-    const ref_ptr<Transform> &child(uint index = 0) const;
+    void setParent(const std::shared_ptr<Transform> &parent);
+    const std::shared_ptr<Transform> &parent() const;
+    const std::shared_ptr<Transform> &child(uint index = 0) const;
     uint childrenSize() const;
 
     void updateWorldTransform() const;
@@ -90,8 +90,8 @@ namespace xe {
   private:
     mutable bool dirty_;
 
-    ref_ptr<Transform> parent_;
-    vector<ref_ptr<Transform>> children_;
+    std::shared_ptr<Transform> parent_;
+    std::vector<std::shared_ptr<Transform>> children_;
 
     vec3 position_;
     quat rotation_;
@@ -118,7 +118,7 @@ namespace xe {
     template<>
     class Getter<xe::Transform> {
     public:
-      static const ref_ptr<System::Transform> &get();
+      static const std::shared_ptr<System::Transform> &get();
     };
 
   }

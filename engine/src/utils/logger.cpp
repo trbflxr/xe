@@ -35,7 +35,7 @@ namespace xe {
   }
 
   Logger &Logger::ref() {
-    static ref_ptr<Logger> logger;
+    static std::shared_ptr<Logger> logger;
     if (!logger) {
       logger.reset(new Logger());
     }

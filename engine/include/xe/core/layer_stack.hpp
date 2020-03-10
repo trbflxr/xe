@@ -28,18 +28,18 @@ namespace xe {
 
     void processEvents(const Event &e);
 
-    void pushLayer(const ref_ptr<Layer> &layer);
-    ref_ptr<Layer> popLayer();
-    void pushOverlay(const ref_ptr<Layer> &overlay);
-    ref_ptr<Layer> popOverlay();
+    void pushLayer(const std::shared_ptr<Layer> &layer);
+    std::shared_ptr<Layer> popLayer();
+    void pushOverlay(const std::shared_ptr<Layer> &overlay);
+    std::shared_ptr<Layer> popOverlay();
 
-    inline ref_ptr<Layer> &topLayer() { return *(layers_.begin() + (index_ - 1)); }
+    inline std::shared_ptr<Layer> &topLayer() { return *(layers_.begin() + (index_ - 1)); }
 
-    inline vector<ref_ptr<Layer>>::iterator begin() { return layers_.begin(); }
-    inline vector<ref_ptr<Layer>>::iterator end() { return layers_.end(); }
+    inline std::vector<std::shared_ptr<Layer>>::iterator begin() { return layers_.begin(); }
+    inline std::vector<std::shared_ptr<Layer>>::iterator end() { return layers_.end(); }
 
   private:
-    vector<ref_ptr<Layer>> layers_;
+    std::vector<std::shared_ptr<Layer>> layers_;
     size_t index_;
   };
 

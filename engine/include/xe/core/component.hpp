@@ -5,7 +5,7 @@
 #ifndef XE_COMPONENT_HPP
 #define XE_COMPONENT_HPP
 
-#include <xe/memory.hpp>
+#include <memory>
 #include <xe/core/object.hpp>
 #include <xe/core/timestep.hpp>
 
@@ -21,12 +21,12 @@ namespace xe {
   public:
     Component();
 
-    inline virtual const ref_ptr<GameObject> &gameObject() { return gameObject_; }
-    inline virtual const ref_ptr<Transform> &transform() { return transform_; }
+    inline virtual const std::shared_ptr<GameObject> &gameObject() { return gameObject_; }
+    inline virtual const std::shared_ptr<Transform> &transform() { return transform_; }
 
     template<class T>
-    const ref_ptr<T> &getComponent() { //todo: test
-      ref_ptr<T> component;
+    const std::shared_ptr<T> &getComponent() { //todo: test
+      std::shared_ptr<T> component;
       for (auto &&c : gameObject_->getComponents()) {
         if ((component = dynamic_cast<T *>(c.get()))) {
           return component;
@@ -36,8 +36,8 @@ namespace xe {
     }
 
   private:
-    ref_ptr<GameObject> gameObject_;
-    ref_ptr<Transform> transform_;
+    std::shared_ptr<GameObject> gameObject_;
+    std::shared_ptr<Transform> transform_;
   };
 
   namespace System {
@@ -59,7 +59,7 @@ namespace xe {
       virtual void onSceneChanged();
 
     protected:
-      ref_ptr<Scene> scene_;
+      std::shared_ptr<Scene> scene_;
     };
 
     template<class T>
@@ -69,13 +69,13 @@ namespace xe {
 #define XE_COMPONENT_SYSTEM(typeName, baseTypeName)          \
   XE_OBJECT(System::##typeName, System::##baseTypeName);     \
   template<typename T>                                       \
-  ref_ptr<T> createInstance() {                              \
-    ref_ptr<T> c = make_ref<T>();                            \
+    std::shared_ptr<T> createInstance() {                    \
+    std::shared_ptr<T> c = std::make_shared<T>();            \
     components_.push_back(c);                                \
     return c;                                                \
   }                                                          \
   private:                                                   \
-  vector<ref_ptr<xe::##typeName>> components_
+  std::vector<std::shared_ptr<xe::##typeName>> components_
 
 }
 

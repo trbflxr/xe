@@ -11,7 +11,7 @@ namespace xe {
     setName("GameObject");
     transform_ = System::Getter<Transform>::get()->createInstance<Transform>();
     transform_->transform_ = transform_;
-    ref_ptr<GameObject> g;
+    std::shared_ptr<GameObject> g;
     g.reset(this);
     transform_->gameObject_ = g;
     components_.push_back(transform_);

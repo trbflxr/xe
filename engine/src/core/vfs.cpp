@@ -9,7 +9,7 @@
 namespace xe {
 
   VFS &VFS::ref() {
-    static scoped_ptr<VFS> vfs;
+    static std::unique_ptr<VFS> vfs;
     if (!vfs) {
       vfs.reset(new VFS());
     }
@@ -21,7 +21,7 @@ namespace xe {
   }
 
   void VFS::unmount(const string &virtualPath, const string &physicalPath) {
-    vector<string> &temp = ref().mountPoints_[virtualPath];
+    std::vector<string> &temp = ref().mountPoints_[virtualPath];
     temp.erase(std::remove_if(temp.begin(), temp.end(), [&](const string &pp) {
                  return pp == physicalPath;
                }),
@@ -38,7 +38,7 @@ namespace xe {
       return FileSystem::exists(path);
     }
 
-    vector<string> dirs = path.split('/');
+    std::vector<string> dirs = path.split('/');
     const string &virtualDir = dirs.front();
 
     if (ref().mountPoints_.find(virtualDir) == ref().mountPoints_.end() ||

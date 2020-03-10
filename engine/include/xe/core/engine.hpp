@@ -5,7 +5,7 @@
 #ifndef XE_ENGINE_HPP
 #define XE_ENGINE_HPP
 
-#include <xe/memory.hpp>
+#include <memory>
 #include <xe/core/gpu.hpp>
 #include <xe/core/assets.hpp>
 #include <xe/core/timestep.hpp>
@@ -31,14 +31,14 @@ namespace xe {
 
     void setUiFunction(const std::function<void(void *)> &function, void *data);
 
-    void loadScene(const ref_ptr<Scene> &scene);
-    inline const ref_ptr<Scene> &scene() { return scene_; }
+    void loadScene(const std::shared_ptr<Scene> &scene);
+    inline const std::shared_ptr<Scene> &scene() { return scene_; }
 
     inline Window &window() { return *gpu_->window_; }
     inline GPU &gpu() { return *gpu_; }
     inline AssetManager &assetManager() { return *assetManager_; }
 
-    inline const ref_ptr<System::Transform> &transform() { return transform_; }
+    inline const std::shared_ptr<System::Transform> &transform() { return transform_; }
 
     static bool isKeyPressed(Keyboard::Key key);
     static bool isMouseButtonPressed(Mouse::Button button);
@@ -65,11 +65,11 @@ namespace xe {
   private:
     Params params_;
 
-    ref_ptr<Scene> scene_;
-    ref_ptr<GPU> gpu_;
-    ref_ptr<AssetManager> assetManager_;
+    std::shared_ptr<Scene> scene_;
+    std::shared_ptr<GPU> gpu_;
+    std::shared_ptr<AssetManager> assetManager_;
 
-    ref_ptr<System::Transform> transform_;
+    std::shared_ptr<System::Transform> transform_;
   };
 
 }

@@ -109,27 +109,27 @@ namespace xe {
     }
   }
 
-  void LayerStack::pushLayer(const ref_ptr<Layer> &layer) {
+  void LayerStack::pushLayer(const std::shared_ptr<Layer> &layer) {
     layer->onInit();
     layers_.emplace(layers_.begin() + index_, layer);
     ++index_;
   }
 
-  ref_ptr<Layer> LayerStack::popLayer() {
+  std::shared_ptr<Layer> LayerStack::popLayer() {
     --index_;
-    ref_ptr<Layer> layer = layers_[index_];
+    std::shared_ptr<Layer> layer = layers_[index_];
     layers_.erase(layers_.begin() + index_);
     layer->onClose();
     return layer;
   }
 
-  void LayerStack::pushOverlay(const ref_ptr<Layer> &overlay) {
+  void LayerStack::pushOverlay(const std::shared_ptr<Layer> &overlay) {
     overlay->onInit();
     layers_.push_back(overlay);
   }
 
-  ref_ptr<Layer> LayerStack::popOverlay() {
-    ref_ptr<Layer> overlay = layers_.back();
+  std::shared_ptr<Layer> LayerStack::popOverlay() {
+    std::shared_ptr<Layer> overlay = layers_.back();
     layers_.pop_back();
     overlay->onClose();
     return overlay;

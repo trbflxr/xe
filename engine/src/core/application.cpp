@@ -20,23 +20,23 @@ namespace xe {
 
   }
 
-  ref_ptr<Layer> &Application::topLayer() {
+  std::shared_ptr<Layer> &Application::topLayer() {
     return layerStack_.topLayer();
   }
 
-  void Application::pushLayer(const ref_ptr<Layer> &layer) {
+  void Application::pushLayer(const std::shared_ptr<Layer> &layer) {
     layerStack_.pushLayer(layer);
   }
 
-  ref_ptr<Layer> Application::popLayer() {
+  std::shared_ptr<Layer> Application::popLayer() {
     return layerStack_.popLayer();
   }
 
-  void Application::pushOverlay(const ref_ptr<Layer> &overlay) {
+  void Application::pushOverlay(const std::shared_ptr<Layer> &overlay) {
     layerStack_.pushOverlay(overlay);
   }
 
-  ref_ptr<Layer> Application::popOverlay() {
+  std::shared_ptr<Layer> Application::popOverlay() {
     return layerStack_.popOverlay();
   }
 

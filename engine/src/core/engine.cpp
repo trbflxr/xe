@@ -19,7 +19,7 @@ namespace xe {
   }
 
   Engine &Engine::ref() {
-    static scoped_ptr<Engine> e;
+    static std::unique_ptr<Engine> e;
     if (!e) {
       e.reset(new Engine());
     }
@@ -36,7 +36,7 @@ namespace xe {
     XE_TRACE_BEGIN("XE", "Engine systems init");
     XE_CORE_INFO("[ENGINE] Initializing engine systems");
 
-    transform_ = make_ref<System::Transform>();
+    transform_ = std::make_shared<System::Transform>();
 
     gpu_->init();
     assetManager_->init();
@@ -124,7 +124,7 @@ namespace xe {
     XE_TRACE_END("XE", "Engine systems stop");
   }
 
-  void Engine::loadScene(const ref_ptr<Scene> &scene) {
+  void Engine::loadScene(const std::shared_ptr<Scene> &scene) {
     XE_TRACE_BEGIN("XE", "Load scene");
 
     if (!scene) {

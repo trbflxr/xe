@@ -5,10 +5,10 @@
 #ifndef XE_VFS_HPP
 #define XE_VFS_HPP
 
-#include <xe/memory.hpp>
+#include <memory>
+#include <vector>
+#include <unordered_map>
 #include <xe/string.hpp>
-#include <xe/vector.hpp>
-#include <xe/unordered_map.hpp>
 #include <xe/utils/noncopyable.hpp>
 #include <xe/core/filesystem.hpp>
 
@@ -33,7 +33,7 @@ namespace xe {
     static VFS &ref();
 
   private:
-    unordered_map<string, vector<string>> mountPoints_;
+    std::unordered_map<string, std::vector<string>> mountPoints_;
   };
 
 }

@@ -104,13 +104,13 @@ namespace xe::gpu {
     return data;
   }
 
-  vector<void *> Texture::loadCubemapFromFile(const string &rt, const string &lf,
+  std::vector<void *> Texture::loadCubemapFromFile(const string &rt, const string &lf,
                                               const string &up, const string &dn,
                                               const string &bk, const string &ft,
                                               Texture::Info &tex, bool flip) {
 
-    assert(false);
-    return xe::vector<void *>();
+    XE_ASSERT(false, "Not supported yet");
+    return std::vector<void *>();
   }
 
   Texture Framebuffer::colorAttachment(uint16 index) const {

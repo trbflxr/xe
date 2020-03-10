@@ -6,43 +6,18 @@
 #define XE_MEMORY_HPP
 
 #include <memory>
+#include <xe/assert.hpp>
 
 namespace xe {
 
-  template<typename T>
-  using scoped_ptr = std::unique_ptr<T>;
-
-  template<typename T, typename... Args>
-  scoped_ptr<T> make_scoped(Args &&... args) {
-    return scoped_ptr<T>(new T(std::forward<Args>(args)...));
-  }
-
-  template<typename T>
-  using ref_ptr = std::shared_ptr<T>;
-
-  template<typename T, typename... Args>
-  ref_ptr<T> make_ref(Args &&... args) {
-    return ref_ptr<T>(new T(std::forward<Args>(args)...));
-  }
-
   template<class T>
   struct memory {
-    scoped_ptr<T[]> data;
+    std::unique_ptr<T[]> data;
     size_t size = 0;
 
-    T &operator[](size_t pos) {
-      assert(pos < size && "Invalid position...");
-      return data[pos];
-    }
+    memory() = default;
 
-    const T &operator[](size_t pos) const {
-      assert(pos < size && "Invalid position...");
-      return data[pos];
-    }
-
-    memory() { }
-
-    memory(memory &&m) {
+    memory(memory &&m) noexcept {
       data = std::move(m.data);
       size = m.size;
       m.size = 0;
@@ -65,6 +40,16 @@ namespace xe {
     void alloc(size_t c) {
       data = std::make_unique<T[]>(c);
       size = c;
+    }
+
+    T &operator[](size_t pos) {
+      XE_ASSERT(pos < size, "Invalid position: {}", pos);
+      return data[pos];
+    }
+
+    const T &operator[](size_t pos) const {
+      XE_ASSERT(pos < size, "Invalid position: {}", pos);
+      return data[pos];
     }
   };
 

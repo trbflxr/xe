@@ -5,8 +5,8 @@
 #ifndef XE_ASSETS_HPP
 #define XE_ASSETS_HPP
 
+#include <unordered_map>
 #include <xe/common.hpp>
-#include <xe/unordered_map.hpp>
 #include <xe/core/object.hpp>
 #include <xe/utils/noncopyable.hpp>
 #include <xe/graphics/gpu_resources.hpp>
@@ -19,8 +19,8 @@ namespace xe {
   public:
     void init();
 
-    void addShader(const string &name, const ref_ptr<gpu::Pipeline::Info::Shader> &shader);
-    const ref_ptr<gpu::Pipeline::Info::Shader> &getShader(const string &name);
+    void addShader(const string &name, const std::shared_ptr<gpu::Pipeline::Info::Shader> &shader);
+    const std::shared_ptr<gpu::Pipeline::Info::Shader> &getShader(const string &name);
 
   private:
     AssetManager();
@@ -28,7 +28,7 @@ namespace xe {
     void initDefaultShaders();
 
   private:
-    unordered_map<string, ref_ptr<gpu::Pipeline::Info::Shader>> shaders_;
+    std::unordered_map<string, std::shared_ptr<gpu::Pipeline::Info::Shader>> shaders_;
   };
 
 }

@@ -6,9 +6,9 @@
 #define XE_STRING_HPP
 
 #include <iterator>
+#include <vector>
 #include <string>
 #include <xe/common.hpp>
-#include <xe/vector.hpp>
 
 #pragma warning(disable : 4251) //export std::string
 
@@ -74,8 +74,8 @@ namespace xe {
 
     static uint wcharToUTF8(uint wchar);
 
-    vector<string> split(char delimiter) const;
-    vector<string> split(const string &delimiters) const;
+    std::vector<string> split(char delimiter) const;
+    std::vector<string> split(const string &delimiters) const;
 
     static const char *findToken(const char *str, const string &token);
     static const char *findChar(const char *str, char ch);
@@ -85,7 +85,7 @@ namespace xe {
     static string getFileName(const string &str, bool includeExt = true, const char *delims = "\\/");
     static string getFileExt(const string &str);
 
-    static vector<string> tokenize(const string &str);
+    static std::vector<string> tokenize(const string &str);
 
   private:
     friend bool operator==(const string &left, const string &right);

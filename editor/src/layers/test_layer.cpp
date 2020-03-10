@@ -61,10 +61,10 @@ TestLayer::TestLayer(Application &app) :
 void TestLayer::onInit() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
 
-  ref_ptr<Scene> scene = make_ref<Scene>();
+  std::shared_ptr<Scene> scene = std::make_shared<Scene>();
   Engine::ref().loadScene(scene);
 
-  camera_ = make_ref<GameObject>();
+  camera_ = std::make_shared<GameObject>();
   camera_->setName("Camera");
   camera_->transform()->setLocalPositionX(2.0f);
 

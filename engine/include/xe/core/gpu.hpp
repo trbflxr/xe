@@ -8,7 +8,7 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
-#include <xe/memory.hpp>
+#include <memory>
 #include <xe/core/object.hpp>
 #include <xe/graphics/display_list.hpp>
 
@@ -56,9 +56,9 @@ namespace xe {
     bool existing_;
     Params::GPU params_{ };
 
-    ref_ptr<Window> window_;
+    std::shared_ptr<Window> window_;
 
-    scoped_ptr<DisplayList> logicFrame_;
+    std::unique_ptr<DisplayList> logicFrame_;
     DisplayList renderFrame_;
 
     struct ThreadSync {

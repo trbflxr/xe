@@ -16,18 +16,18 @@ namespace xe {
   public:
     GameObject();
 
-    inline const ref_ptr<Transform> &transform() { return transform_; }
+    inline const std::shared_ptr<Transform> &transform() { return transform_; }
 
     void setActive(bool active);
     inline bool active() const { return active_; }
 
     inline uint sceneId() const { return sceneId_; }
 
-    inline const vector<ref_ptr<Component>> &getComponents() const { return components_; }
+    inline const std::vector<std::shared_ptr<Component>> &getComponents() const { return components_; }
 
     template<class T>
-    const ref_ptr<T> &getComponent() { //todo: test
-      ref_ptr<T> component;
+    const std::shared_ptr<T> &getComponent() { //todo: test
+      std::shared_ptr<T> component;
       for (auto &&c : components_) {
         if ((component = dynamic_cast<T *>(c.get()))) {
           return component;
@@ -37,8 +37,8 @@ namespace xe {
     }
 
     template<class T>
-    const ref_ptr<T> &getInChildrenComponent() { //todo: test
-      ref_ptr<T> component;
+    const std::shared_ptr<T> &getInChildrenComponent() { //todo: test
+      std::shared_ptr<T> component;
       for (size_t i = 0; i < transform_->childrenSize(); ++i) {
         component = transform_->child(i)->getComponent<T>();
         if (component) {
@@ -53,14 +53,14 @@ namespace xe {
     }
 
     template<class T, class L=T>
-    const ref_ptr<T> &addComponent() { //todo: test
+    const std::shared_ptr<T> &addComponent() { //todo: test
       for (auto &&c : components_) {
         auto other = dynamic_cast<T *>(c.get());
         if (other) {
           return other;
         }
       }
-      ref_ptr<T> component = System::Getter<L>::get()->createInstance<T>();
+      std::shared_ptr<T> component = System::Getter<L>::get()->createInstance<T>();
       component->gameObject_ = this;
       component->transform_ = transform_;
       components_.push_back(component);
@@ -68,8 +68,8 @@ namespace xe {
     }
 
   private:
-    ref_ptr<Transform> transform_;
-    vector<ref_ptr<Component>> components_;
+    std::shared_ptr<Transform> transform_;
+    std::vector<std::shared_ptr<Component>> components_;
 
     uint sceneId_ = 0;
     bool active_ = true;

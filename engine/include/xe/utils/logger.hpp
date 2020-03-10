@@ -5,10 +5,10 @@
 #ifndef XE_LOGGER_HPP
 #define XE_LOGGER_HPP
 
+#include <memory>
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 #include <xe/common.hpp>
-#include <xe/memory.hpp>
 #include <xe/utils/noncopyable.hpp>
 
 namespace xe {
@@ -35,8 +35,8 @@ namespace xe {
     static Logger &ref();
 
   private:
-    ref_ptr<spdlog::logger> coreLogger_;
-    ref_ptr<spdlog::logger> clientLogger_;
+    std::shared_ptr<spdlog::logger> coreLogger_;
+    std::shared_ptr<spdlog::logger> clientLogger_;
   };
 
 }

@@ -241,11 +241,11 @@ namespace xe {
     rotateAround(point, quat(delta), space);
   }
 
-  void Transform::rotateAround(const ref_ptr<GameObject> &obj, const quat &delta, TransformSpace space) {
+  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, TransformSpace space) {
     rotateAround(obj->transform()->worldPosition(), delta, space);
   }
 
-  void Transform::rotateAround(const ref_ptr<GameObject> &obj, const vec3 &delta, TransformSpace space) {
+  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, TransformSpace space) {
     rotateAround(obj->transform()->worldPosition(), quat(delta), space);
   }
 
@@ -362,14 +362,14 @@ namespace xe {
     return worldTransform_;
   }
 
-  void Transform::setParent(const ref_ptr<Transform> &parent) {
+  void Transform::setParent(const std::shared_ptr<Transform> &parent) {
     if (!parent) {
       return;
     }
 
     if (parent_ != parent) {
       parent_ = parent;
-      ref_ptr<Transform> t;
+      std::shared_ptr<Transform> t;
       t.reset(this);
       parent_->children_.push_back(t);
 
@@ -384,12 +384,12 @@ namespace xe {
     }
   }
 
-  const ref_ptr<Transform> &Transform::parent() const {
+  const std::shared_ptr<Transform> &Transform::parent() const {
     return parent_;
   }
 
-  const ref_ptr<Transform> &Transform::child(uint index) const {
-    static const ref_ptr<Transform> empty;
+  const std::shared_ptr<Transform> &Transform::child(uint index) const {
+    static const std::shared_ptr<Transform> empty;
     if (index > children_.size() - 1) {
       XE_CORE_ERROR("[Transform] Could not find child with index {} (index out of range). Returning nullptr.", index);
       return empty;
@@ -451,7 +451,7 @@ namespace xe {
     XE_TRACE_END("XE", "Transform render update");
   }
 
-  const ref_ptr<System::Transform> &System::Getter<Transform>::get() {
+  const std::shared_ptr<System::Transform> &System::Getter<Transform>::get() {
     return Engine::ref().transform();
   }
 

@@ -5,8 +5,8 @@
 #ifndef XE_FILESYSTEM_HPP
 #define XE_FILESYSTEM_HPP
 
+#include <vector>
 #include <xe/string.hpp>
-#include <xe/vector.hpp>
 #include <xe/utils/noncopyable.hpp>
 
 namespace xe {
@@ -24,7 +24,7 @@ namespace xe {
 
     static string getWorkingDirectory();
 
-    static vector<string> getLogicalDrives();
+    static std::vector<std::string> getLogicalDrives();
 
     static void updateVolumes() { ref().updateVolumes_ = true; }
 

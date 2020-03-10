@@ -5,8 +5,8 @@
 #ifndef XE_DISPLAY_LIST_HPP
 #define XE_DISPLAY_LIST_HPP
 
-#include <xe/memory.hpp>
-#include <xe/vector.hpp>
+#include <memory>
+#include <vector>
 #include <xe/core/object.hpp>
 #include <xe/graphics/color.hpp>
 #include <xe/graphics/gpu_resources.hpp>
@@ -47,7 +47,7 @@ namespace xe {
 #define PROP_ARRAY(type, count, name) \
     type name[count] = {};\
     Self &set_##name(size_t i, const type &c) { name[i] = c; return *this; }\
-    Self &set_v_##name(const vector<type> &c) { for (uint i = 0; i < c.size(); ++i) { set_##name(i, c[i]); } return *this; }
+    Self &set_v_##name(const std::vector<type> &c) { for (uint i = 0; i < c.size(); ++i) { set_##name(i, c[i]); } return *this; }
 
     struct ViewData {
       typedef ViewData Self;
@@ -131,7 +131,7 @@ namespace xe {
     RenderData &renderCommand();
 
   private:
-    vector<ref_ptr<Command>> commands_;
+    std::vector<std::shared_ptr<Command>> commands_;
   };
 
 }

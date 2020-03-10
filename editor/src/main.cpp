@@ -30,8 +30,8 @@ protected:
     VFS::mount("shaders", "assets/shaders/");
     VFS::mount("textures", "assets/textures/");
 
-    ref_ptr<TestLayer> l = make_ref<TestLayer>(*this);
-    ref_ptr<TestOverlay> o = make_ref<TestOverlay>(*this);
+    std::shared_ptr<TestLayer> l = std::make_shared<TestLayer>(*this);
+    std::shared_ptr<TestOverlay> o = std::make_shared<TestOverlay>(*this);
     pushLayer(l);
     pushOverlay(o);
   }

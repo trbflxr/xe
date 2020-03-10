@@ -13,7 +13,7 @@ namespace xe {
       updateVolumes_(true) { }
 
   FileSystem &FileSystem::ref() {
-    static scoped_ptr<FileSystem> fs;
+    static std::unique_ptr<FileSystem> fs;
     if (!fs) {
       fs.reset(new FileSystem());
     }

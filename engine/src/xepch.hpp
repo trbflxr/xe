@@ -14,12 +14,12 @@
 #include <algorithm>
 #include <utility>
 #include <sstream>
+#include <memory>
+#include <vector>
+#include <unordered_map>
 
-#include <xe/memory.hpp>
 #include <xe/string.hpp>
-#include <xe/vector.hpp>
-#include <xe/unordered_map.hpp>
-
+#include <xe/memory.hpp>
 #include <xe/math/math.hpp>
 
 #include <xe/utils/debug_trace.hpp>

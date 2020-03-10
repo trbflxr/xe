@@ -34,11 +34,11 @@ namespace xe {
       usedFramebuffers_(0) {
 
     setName("GPU");
-    window_ = make_ref<Window>();
+    window_ = std::make_shared<Window>();
 
     ctx_ = new RenderContext();
 
-    logicFrame_ = make_scoped<DisplayList>();
+    logicFrame_ = std::make_unique<DisplayList>();
   }
 
   GPU::~GPU() {

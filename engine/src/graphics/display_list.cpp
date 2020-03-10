@@ -24,7 +24,7 @@ namespace xe {
 
   DisplayList::ViewData &DisplayList::setupViewCommand() {
     SetupViewCommand *cmd = new SetupViewCommand();
-    ref_ptr<SetupViewCommand> c;
+    std::shared_ptr<SetupViewCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;
@@ -32,7 +32,7 @@ namespace xe {
 
   DisplayList::ClearData &DisplayList::clearCommand() {
     ClearCommand *cmd = new ClearCommand();
-    ref_ptr<ClearCommand> c;
+    std::shared_ptr<ClearCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;
@@ -40,7 +40,7 @@ namespace xe {
 
   DisplayList::FillBufferData &DisplayList::fillBufferCommand() {
     FillBufferCommand *cmd = new FillBufferCommand();
-    ref_ptr<FillBufferCommand> c;
+    std::shared_ptr<FillBufferCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;
@@ -48,7 +48,7 @@ namespace xe {
 
   DisplayList::FillTextureData &DisplayList::fillTextureCommand() {
     FillTextureCommand *cmd = new FillTextureCommand();
-    ref_ptr<FillTextureCommand> c;
+    std::shared_ptr<FillTextureCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;
@@ -56,7 +56,7 @@ namespace xe {
 
   DisplayList::SetupPipelineData &DisplayList::setupPipelineCommand() {
     SetupPipelineCommand *cmd = new SetupPipelineCommand();
-    ref_ptr<SetupPipelineCommand> c;
+    std::shared_ptr<SetupPipelineCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;
@@ -64,7 +64,7 @@ namespace xe {
 
   DisplayList::RenderData &DisplayList::renderCommand() {
     RenderCommand *cmd = new RenderCommand();
-    ref_ptr<RenderCommand> c;
+    std::shared_ptr<RenderCommand> c;
     c.reset(cmd);
     commands_.push_back(c);
     return cmd->data_;

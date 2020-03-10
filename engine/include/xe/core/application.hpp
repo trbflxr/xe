@@ -16,12 +16,12 @@ namespace xe {
     explicit Application();
     ~Application() override;
 
-    ref_ptr<Layer> &topLayer();
+    std::shared_ptr<Layer> &topLayer();
 
-    void pushLayer(const ref_ptr<Layer> &layer);
-    ref_ptr<Layer> popLayer();
-    void pushOverlay(const ref_ptr<Layer> &overlay);
-    ref_ptr<Layer> popOverlay();
+    void pushLayer(const std::shared_ptr<Layer> &layer);
+    std::shared_ptr<Layer> popLayer();
+    void pushOverlay(const std::shared_ptr<Layer> &overlay);
+    std::shared_ptr<Layer> popOverlay();
 
     bool isExisting() const;
 

@@ -110,15 +110,15 @@ namespace xe {
     return utf8;
   }
 
-  vector<string> string::split(char delimiter) const {
+  std::vector<string> string::split(char delimiter) const {
     return split(string(delimiter));
   }
 
-  vector<string> string::split(const string &delimiters) const {
+  std::vector<string> string::split(const string &delimiters) const {
     size_t start = 0;
     size_t end = base_.find_first_of(delimiters.base_);
 
-    vector<string> result;
+    std::vector<string> result;
 
     while (end <= string::npos) {
       string token = base_.substr(start, end - start);
@@ -206,7 +206,7 @@ namespace xe {
     return string(dot + 1);
   }
 
-  vector<string> string::tokenize(const string &str) {
+  std::vector<string> string::tokenize(const string &str) {
     return str.split(" \t\n");
   }
 

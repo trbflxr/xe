@@ -52,7 +52,7 @@ namespace xe {
       };
 
       static void *loadFromFile(const char *file, Texture::Info &tex, bool flip = true);
-      static vector<void *> loadCubemapFromFile(const string &rt, const string &lf, const string &up,
+      static std::vector<void *> loadCubemapFromFile(const string &rt, const string &lf, const string &up,
                                                 const string &dn, const string &bk, const string &ft,
                                                 Texture::Info &tex, bool flip = true);
     };

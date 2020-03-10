@@ -38,7 +38,7 @@ namespace xe::gpu {
   void GLShaderParser::parseUniform(const string &statement, Backend::Uniform *uniforms,
                                     size_t &index, size_t &outSize) {
 
-    vector<string> tokens = string::tokenize(statement);
+    auto tokens = string::tokenize(statement);
     size_t i = tokens.size() - 1;
 
     if (tokens[2][0] == '{') return; // uniform buffer

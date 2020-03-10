@@ -129,8 +129,8 @@ namespace xe {
     return buffer;
   }
 
-  vector<string> FileSystem::getLogicalDrives() {
-    static vector<string> drives;
+  std::vector<std::string> FileSystem::getLogicalDrives() {
+    static std::vector<std::string> drives;
 
     if (ref().updateVolumes_) {
       ref().updateVolumes_ = false;

@@ -343,7 +343,7 @@ namespace xe::gpu {
     }
   }
 
-  static string prettyCodeError(const char *src) {
+  static std::string prettyCodeError(const char *src) {
     std::stringstream ss;
 
     size_t i = 0;
@@ -381,7 +381,7 @@ namespace xe::gpu {
       static const size_t maxLength = 2048;
       char buffer[maxLength];
       GLCHECK(glGetShaderInfoLog(shader, maxLength, nullptr, buffer));
-      string code = prettyCodeError(src);
+      std::string code = prettyCodeError(src);
       XE_CORE_ERROR("[GL Error] Could compile shader ({}):{}\n// CODE:\n{}", type, buffer, code);
       GLCHECK(glDeleteShader(shader));
       return 0;
@@ -389,7 +389,7 @@ namespace xe::gpu {
     return shader;
   }
 
-  static bool parseOrError(const string &source, Backend::Uniform *uniforms, size_t &outUsedUniforms, size_t &outSize) {
+  static bool parseOrError(std::string_view source, Backend::Uniform *uniforms, size_t &outUsedUniforms, size_t &outSize) {
     if (!GLShaderParser::parse(source, uniforms, outUsedUniforms, outSize)) {
       XE_CORE_ERROR("[GL Error] Max shader uniforms reached ({}/{})", cMaxShaderUniforms, outUsedUniforms);
     }

@@ -14,24 +14,24 @@ namespace xe {
 public:                                                                   \
   using ClassName = typeName;                                             \
   using BaseClassName = baseTypeName;                                     \
-  inline const char* type() const override { return #typeName; }          \
-  inline const char* baseType() const override { return #baseTypeName; }  \
+  std::string_view type() const override { return #typeName; }            \
+  std::string_view baseType() const override { return #baseTypeName; }    \
 
   class XE_API Object {
   public:
     Object();
     virtual ~Object() = default;
 
-    inline void setName(const char *name) { name_ = name; }
-    inline const string &name() const { return name_; }
+    void setName(std::string_view name) { name_ = name; }
+    std::string_view name() const { return name_; }
 
-    inline uint id() const { return id_; }
+    uint id() const { return id_; }
 
-    virtual const char *type() const = 0;
-    virtual const char *baseType() const = 0;
+    virtual std::string_view type() const = 0;
+    virtual std::string_view baseType() const = 0;
 
   private:
-    string name_;
+    std::string name_;
     uint id_;
   };
 

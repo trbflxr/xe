@@ -16,7 +16,7 @@ namespace xe::gpu {
   public:
     struct Uniform {
       int32 loc = -1;
-      string name;
+      std::string name;
       VertexFormat::Enum type = VertexFormat::Undefined;
       uint size = 0;
       uint offset = 0;

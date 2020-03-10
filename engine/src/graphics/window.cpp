@@ -90,7 +90,7 @@ namespace xe {
     WindowBackend::setSize(data_);
   }
 
-  void Window::setTitle(const string &title) {
+  void Window::setTitle(std::string_view title) {
     data_->title = title;
     WindowBackend::setTitle(data_);
   }

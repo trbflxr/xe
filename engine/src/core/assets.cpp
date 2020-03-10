@@ -11,9 +11,10 @@
 
 namespace xe {
 
-  static string makeShader(const std::initializer_list<const char *> &sources) {
-    static const char *version = "#version 330 core\n";
-    string shader = version;
+  static std::string makeShader(const std::initializer_list<const char *> &sources) {
+    //todo: get version from somewhere
+    static const char *version = "#version 460 core\n";
+    std::string shader = version;
 
     for (const auto &s : sources) {
       shader += s;
@@ -46,7 +47,7 @@ namespace xe {
     XE_TRACE_END("XE", "Default shaders init");
   }
 
-  void AssetManager::addShader(const string &name, const std::shared_ptr<gpu::Pipeline::Info::Shader> &shader) {
+  void AssetManager::addShader(const std::string &name, const std::shared_ptr<gpu::Pipeline::Info::Shader> &shader) {
     auto &&it = shaders_.find(name);
     if (it == shaders_.end()) {
       shaders_.emplace(name, shader);
@@ -55,7 +56,7 @@ namespace xe {
     XE_CORE_ERROR("[AssetManager] Shader '{}' already exists", name);
   }
 
-  const std::shared_ptr<gpu::Pipeline::Info::Shader> &AssetManager::getShader(const string &name) {
+  const std::shared_ptr<gpu::Pipeline::Info::Shader> &AssetManager::getShader(const std::string &name) {
     static const std::shared_ptr<gpu::Pipeline::Info::Shader> empty;
 
     auto &&it = shaders_.find(name);

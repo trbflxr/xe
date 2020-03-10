@@ -16,16 +16,16 @@ namespace xe {
 
   class XE_API VFS : NonCopyable {
   public:
-    static void mount(const string &virtualPath, const string &physicalPath);
-    static void unmount(const string &virtualPath, const string &physicalPath);
-    static void unmount(const string &virtualPath);
+    static void mount(std::string_view virtualPath, std::string_view physicalPath);
+    static void unmount(std::string_view virtualPath, std::string_view physicalPath);
+    static void unmount(std::string_view virtualPath);
 
-    static bool resolvePhysicalPath(const string &path, string &outPhysicalPath);
+    static bool resolvePhysicalPath(std::string_view path, std::string &outPhysicalPath);
 
-    static byte *readFile(const string &path, int64 *outSize = nullptr);
-    static bool readTextFile(const string &path, string &outString);
+    static byte *readFile(std::string_view path, int64 *outSize = nullptr);
+    static bool readTextFile(std::string_view path, std::string &outString);
 
-    static bool writeFile(const string &path, byte *buffer, size_t size);
+    static bool writeFile(std::string_view path, byte *buffer, size_t size);
 
   private:
     VFS() = default;
@@ -33,7 +33,7 @@ namespace xe {
     static VFS &ref();
 
   private:
-    std::unordered_map<string, std::vector<string>> mountPoints_;
+    std::unordered_map<std::string, std::vector<std::string>> mountPoints_;
   };
 
 }

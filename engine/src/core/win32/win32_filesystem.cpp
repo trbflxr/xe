@@ -11,8 +11,8 @@ namespace xe {
 #ifndef XE_GENERIC_FS
   void CALLBACK fileIOCompletionRoutine(DWORD errorCode, DWORD numberOfBytesTransfered, LPOVERLAPPED overlapped) { }
 
-  static HANDLE openFileForReading(const string &path) {
-    return CreateFileW(path.toWide().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+  static HANDLE openFileForReading(std::string_view path) {
+    return CreateFileW(string::utf8ToWide(path).c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
                        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, nullptr);
   }
 
@@ -27,12 +27,12 @@ namespace xe {
     return (bool) ReadFileEx(file, buffer, static_cast<DWORD>(size), &ol, fileIOCompletionRoutine);
   }
 
-  bool FileSystem::exists(const string &file) {
-    const DWORD dwAttrib = GetFileAttributesW(file.toWide().c_str());
+  bool FileSystem::exists(std::string_view file) {
+    const DWORD dwAttrib = GetFileAttributesW(string::utf8ToWide(file).c_str());
     return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
   }
 
-  int64 FileSystem::size(const string &file) {
+  int64 FileSystem::size(std::string_view file) {
     HANDLE handle = openFileForReading(file);
     if (handle == INVALID_HANDLE_VALUE) return -1;
 
@@ -42,7 +42,7 @@ namespace xe {
     return result;
   }
 
-  byte *FileSystem::read(const string &file, int64 *outSize) {
+  byte *FileSystem::read(std::string_view file, int64 *outSize) {
     HANDLE handle = openFileForReading(file);
     const int64 s = getFileSizeInternal(handle);
     const size_t size = static_cast<size_t>(s);
@@ -67,7 +67,7 @@ namespace xe {
     return buffer;
   }
 
-  bool FileSystem::read(const string &file, void *buff, int64 size) {
+  bool FileSystem::read(std::string_view file, void *buff, int64 size) {
     HANDLE handle = openFileForReading(file);
     if (handle == INVALID_HANDLE_VALUE) return false;
 
@@ -81,7 +81,7 @@ namespace xe {
     return success;
   }
 
-  bool FileSystem::readText(const string &file, string &outString) {
+  bool FileSystem::readText(std::string_view file, std::string &outString) {
     HANDLE handle = openFileForReading(file);
     const int64 s = getFileSizeInternal(handle);
     const size_t size = static_cast<size_t>(s);
@@ -103,9 +103,9 @@ namespace xe {
     }
   }
 
-  bool FileSystem::write(const string &file, void *buff, size_t size) {
+  bool FileSystem::write(std::string_view file, void *buff, size_t size) {
     DWORD mode = exists(file) ? OPEN_EXISTING : CREATE_NEW;
-    HANDLE handle = CreateFileW(file.toWide().c_str(), GENERIC_WRITE, 0,
+    HANDLE handle = CreateFileW(string::utf8ToWide(file).c_str(), GENERIC_WRITE, 0,
                                 nullptr, mode, FILE_ATTRIBUTE_NORMAL, nullptr);
 
     if (handle == INVALID_HANDLE_VALUE) return false;
@@ -120,13 +120,13 @@ namespace xe {
 #endif //XE_GENERIC_FS
 
 #ifdef XE_PLATFORM_WINDOWS
-  string FileSystem::getWorkingDirectory() {
+  std::string FileSystem::getWorkingDirectory() {
     static constexpr uint maxSize = 512;
 
     wchar_t buffer[maxSize];
     GetCurrentDirectoryW(maxSize, buffer);
 
-    return buffer;
+    return string::wideToUtf8(buffer);
   }
 
   std::vector<std::string> FileSystem::getLogicalDrives() {

@@ -398,7 +398,7 @@ namespace xe {
   }
 
   uint Transform::childrenSize() const {
-    return children_.size();
+    return static_cast<uint32_t>(children_.size());
   }
 
   void Transform::updateWorldTransform() const {

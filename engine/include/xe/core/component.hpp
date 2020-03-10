@@ -21,8 +21,8 @@ namespace xe {
   public:
     Component();
 
-    inline virtual const std::shared_ptr<GameObject> &gameObject() { return gameObject_; }
-    inline virtual const std::shared_ptr<Transform> &transform() { return transform_; }
+    virtual const std::shared_ptr<GameObject> &gameObject() { return gameObject_; }
+    virtual const std::shared_ptr<Transform> &transform() { return transform_; }
 
     template<class T>
     const std::shared_ptr<T> &getComponent() { //todo: test

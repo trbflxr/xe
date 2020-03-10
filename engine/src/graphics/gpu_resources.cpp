@@ -19,7 +19,7 @@ namespace xe::gpu {
   void *Texture::loadFromFile(const char *file, Texture::Info &tex, bool flip) {
     XE_TRACE_BEGIN("XE", "Texture load");
 
-    string path(file);
+    std::string path(file);
 
     if (!FileSystem::exists(path)) {
       path.insert(0, vfsBasePath);
@@ -43,7 +43,7 @@ namespace xe::gpu {
     void *data = nullptr;
     bool hdr = false;
 
-    string extension = string::getFileExt(file);
+    std::string extension = string::getFileExt(file);
 
     if (extension == "hdr") {
       data = stbi_loadf_from_memory(memory, static_cast<int32>(memorySize), &width, &height, &channels, 0);
@@ -104,10 +104,10 @@ namespace xe::gpu {
     return data;
   }
 
-  std::vector<void *> Texture::loadCubemapFromFile(const string &rt, const string &lf,
-                                              const string &up, const string &dn,
-                                              const string &bk, const string &ft,
-                                              Texture::Info &tex, bool flip) {
+  std::vector<void *> Texture::loadCubemapFromFile(std::string_view rt, std::string_view lf,
+                                                   std::string_view up, std::string_view dn,
+                                                   std::string_view bk, std::string_view ft,
+                                                   Texture::Info &tex, bool flip) {
 
     XE_ASSERT(false, "Not supported yet");
     return std::vector<void *>();

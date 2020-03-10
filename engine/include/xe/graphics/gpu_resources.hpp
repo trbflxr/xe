@@ -52,20 +52,20 @@ namespace xe {
       };
 
       static void *loadFromFile(const char *file, Texture::Info &tex, bool flip = true);
-      static std::vector<void *> loadCubemapFromFile(const string &rt, const string &lf, const string &up,
-                                                const string &dn, const string &bk, const string &ft,
-                                                Texture::Info &tex, bool flip = true);
+      static std::vector<void *> loadCubemapFromFile(std::string_view rt, std::string_view lf, std::string_view up,
+                                                     std::string_view dn, std::string_view bk, std::string_view ft,
+                                                     Texture::Info &tex, bool flip = true);
     };
 
     struct Pipeline : public Resource {
       Pipeline(RenderContext *ctx = nullptr, uint id = 0) : Resource{ctx, ResourceType::Pipeline, id} { }
       struct Info {
         struct Shader {
-          string vert;
-          string tessControl;
-          string tessEval;
-          string geom;
-          string frag;
+          std::string vert;
+          std::string tessControl;
+          std::string tessEval;
+          std::string geom;
+          std::string frag;
         } shader;
         VertexDeclaration attribs[cMaxVertexAttribs] = { };
         TextureType textures[cMaxTextureUnits] = { };

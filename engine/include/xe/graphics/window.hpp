@@ -45,7 +45,7 @@ namespace xe {
     vec2 size() const;
     void setSize(uint width, uint height);
 
-    void setTitle(const string &title);
+    void setTitle(std::string_view title);
     void setIcon(uint width, uint height, byte *pixels);
     void setSwapInterval(bool enabled);
 

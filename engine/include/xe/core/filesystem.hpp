@@ -13,16 +13,16 @@ namespace xe {
 
   class XE_API FileSystem : NonCopyable {
   public:
-    static bool exists(const string &file);
-    static int64 size(const string &file);
+    static bool exists(std::string_view file);
+    static int64 size(std::string_view file);
 
-    static byte *read(const string &file, int64 *outSize = nullptr);
-    static bool read(const string &file, void *buff, int64 size = -1);
-    static bool readText(const string &file, string &outString);
+    static byte *read(std::string_view file, int64 *outSize = nullptr);
+    static bool read(std::string_view file, void *buff, int64 size = -1);
+    static bool readText(std::string_view file, std::string &outString);
 
-    static bool write(const string &file, void *buff, size_t size);
+    static bool write(std::string_view file, void *buff, size_t size);
 
-    static string getWorkingDirectory();
+    static std::string getWorkingDirectory();
 
     static std::vector<std::string> getLogicalDrives();
 

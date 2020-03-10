@@ -44,12 +44,12 @@ namespace xe::gpu {
 
   struct PipelineInstance : public InstanceBase {
     Pipeline::Info info;
-    string vertShader;
-    string tessControlShader;
-    string tessEvalShader;
-    string geomShader;
-    string fragShader;
-    string attributes[cMaxVertexAttribs];
+    std::string vertShader;
+    std::string tessControlShader;
+    std::string tessEvalShader;
+    std::string geomShader;
+    std::string fragShader;
+    std::string attributes[cMaxVertexAttribs];
   };
 
   struct FramebufferInstance : public InstanceBase {

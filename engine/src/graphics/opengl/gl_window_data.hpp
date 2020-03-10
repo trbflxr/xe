@@ -20,7 +20,7 @@ namespace xe {
     bool cursorVisible;
     GLFWimage icon;
 
-    string title;
+    std::string title;
 
     std::atomic<bool> swapInterval;
 

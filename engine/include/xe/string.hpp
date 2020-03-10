@@ -5,160 +5,85 @@
 #ifndef XE_STRING_HPP
 #define XE_STRING_HPP
 
-#include <iterator>
 #include <vector>
 #include <string>
 #include <xe/common.hpp>
 
-#pragma warning(disable : 4251) //export std::string
+namespace xe::string {
 
-namespace xe {
+  bool isWhitespace(char c) noexcept;
+  bool isNumber(std::string_view str) noexcept;
 
-  class XE_API string {
-  public:
-    typedef std::string::iterator iterator;
-    typedef std::string::const_iterator constIterator;
+  std::string fixEscapedChars(std::string str);
+  std::string unfixEscapedChars(std::string str);
 
-    static const size_t npos;
+  std::string wideToUtf8(std::wstring_view wide);
+  std::wstring utf8ToWide(std::string_view utf8);
 
-  public:
-    string() = default;
+  std::vector<std::string> split(std::string_view str, char delimiter);
+  std::vector<std::string> split(std::string_view str, std::string_view delimiters);
 
-    string(char ch);
-    string(wchar_t ch);
-    string(uint ch);
+  const char *findToken(const char *str, std::string_view token);
+  const char *findChar(const char *str, char ch);
+  std::string getWord(const char *str, const char **outPosition);
+  std::string getStatement(const char *str, const char **outPosition = nullptr);
 
-    string(const char *str);
-    string(const std::string &str);
+  std::string replaceFirst(std::string str, std::string_view token, std::string_view to);
 
-    string(const wchar_t *str);
-    string(const std::wstring &str);
+  std::string getDirectoryName(std::string_view str, const char *delims = "\\/");
+  std::string getFileName(std::string_view str, bool includeExt = true, const char *delims = "\\/");
+  std::string getFileExt(std::string_view str);
 
-    string(const string &copy);
+  std::vector<std::string> tokenize(std::string_view str);
 
-    inline void clear() { base_.clear(); }
-    inline size_t size() const { return base_.size(); }
-    inline bool empty() const { return base_.empty(); }
-
-    inline void erase(size_t position, size_t count = 1) { base_.erase(position, count); }
-
-    inline void insert(size_t position, const string &str) { base_.insert(position, str.base_); }
-
-    inline size_t find(const string &str, size_t start = 0) const { return base_.find(str.base_, start); }
-
-    void replace(size_t position, size_t length, const string &replaceWith);
-    void replace(const string &searchFor, const string &replaceWith);
-
-    inline string substr(size_t position, size_t length = npos) const { return base_.substr(position, length); }
-
-    inline const char *data() const { return base_.data(); }
-    inline const char *c_str() const { return base_.c_str(); }
-    inline char *data() { return base_.data(); }
-
-    inline iterator begin() { return base_.begin(); }
-    inline constIterator begin() const { return base_.begin(); }
-
-    inline iterator end() { return base_.end(); }
-    inline constIterator end() const { return base_.end(); }
-
-    std::wstring toWide() const;
-
-    inline string &operator=(const string &right);
-    inline string &operator+=(const string &right);
-
-    inline char operator[](size_t index) const;
-    inline char &operator[](size_t index);
-
-    template<typename OStream>
-    inline friend OStream &operator<<(OStream &os, const string &s) { return os << s.c_str(); }
-
-    static uint wcharToUTF8(uint wchar);
-
-    std::vector<string> split(char delimiter) const;
-    std::vector<string> split(const string &delimiters) const;
-
-    static const char *findToken(const char *str, const string &token);
-    static const char *findChar(const char *str, char ch);
-    static string getWord(const char *str, const char **outPosition);
-    static string getStatement(const char *str, const char **outPosition = nullptr);
-
-    static string getFileName(const string &str, bool includeExt = true, const char *delims = "\\/");
-    static string getFileExt(const string &str);
-
-    static std::vector<string> tokenize(const string &str);
-
-  private:
-    friend bool operator==(const string &left, const string &right);
-    friend bool operator<(const string &left, const string &right);
-
-  private:
-    std::string base_;
-  };
-
-  inline string &string::operator=(const string &right) {
-    base_ = right.base_;
-    return *this;
+  template<typename T>
+  static std::string to(T val) {
+    if constexpr (std::is_same_v<std::string, T> || std::is_same_v<const char *, T>) {
+      return val;
+    } else if constexpr (std::is_enum_v<T>) {
+      typedef typename std::underlying_type<T>::type safe_type;
+      return std::to_string(static_cast<safe_type>(val));
+    } else if constexpr (std::is_same_v<bool, T>) {
+      return val ? "true" : "false";
+    } else if constexpr (std::is_same_v<std::nullptr_t, T>) {
+      return "null";
+    } else if constexpr (is_optional_v<T>) {
+      if (!val.has_value()) {
+        return "null";
+      }
+      return to(*val);
+    } else if constexpr (std::is_same_v<char, T>) {
+      return std::string(1, val);
+    } else {
+      return std::to_string(val);
+    }
   }
 
-  inline string &string::operator+=(const string &right) {
-    base_ += right.base_;
-    return *this;
+  template<typename T>
+  static T from(const std::string &str) {
+    if constexpr (std::is_same_v<std::string, T>) {
+      return str;
+    } else if constexpr (std::is_enum_v<T>) {
+      typedef typename std::underlying_type<T>::type safe_type;
+      return static_cast<T>(from<safe_type>(str));
+    } else if constexpr (std::is_same_v<bool, T>) {
+      return str == "true" || from<std::optional<int32_t>>(str) == 1;
+    } else if constexpr (is_optional_v<T>) {
+      typedef typename T::value_type base_type;
+      base_type temp;
+      std::istringstream iss(str);
+
+      if ((iss >> temp).fail()) {
+        return std::nullopt;
+      }
+      return temp;
+    } else {
+      long double temp = 0.0;
+      std::istringstream iss(str);
+      iss >> temp;
+      return static_cast<T>(temp);
+    }
   }
-
-  inline char string::operator[](size_t index) const {
-    return base_[index];
-  }
-
-  inline char &string::operator[](size_t index) {
-    return base_[index];
-  }
-
-  inline bool operator==(const string &left, const string &right) {
-    return left.base_ == right.base_;
-  }
-
-  inline bool operator!=(const string &left, const string &right) {
-    return !(left == right);
-  }
-
-  inline bool operator<(const string &left, const string &right) {
-    return left.base_ < right.base_;
-  }
-
-  inline bool operator>(const string &left, const string &right) {
-    return right < left;
-  }
-
-  inline bool operator<=(const string &left, const string &right) {
-    return !(right < left);
-  }
-
-  inline bool operator>=(const string &left, const string &right) {
-    return !(left < right);
-  }
-
-  inline string operator+(const string &left, const string &right) {
-    string string = left;
-    string += right;
-
-    return string;
-  }
-
-}
-
-namespace std {
-
-#if defined(__MINGW64__)
-  template<>
-  struct hash<xe::string> : public __hash_base<size_t, xe::string> {
-    size_t operator()(const xe::string &s) const noexcept { return std::_Hash_impl::hash(s.data(), s.size()); }
-  };
-#elif defined(_MSC_VER)
-  template<>
-  struct hash<xe::string> {
-    size_t operator()(const xe::string &s) const noexcept { return _Hash_array_representation(s.c_str(), s.size()); }
-  };
-#endif
 
 }
 

@@ -1,31 +1,21 @@
 cmake_minimum_required(VERSION 3.1)
 project(engine)
 
-macro(add_msvc_pch pch_header pch_source sources)
-  if (MSVC)
-    GET_FILENAME_COMPONENT(PrecompiledBasename ${pch_header} NAME_WE)
-    set(pch_bin "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
-    set(src ${${sources}})
-
-    set_source_files_properties(${pch_source}
-        PROPERTIES COMPILE_FLAGS "/Yc\"${pch_header}\" /Fp\"${pch_bin}\""
-        OBJECT_OUTPUTS "${pch_bin}")
-    set_source_files_properties(${src}
-        PROPERTIES COMPILE_FLAGS "/Yu\"${pch_header}\" /FI\"${pch_header}\" /Fp\"${pch_bin}\""
-        OBJECT_DEPENDS "${pch_bin}")
-    # Add precompiled header to sources
-    list(APPEND ${sources} ${pch_source})
-  endif ()
-endmacro()
-
 set(CMAKE_CXX_STANDARD 17)
+
+#pch
+include(cmake/msvc_pch.cmake)
+
+#target
+set(ENGINE_NAME xe)
 
 #options
 option(XE_PLATFORM_WIN32 "Platform Win32" ON)
 option(XE_PLATFORM_GL "Platform OpenGL" ON)
-option(XE_USE_GENERIC_FS "Use generic filesystem" OFF)
+option(XE_THREAT_WARNINGS_AS_ERRORS "Threat warnings as errors" OFF)
+option(XE_ENABLE_DEBUG_TRACING "Enable debug tracing for chrome://tracing" ON)
 
-set(XE_DEBUG_FLAGS "-Od -DXE_DEBUG -DXE_DEBUG_TRACING" CACHE STRING "xe_debug flags")
+set(XE_DEBUG_FLAGS "-Od -DXE_DEBUG" CACHE STRING "xe_debug flags")
 set(XE_RELEASE_FLAGS "-Ox -DNDEBUG" CACHE STRING "xe_release flags")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
@@ -33,41 +23,67 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 
+#some libs requires debug versions on msvc
+set(XE_DEBUG_SUFFIX "")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(XE_DEBUG_SUFFIX "d")
+endif ()
+
+if (XE_THREAT_WARNINGS_AS_ERRORS)
+  set(XE_WARNINGS "/W4 /WX")
+else ()
+  set(XE_WARNINGS "/W4")
+endif ()
+
 set(XE_DEFINES
     -DXE_STATIC
     -DXE_CURRENT_SRC_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
+
+set(XE_EXT_LIBS
+    spdlog
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/glfw3${XE_DEBUG_SUFFIX}.lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/physfs/physfs${XE_DEBUG_SUFFIX}.lib)
+
+if (XE_PLATFORM_WIN32)
+  list(APPEND XE_DEFINES -DXE_PLATFORM_WINDOWS)
+  list(APPEND XE_EXT_LIBS winmm)
+endif ()
 
 if (XE_PLATFORM_GL)
   list(APPEND XE_DEFINES -DXE_PLATFORM_GL)
 endif ()
 
-if (XE_USE_GENERIC_FS)
-  list(APPEND XE_DEFINES -DXE_GENERIC_FS)
+if (XE_ENABLE_DEBUG_TRACING)
+  list(APPEND XE_DEFINES -DXE_DEBUG_TRACING)
 endif ()
 
 #status
 message(STATUS "XE Configuration:")
+message(STATUS "  XE_WARNINGS:             " ${XE_WARNINGS})
 message(STATUS "  XE_PLATFORM_WIN32:       " ${XE_PLATFORM_WIN32})
 message(STATUS "  XE_PLATFORM_GL:          " ${XE_PLATFORM_GL})
-message(STATUS "  XE_USE_GENERIC_FS:       " ${XE_USE_GENERIC_FS})
+message(STATUS "  XE_ENABLE_DEBUG_TRACING: " ${XE_ENABLE_DEBUG_TRACING})
 message(STATUS "  XE_DEFINES:              " ${XE_DEFINES})
+message(STATUS "  XE_EXT_LIBS:             " ${XE_EXT_LIBS})
 message(STATUS "  CMAKE_CXX_FLAGS_DEBUG:   " ${CMAKE_CXX_FLAGS_DEBUG})
 message(STATUS "  CMAKE_CXX_FLAGS_RELEASE: " ${CMAKE_CXX_FLAGS_RELEASE})
 
 set(XE_INCLUDE_DIRS
+    #engine
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    #libs
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/physfs/include
+
     CACHE STRING "XE include dirs" FORCE)
-
-#external libs
-add_subdirectory(external/glfw)
-include_directories(external/glfw/include)
-
-add_subdirectory(external/spdlog)
-include_directories(external/spdlog/include)
 
 #includes
 include_directories(${XE_INCLUDE_DIRS})
 include_directories(src)
+
+#submodules
+add_subdirectory(external/spdlog)
 
 #engine sources
 file(GLOB ENGINE_EXTERNAL_SRC
@@ -94,6 +110,7 @@ file(GLOB ENGINE_GL_SRC
     src/graphics/opengl/*.cpp
     src/ui/opengl/*.cpp)
 
+#append platform sources
 if (XE_PLATFORM_WIN32)
   list(APPEND ENGINE_SRC ${ENGINE_WIN32_SRC})
 endif ()
@@ -109,21 +126,19 @@ add_msvc_pch("xepch.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/xepch/xepch.cpp" ENGIN
 list(APPEND ENGINE_SRC ${ENGINE_EXTERNAL_SRC})
 
 #xe lib
-add_library(xe STATIC ${ENGINE_SRC})
+add_library(${ENGINE_NAME} STATIC ${ENGINE_SRC})
 
-target_compile_definitions(xe PUBLIC ${XE_DEFINES})
+target_compile_definitions(${ENGINE_NAME} PUBLIC ${XE_DEFINES})
 
-target_link_libraries(xe
-    spdlog)
+target_link_libraries(${ENGINE_NAME} ${XE_EXT_LIBS})
 
-#link opengl libs
-if (XE_PLATFORM_GL)
-  target_link_libraries(xe glfw)
-endif ()
-
-#link win32 libs
-if (XE_PLATFORM_WIN32)
-  target_link_libraries(xe winmm)
+#replace /w3 by /w4
+if (MSVC)
+  if (CMAKE_CXX_FLAGS MATCHES "/W[0-3]")
+    string(REGEX REPLACE "/W[0-3]" ${XE_WARNINGS} CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else ()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${XE_WARNINGS}")
+  endif ()
 endif ()
 
 #pack shaders

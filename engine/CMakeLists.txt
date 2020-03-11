@@ -97,6 +97,7 @@ file(GLOB ENGINE_SRC
     src/embedded/*.cpp
     src/graphics/*.cpp
     src/math/*.cpp
+    src/serialization/*.cpp
     src/ui/*.cpp
     src/ui/imgui/*.cpp
     src/utils/*.cpp)

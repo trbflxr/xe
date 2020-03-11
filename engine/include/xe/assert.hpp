@@ -2,8 +2,8 @@
 // Created by trbflxr on 2/29/2020.
 //
 
-#ifndef XEVK_ASSERT_HPP
-#define XEVK_ASSERT_HPP
+#ifndef XE_ASSERT_HPP
+#define XE_ASSERT_HPP
 
 #include <xe/utils/logger.hpp>
 
@@ -30,4 +30,4 @@
   #define XE_ASSERT(expression, ...) ((void)0)
 #endif
 
-#endif //XEVK_ASSERT_HPP
+#endif //XE_ASSERT_HPP

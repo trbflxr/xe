@@ -6,6 +6,7 @@
 #define XE_COMMON_HPP
 
 #include <cstdint>
+#include <optional>
 
 #define XE_SRC_ROOT_DIR XE_CURRENT_SRC_DIR
 
@@ -93,6 +94,14 @@
 
 namespace xe {
 
+  struct Version {
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+  };
+
+  static constexpr Version cEngineVersion = {0, 1, 0};
+
   static constexpr uint32_t cMaxTextureUnits = 16;
   static constexpr uint32_t cMaxVertexAttribs = 16;
   static constexpr uint32_t cMaxFramebufferColorAttachments = 16;
@@ -100,208 +109,21 @@ namespace xe {
   static constexpr uint32_t cMaxUniformBuffers = 16;
   static constexpr uint32_t cMaxShaderUniforms = 32;
 
-  struct Params {
-    struct Window {
-      uint32_t width = 0;
-      uint32_t height = 0;
-      std::string_view title = "xe";
-      bool swapInterval = false;
-      bool srgb = true;
+  template<typename T>
+  struct is_optional : std::false_type { };
 
-      uint32_t iconWidth = 0;
-      uint32_t iconHeight = 0;
-      uint8_t *iconPixels = nullptr;
-    } window;
-
-    struct GPU {
-      uint32_t maxBuffers = 64;
-      uint32_t maxTextures = 64;
-      uint32_t maxPipelines = 32;
-      uint32_t maxFramebuffers = 64;
-    } gpu;
+  template<typename T>
+  struct is_optional<std::optional<T>> : std::true_type {
   };
 
-  enum class TransformSpace {
-    Local,
-    Parent,
-    World
-  };
+  template<typename T>
+  inline constexpr bool is_optional_v = is_optional<T>::value;
 
-  enum class Usage {
-    Static,
-    Dynamic,
-    Stream
-  };
+  template<typename T>
+  static T *to_address(T *obj) noexcept { return obj; }
 
-  enum class BufferType {
-    Invalid,
-    Vertex,
-    Index,
-    Uniform
-  };
-
-  enum class CubemapTarget {
-    PositiveX,
-    NegativeX,
-    PositiveY,
-    NegativeY,
-    PositiveZ,
-    NegativeZ,
-    Invalid
-  };
-
-  enum class TexelsFormat {
-    None,
-    R8,
-    Rg8,
-    Rgb8,
-    Rgba8,
-    R16f,
-    Rg16f,
-    Rgb16f,
-    Rgba16f,
-    Depth16,
-    DepthStencil16,
-    Depth24,
-    DepthStencil24
-  };
-
-  enum class TextureWrap {
-    Repeat,
-    MirroredRepeat,
-    Clamp
-  };
-
-  enum class TextureMinFilter {
-    Nearest,
-    Linear,
-    NearestMipmapNearest,
-    NearestMipmapLinear,
-    LinearMipmapNearest,
-    LinearMipmapLinear
-  };
-
-  enum class TextureMagFilter {
-    Nearest,
-    Linear
-  };
-
-  enum class Primitive {
-    Lines,
-    Triangles,
-    Points
-  };
-
-  enum class Cull {
-    Disabled,
-    Front,
-    Back
-  };
-
-  enum class RenderMode {
-    Disabled,
-    Solid,
-    Wireframe
-  };
-
-  enum class TextureType {
-    Invalid = 0,
-    T1D,
-    T2D,
-    T3D,
-    CubeMap
-  };
-
-  enum class BlendFactor {
-    Zero,
-    One,
-    SrcColor,
-    OneMinusSrcColor,
-    SrcAlpha,
-    OneMinusSrcAlpha,
-    DstColor,
-    OneMinusDstColor,
-    DstAlpha,
-    OneMinusDstAlpha,
-    SrcAlphaSaturated,
-    BlendColor,
-    OneMinusBlendColor,
-    BlendAlpha,
-    OneMinusBlendAlpha
-  };
-
-  enum class BlendOp {
-    Add,
-    Substract,
-    ReverseSubstract,
-    Min,
-    Max
-  };
-
-  enum class CompareFunc {
-    Disabled,
-    Never,
-    Less,
-    LessEqual,
-    Equal,
-    NotEqual,
-    GreaterEqual,
-    Greater,
-    Always
-  };
-
-  struct VertexFormat {
-    enum Enum {
-      Undefined = 0,
-      Float = 0x1,
-      Int8 = 0x2,
-      Uint8 = 0x3,
-      Int16 = 0x4,
-      Uint16 = 0x5,
-      Int32 = 0x6,
-      Uint32 = 0x7,
-      Mat4 = 0x8,
-
-      NumComponents1 = 0x10,
-      NumComponents2 = 0x20,
-      NumComponents3 = 0x30,
-      NumComponents4 = 0x40,
-
-      Normalized = 0x100,
-
-      Float2 = Float | NumComponents2,
-      Float3 = Float | NumComponents3,
-      Float4 = Float | NumComponents4,
-
-      TypeMask = 0xF,
-      TypeShift = 0,
-      NumComponentsMask = 0xF0,
-      NumComponentsShift = 4,
-      FlagsMask = 0xF00,
-      FlagsShift = 8
-    };
-  };
-
-  enum class VertexStep {
-    PerVertex,
-    PerInstance
-  };
-
-  struct VertexDeclaration {
-    const char *name;
-    VertexFormat::Enum format;
-    uint32_t bufferIndex;
-    VertexStep vertexStep;
-
-    uint32_t offset;
-    uint32_t stride;
-  };
-
-  enum class IndexFormat {
-    Uint8,
-    Uint16,
-    Uint32
-  };
+  template<typename T>
+  static T *to_address(T &obj) noexcept { return &obj; }
 
 }
 

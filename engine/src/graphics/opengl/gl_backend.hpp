@@ -6,6 +6,7 @@
 #define XE_GL_BACKEND_HPP
 
 #include <xe/memory.hpp>
+#include <xe/params.hpp>
 #include <xe/core/object.hpp>
 #include <xe/graphics/display_list.hpp>
 

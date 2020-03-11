@@ -5,7 +5,7 @@
 #ifndef XE_GPU_RESOURCES_HPP
 #define XE_GPU_RESOURCES_HPP
 
-#include <xe/common.hpp>
+#include <xe/graphics/types.hpp>
 
 namespace xe {
 
@@ -22,18 +22,18 @@ namespace xe {
         Framebuffer
       };
 
-      RenderContext *ctx;
-      ResourceType type;
-      uint32_t id;
+      RenderContext *ctx = nullptr;
+      ResourceType type = ResourceType::Invalid;
+      uint32_t id = 0;
     };
 
     struct Buffer : public Resource {
       Buffer(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Buffer, id} { }
       struct Info {
-        BufferType type_;
-        Usage usage_;
-        uint32_t size_;
-        const char *name_;
+        BufferType bufferType = BufferType::Invalid;
+        Usage usage = Usage::Static;
+        uint32_t size = 0;
+        std::string_view name;
       };
     };
 
@@ -92,9 +92,9 @@ namespace xe {
       Framebuffer(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Framebuffer, id} { }
       struct Info {
         Texture::Info colorAttachmentInfo[cMaxFramebufferColorAttachments];
-        Texture::Info depthStencilAttachmentInfo;
-        uint16_t colorAttachmentsSize;
-        vec2u size;
+        Texture::Info depthStencilAttachmentInfo{ };
+        uint16_t colorAttachmentsSize = 0;
+        vec2u size{ };
       };
 
       Texture colorAttachment(uint16_t index = 0) const;

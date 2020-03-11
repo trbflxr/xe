@@ -5,7 +5,7 @@
 #ifndef XE_RENDER_CONTEXT_HPP
 #define XE_RENDER_CONTEXT_HPP
 
-#include <xe/common.hpp>
+#include <xe/params.hpp>
 #include <xe/memory.hpp>
 #include <xe/graphics/display_list.hpp>
 #include <xe/graphics/gpu_instances.hpp>

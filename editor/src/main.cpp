@@ -4,7 +4,7 @@
 
 #include <xe/core/application.hpp>
 #include <xe/utils/logger.hpp>
-#include <xe/core/vfs.hpp>
+
 #include "layers/test_layer.hpp"
 #include "layers/test_overlay.hpp"
 

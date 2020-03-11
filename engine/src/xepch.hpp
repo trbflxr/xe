@@ -8,15 +8,25 @@
 #include <cassert>
 #include <cstring>
 
+#include <future>
 #include <atomic>
+#include <functional>
+#include <optional>
 #include <thread>
 #include <mutex>
-#include <algorithm>
-#include <utility>
-#include <sstream>
+
+#include <map>
+#include <set>
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
+#include <utility>
+
+#include <sstream>
+#include <string>
+
+#include <xe/common.hpp>
 
 #include <xe/string.hpp>
 #include <xe/memory.hpp>

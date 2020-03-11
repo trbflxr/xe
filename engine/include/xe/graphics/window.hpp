@@ -6,6 +6,7 @@
 #define XE_WINDOW_HPP
 
 #include <functional>
+#include <xe/params.hpp>
 #include <xe/core/event.hpp>
 #include <xe/core/object.hpp>
 #include <xe/core/timestep.hpp>

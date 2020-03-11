@@ -12,6 +12,13 @@ namespace xe {
   class XE_API Transform : public Component {
   XE_OBJECT(Transform, Component);
   public:
+    enum class Space {
+      Local,
+      Parent,
+      World
+    };
+
+  public:
     Transform();
 
     void setLocalPosition(const vec3 &position);
@@ -39,23 +46,23 @@ namespace xe {
     void setWorldTransform(const vec3 &position, const quat &rotation);
     void setWorldTransform(const vec3 &position, const vec3 &rotation);
 
-    void translate(const vec3 &delta, TransformSpace space = TransformSpace::Local);
-    void translateX(float delta, TransformSpace space = TransformSpace::Local);
-    void translateY(float delta, TransformSpace space = TransformSpace::Local);
-    void translateZ(float delta, TransformSpace space = TransformSpace::Local);
+    void translate(const vec3 &delta, Space space = Space::Local);
+    void translateX(float delta, Space space = Space::Local);
+    void translateY(float delta, Space space = Space::Local);
+    void translateZ(float delta, Space space = Space::Local);
 
-    void rotate(const quat &delta, TransformSpace space = TransformSpace::Local);
-    void rotate(const vec3 &delta, TransformSpace space = TransformSpace::Local);
-    void rotateX(const float &angle, TransformSpace space = TransformSpace::Local);
-    void rotateY(const float &angle, TransformSpace space = TransformSpace::Local);
-    void rotateZ(const float &angle, TransformSpace space = TransformSpace::Local);
+    void rotate(const quat &delta, Space space = Space::Local);
+    void rotate(const vec3 &delta, Space space = Space::Local);
+    void rotateX(const float &angle, Space space = Space::Local);
+    void rotateY(const float &angle, Space space = Space::Local);
+    void rotateZ(const float &angle, Space space = Space::Local);
 
-    void rotateAround(const vec3 &point, const quat &delta, TransformSpace space = TransformSpace::Local);
-    void rotateAround(const vec3 &point, const vec3 &delta, TransformSpace space = TransformSpace::Local);
-    void rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, TransformSpace space = TransformSpace::Local);
-    void rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, TransformSpace space = TransformSpace::Local);
+    void rotateAround(const vec3 &point, const quat &delta, Space space = Space::Local);
+    void rotateAround(const vec3 &point, const vec3 &delta, Space space = Space::Local);
+    void rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, Space space = Space::Local);
+    void rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, Space space = Space::Local);
 
-    void lookAt(const vec3 &target, const vec3 &up = vec3::unitY(), TransformSpace space = TransformSpace::World);
+    void lookAt(const vec3 &target, const vec3 &up = vec3::unitY(), Space space = Space::World);
 
     const vec3 &localPosition() const;
     const quat &localRotation() const;

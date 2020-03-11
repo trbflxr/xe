@@ -9,6 +9,7 @@
 #include <thread>
 #include <mutex>
 #include <memory>
+#include <xe/params.hpp>
 #include <xe/core/object.hpp>
 #include <xe/graphics/display_list.hpp>
 

@@ -532,20 +532,20 @@ namespace xe::gpu {
   void Backend::fillBuffer(DisplayList::FillBufferData &d) {
     auto b = RenderContext::getResource(d.buffer.id, &d.buffer.ctx->buffers_, &d.buffer.ctx->backend_->buffers_);
     uint32_t id = b.second->buffer;
-    const uint32_t target = toGL(b.first->info.type_);
+    const uint32_t target = toGL(b.first->info.bufferType);
 
     if (!id) {
       GLCHECK(glGenBuffers(1, &id));
       GLCHECK(glBindBuffer(target, id));
-      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage_)));
+      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage)));
       b.second->buffer = id;
     }
 
     GLCHECK(glBindBuffer(target, id));
 
-    if (b.first->info.size_ != d.size) {
-      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage_)));
-      b.first->info.size_ = d.size;
+    if (b.first->info.size != d.size) {
+      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage)));
+      b.first->info.size = d.size;
     }
 
     GLCHECK(glBufferSubData(target, d.offset, d.size, d.data));
@@ -804,7 +804,7 @@ namespace xe::gpu {
           auto ubo = RenderContext::getResource(ub.id, &d.pipeline.ctx->buffers_, &d.pipeline.ctx->backend_->buffers_);
           uint32_t uniformIndex = 0;
 
-          GLCHECK(uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name_));
+          GLCHECK(uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name.data()));
           GLCHECK(glUniformBlockBinding(mat.second->program, uniformIndex, ubo.second->buffer));
         }
       }

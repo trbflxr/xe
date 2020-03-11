@@ -133,17 +133,17 @@ namespace xe {
     setWorldTransform(position, quat(rotation));
   }
 
-  void Transform::translate(const vec3 &delta, TransformSpace space) {
+  void Transform::translate(const vec3 &delta, Space space) {
     switch (space) {
-      case TransformSpace::Local: {
+      case Space::Local: {
         position_ += rotation_ * delta;
         break;
       }
-      case TransformSpace::Parent: {
+      case Space::Parent: {
         position_ += delta;
         break;
       }
-      case TransformSpace::World: {
+      case Space::World: {
         if (!parent_) {
           position_ += delta;
         } else {
@@ -155,29 +155,29 @@ namespace xe {
     markForUpdate();
   }
 
-  void Transform::translateX(float delta, TransformSpace space) {
+  void Transform::translateX(float delta, Space space) {
     translate(vec3(1.0f, 0.0f, 0.0f) * delta, space);
   }
 
-  void Transform::translateY(float delta, TransformSpace space) {
+  void Transform::translateY(float delta, Space space) {
     translate(vec3(0.0f, 1.0f, 0.0f) * delta, space);
   }
 
-  void Transform::translateZ(float delta, TransformSpace space) {
+  void Transform::translateZ(float delta, Space space) {
     translate(vec3(0.0f, 0.0f, 1.0f) * delta, space);
   }
 
-  void Transform::rotate(const quat &delta, TransformSpace space) {
+  void Transform::rotate(const quat &delta, Space space) {
     switch (space) {
-      case TransformSpace::Local: {
+      case Space::Local: {
         rotation_ = (rotation_ * delta).normalize();
         break;
       }
-      case TransformSpace::Parent: {
+      case Space::Parent: {
         rotation_ = (delta * rotation_).normalize();
         break;
       }
-      case TransformSpace::World: {
+      case Space::World: {
         if (!parent_) {
           rotation_ = (delta * rotation_).normalize();
         } else {
@@ -190,37 +190,37 @@ namespace xe {
     markForUpdate();
   }
 
-  void Transform::rotate(const vec3 &delta, TransformSpace space) {
+  void Transform::rotate(const vec3 &delta, Space space) {
     rotate(quat(delta), space);
   }
 
-  void Transform::rotateX(const float &angle, TransformSpace space) {
+  void Transform::rotateX(const float &angle, Space space) {
     rotate(quat(vec3(1.0f, 0.0f, 0.0f) * angle), space);
   }
 
-  void Transform::rotateY(const float &angle, TransformSpace space) {
+  void Transform::rotateY(const float &angle, Space space) {
     rotate(quat(vec3(0.0f, 1.0f, 0.0f) * angle), space);
   }
 
-  void Transform::rotateZ(const float &angle, TransformSpace space) {
+  void Transform::rotateZ(const float &angle, Space space) {
     rotate(quat(vec3(0.0f, 0.0f, 1.0f) * angle), space);
   }
 
-  void Transform::rotateAround(const vec3 &point, const quat &delta, TransformSpace space) {
+  void Transform::rotateAround(const vec3 &point, const quat &delta, Space space) {
     vec3 psp;
     quat pr = rotation_;
     switch (space) {
-      case TransformSpace::Local: {
+      case Space::Local: {
         psp = localTransform() * point;
         rotation_ = (rotation_ * delta).normalize();
         break;
       }
-      case TransformSpace::Parent: {
+      case Space::Parent: {
         psp = point;
         rotation_ = (delta * rotation_).normalize();
         break;
       }
-      case TransformSpace::World: {
+      case Space::World: {
         if (!parent_) {
           psp = point;
           rotation_ = (delta * rotation_).normalize();
@@ -237,27 +237,27 @@ namespace xe {
     markForUpdate();
   }
 
-  void Transform::rotateAround(const vec3 &point, const vec3 &delta, TransformSpace space) {
+  void Transform::rotateAround(const vec3 &point, const vec3 &delta, Space space) {
     rotateAround(point, quat(delta), space);
   }
 
-  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, TransformSpace space) {
+  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, Space space) {
     rotateAround(obj->transform()->worldPosition(), delta, space);
   }
 
-  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, TransformSpace space) {
+  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, Space space) {
     rotateAround(obj->transform()->worldPosition(), quat(delta), space);
   }
 
-  void Transform::lookAt(const vec3 &target, const vec3 &up, TransformSpace space) {
+  void Transform::lookAt(const vec3 &target, const vec3 &up, Space space) {
     vec3 tws;
 
     switch (space) {
-      case TransformSpace::Local: {
+      case Space::Local: {
         tws = worldTransform() * target;
         break;
       }
-      case TransformSpace::Parent: {
+      case Space::Parent: {
         if (!parent_) {
           tws = target;
         } else {
@@ -265,7 +265,7 @@ namespace xe {
         }
         break;
       }
-      case TransformSpace::World: {
+      case Space::World: {
         tws = target;
         break;
       }

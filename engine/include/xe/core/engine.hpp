@@ -6,6 +6,7 @@
 #define XE_ENGINE_HPP
 
 #include <memory>
+#include <xe/params.hpp>
 #include <xe/core/vfs.hpp>
 #include <xe/core/gpu.hpp>
 #include <xe/core/assets.hpp>

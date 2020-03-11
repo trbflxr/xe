@@ -11,6 +11,7 @@
 #include <xe/core/gpu.hpp>
 #include <xe/core/assets.hpp>
 #include <xe/core/timestep.hpp>
+#include <xe/core/application.hpp>
 #include <xe/core/scene.hpp>
 #include <xe/graphics/window.hpp>
 #include <xe/components/transform.hpp>
@@ -19,14 +20,19 @@ namespace xe {
 
   class XE_API Engine : public Object {
   XE_OBJECT(Engine, Object);
-    friend class Application;
   public:
     explicit Engine(int32_t argc, char **argv);
     ~Engine() override;
 
     static Engine &ref() { return *instance_; }
 
-    bool isExisting() const;
+    int32_t run();
+    void requestClose();
+
+    Application *getApp() const { return app_.get(); }
+    void setApp(std::unique_ptr<Application> &&app) { app_ = std::move(app); }
+
+    bool isRunning() const;
 
     void submitDrawList(DisplayList &&dl);
 
@@ -37,6 +43,12 @@ namespace xe {
 
     void loadScene(const std::shared_ptr<Scene> &scene);
     const std::shared_ptr<Scene> &scene() { return scene_; }
+
+    void setTimestep(float step) { framerate_.timeStep = step; }
+    void setMaxSteps(uint32_t steps) { framerate_.maxSteps = steps; }
+
+    Timestep delta() const { return framerate_.timeStep; }
+    uint32_t fps() const { return framerate_.fps; }
 
     VFS &vfs() { return *vfs_; }
     GPU &gpu() { return *gpu_; }
@@ -64,6 +76,8 @@ namespace xe {
     void renderPostUpdate();
     void stop();
 
+    void processEvents();
+
     void startSystems();
     void stopSystems();
 
@@ -72,6 +86,7 @@ namespace xe {
 
     std::vector<std::string> args_;
 
+    std::unique_ptr<Application> app_;
     std::shared_ptr<Scene> scene_;
 
     std::unique_ptr<VFS> vfs_;
@@ -79,6 +94,12 @@ namespace xe {
     std::unique_ptr<AssetManager> assetManager_;
 
     std::shared_ptr<System::Transform> transform_;
+
+    struct Framerate {
+      float timeStep = 1.0f / 60.0f;
+      uint32_t maxSteps = 10;
+      uint32_t fps = 0;
+    } framerate_;
   };
 
 }

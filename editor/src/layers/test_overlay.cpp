@@ -8,8 +8,7 @@
 using namespace xe;
 
 
-TestOverlay::TestOverlay(xe::Application &app) :
-    Layer(app) {
+TestOverlay::TestOverlay() {
 
 }
 
@@ -19,6 +18,6 @@ bool TestOverlay::onKeyPressed(const Event::Key &e) {
     title += std::to_string(e.code);
     Engine::ref().window().setTitle(title);
   }
-//  XE_INFO("[TestOverlay] key pressed ({})", e.code);
+  XE_INFO("[TestOverlay] key pressed ({})", e.code);
   return false;
 }

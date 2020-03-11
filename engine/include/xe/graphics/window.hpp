@@ -33,14 +33,11 @@ namespace xe {
   XE_OBJECT(Window, Object);
     friend class GPU;
     friend class Engine;
-    friend class Application;
   public:
     struct Data;
 
     Window();
     ~Window() override;
-
-    void forceExit();
 
     vec2u framebufferSize() const;
     vec2u size() const;
@@ -63,13 +60,15 @@ namespace xe {
     bool shouldClose() const;
     Timestep uptime() const;
 
-  protected:
+  private:
     void init();
     void initContext();
     void update();
     void stop();
 
     bool pollEvent(Event &event);
+
+    void forceExit();
 
     bool isKeyPressed(Keyboard::Key key);
     bool isMouseButtonPressed(Mouse::Button button);

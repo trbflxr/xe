@@ -5,68 +5,112 @@
 #ifndef XE_APPLICATION_HPP
 #define XE_APPLICATION_HPP
 
-#include <xe/core/engine.hpp>
-#include <xe/core/layer_stack.hpp>
+#include <xe/core/object.hpp>
+#include <xe/core/event.hpp>
 
 namespace xe {
 
   class XE_API Application : public Object {
   XE_OBJECT(Application, Object);
+    friend class Engine;
   public:
-    explicit Application();
-    ~Application() override;
+    explicit Application() {
+      setName("Application");
+    }
 
-    std::shared_ptr<Layer> &topLayer();
-
-    void pushLayer(const std::shared_ptr<Layer> &layer);
-    std::shared_ptr<Layer> popLayer();
-    void pushOverlay(const std::shared_ptr<Layer> &overlay);
-    std::shared_ptr<Layer> popOverlay();
-
-    bool isExisting() const;
-
-    inline void setTimestep(float step) { framerate_.timeStep = step; }
-    inline void setMaxSteps(uint32_t steps) { framerate_.maxSteps = steps; }
-
-    inline Timestep delta() const { return framerate_.timeStep; }
-    inline uint32_t fps() const { return framerate_.fps; }
-
-    int32_t run();
+    ~Application() override = default;
 
   protected:
-    virtual void init() { }
-    virtual void start() { }
-    virtual void preUpdate() { }
-    virtual void update(Timestep /*ts*/) { }
-    virtual void postUpdate() { }
-    virtual void preRender() { }
-    virtual void render() { }
-    virtual void postRender() { }
-    virtual void stop() { }
+    virtual void onInit() { }
+    virtual void onStart() { }
+    virtual void onPreUpdate() { }
+    virtual void onUpdate() { }
+    virtual void onPostUpdate() { }
+    virtual void onRreRender() { }
+    virtual void onRender() { }
+    virtual void onPostRender() { }
+    virtual void onStop() { }
+
+    virtual void onKeyPressed(const Event::Key &/*e*/) { }
+    virtual void onKeyReleased(const Event::Key &/*e*/) { }
+    virtual void onKeyRepeated(const Event::Key &/*e*/) { }
+    virtual void onTextEntered(const Event::Text &/*e*/) { }
+
+    virtual void onMousePressed(const Event::MouseButton &/*e*/) { }
+    virtual void onMouseReleased(const Event::MouseButton &/*e*/) { }
+    virtual void onMouseScrolled(const Event::MouseWheel &/*e*/) { }
+    virtual void onMouseMoved(const Event::MouseMove &/*e*/) { }
+
+    virtual void onResize(const Event::SizeEvent &/*e*/) { }
+
+    virtual void onMouseEntered() { }
+    virtual void onMouseLeft() { }
+
+    virtual void onFocusGained() { }
+    virtual void onFocusLost() { }
 
   private:
-    void initInternal();
-    void startInternal();
-    void preUpdateInternal();
-    void updateInternal(Timestep ts);
-    void postUpdateInternal();
-    void preRenderInternal();
-    void renderInternal();
-    void postRenderInternal();
-    void stopInternal();
-
-    void processEvents();
-
-  private:
-    LayerStack layerStack_;
-
-    bool exit_;
-
-    struct Framerate {
-      float timeStep;
-      uint32_t maxSteps;
-      uint32_t fps;
-    } framerate_;
+    void onEvent(const Event &e) {
+      switch (e.type) {
+        case Event::Closed: {
+          onStop();
+          break;
+        }
+        case Event::Resized: {
+          onResize(e.size);
+          break;
+        }
+        case Event::LostFocus: {
+          onFocusLost();
+          break;
+        }
+        case Event::GainedFocus: {
+          onFocusGained();
+          break;
+        }
+        case Event::TextEntered: {
+          onTextEntered(e.text);
+          break;
+        }
+        case Event::KeyPressed: {
+          onKeyPressed(e.key);
+          break;
+        }
+        case Event::KeyRepeated: {
+          onKeyRepeated(e.key);
+          break;
+        }
+        case Event::KeyReleased: {
+          onKeyReleased(e.key);
+          break;
+        }
+        case Event::MouseScrolled: {
+          onMouseScrolled(e.mouseScroll);
+          break;
+        }
+        case Event::MouseButtonPressed: {
+          onMousePressed(e.mouseButton);
+          break;
+        }
+        case Event::MouseButtonReleased: {
+          onMouseReleased(e.mouseButton);
+          break;
+        }
+        case Event::MouseMoved: {
+          onMouseMoved(e.mouseMove);
+          break;
+        }
+        case Event::MouseEntered: {
+          onMouseEntered();
+          break;
+        }
+        case Event::MouseLeft: {
+          onMouseLeft();
+          break;
+        }
+        default: break;
+      }
+    }
   };
 
 }

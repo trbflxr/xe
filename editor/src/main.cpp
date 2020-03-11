@@ -18,16 +18,39 @@ public:
   }
 
 protected:
-  void init() override {
+  void onInit() override {
     Engine::ref().vfs().mount(".");
     Engine::ref().vfs().mount("assets");
 
-    std::shared_ptr<TestLayer> l = std::make_shared<TestLayer>(*this);
-    std::shared_ptr<TestOverlay> o = std::make_shared<TestOverlay>(*this);
-    pushLayer(l);
-    pushOverlay(o);
+    layer_ = std::make_unique<TestLayer>();
+    overlay_ = std::make_unique<TestOverlay>();
   }
 
+  void onStart() override {
+    layer_->start();
+  }
+
+  void onStop() override {
+    layer_->stop();
+  }
+
+  void onUpdate() override {
+    layer_->update(Engine::ref().delta());
+  }
+
+  void onRender() override {
+    layer_->render();
+  }
+
+  void onKeyPressed(const Event::Key &key) override {
+    overlay_->onKeyPressed(key);
+    layer_->onKeyPressed(key);
+  }
+
+
+private:
+  std::unique_ptr<TestLayer> layer_;
+  std::unique_ptr<TestOverlay> overlay_;
 };
 
 int32_t main(int32_t argc, char **argv) {
@@ -51,9 +74,9 @@ int32_t main(int32_t argc, char **argv) {
   }
 
   engine.setParams(params);
+  engine.setApp(std::make_unique<Editor>());
 
-  Editor app;
-  int32_t exitCode = app.run();
+  int32_t exitCode = engine.run();
 
   //save config
   *paramsFile.getNode() << engine.getParams();

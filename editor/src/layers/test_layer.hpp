@@ -5,7 +5,7 @@
 #ifndef XE_TEST_LAYER_HPP
 #define XE_TEST_LAYER_HPP
 
-#include <xe/core/layer.hpp>
+#include <xe/core/engine.hpp>
 
 struct State {
   xe::gpu::Framebuffer fb;
@@ -31,18 +31,18 @@ struct State {
   } quad;
 };
 
-class TestLayer : public xe::Layer {
+class TestLayer {
 public:
-  explicit TestLayer(xe::Application &app);
-  ~TestLayer() override;
+  explicit TestLayer();
+  ~TestLayer();
 
-  void onInit() override;
-  void onClose() override;
+  void start();
+  void stop();
 
-  void onRender() override;
-  void onUpdate(xe::Timestep ts) override;
+  void render();
+  void update(xe::Timestep ts);
 
-  bool onKeyPressed(const xe::Event::Key &e) override;
+  bool onKeyPressed(const xe::Event::Key &e);
 
 private:
   static void uiFunc(void *data);

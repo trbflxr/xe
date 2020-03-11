@@ -52,10 +52,6 @@ namespace xe {
     return WindowBackend::isExisting(data_);
   }
 
-  void Window::forceExit() {
-    WindowBackend::forceExit(data_);
-  }
-
   void Window::update() {
     ui::update(*this, data_);
     XE_TRACE_BEGIN("XE", "UI Function");
@@ -166,6 +162,10 @@ namespace xe {
       return true;
     }
     return false;
+  }
+
+  void Window::forceExit() {
+    WindowBackend::forceExit(data_);
   }
 
   bool Window::isKeyPressed(Keyboard::Key key) {

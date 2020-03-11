@@ -11,15 +11,15 @@ using namespace xe;
 
 namespace cube {
   float vertexData[] = {
-      -1.0, -1.0,  1.0,  0.0f, 0.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-      1.0, -1.0,  1.0,   1.0f, 0.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-      1.0,  1.0,  1.0,   1.0f, 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-      -1.0,  1.0,  1.0,  0.0f, 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+      -1.0, -1.0, 1.0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      1.0, -1.0, 1.0, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      1.0, 1.0, 1.0, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      -1.0, 1.0, 1.0, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
 
-      -1.0, -1.0, -1.0,  0.0f, 0.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-      1.0, -1.0, -1.0,   1.0f, 0.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-      1.0,  1.0, -1.0,   1.0f, 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-      -1.0,  1.0, -1.0,  0.0f, 1.0f,  1.0f, 0.0f, 1.0f, 1.0f
+      -1.0, -1.0, -1.0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      1.0, -1.0, -1.0, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      1.0, 1.0, -1.0, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      -1.0, 1.0, -1.0, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f
   };
 
   uint16_t indexData[] = {
@@ -53,12 +53,11 @@ namespace quad {
   uint16_t indexData[] = {0, 2, 1, 0, 3, 2};
 }
 
-TestLayer::TestLayer(Application &app) :
-    Layer(app),
+TestLayer::TestLayer() :
     texData_(nullptr),
     instances_(static_cast<int32_t>(State::INSTANCES / 8.0f)) { }
 
-void TestLayer::onInit() {
+void TestLayer::start() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
 
   std::shared_ptr<Scene> scene = std::make_shared<Scene>();
@@ -173,11 +172,11 @@ TestLayer::~TestLayer() {
 
 }
 
-void TestLayer::onClose() {
+void TestLayer::stop() {
 
 }
 
-void TestLayer::onRender() {
+void TestLayer::render() {
   DisplayList frame;
   frame.setupViewCommand()
       .set_viewport({0, 0, 800, 600})
@@ -232,7 +231,7 @@ void TestLayer::onRender() {
   Engine::ref().submitDrawList(std::move(frame));
 }
 
-void TestLayer::onUpdate(Timestep ts) {
+void TestLayer::update(Timestep ts) {
   static float v = 0;
   for (size_t i = 0; i < (size_t) instances_; ++i) {
     state_.cube.instancePositions[i] = {
@@ -263,14 +262,14 @@ void TestLayer::uiFunc(void *data) {
   TestLayer *tl = (TestLayer *) data;
 
   static const uint32_t flags = ImGuiWindowFlags_NoDocking |
-                            ImGuiWindowFlags_MenuBar |
-                            ImGuiWindowFlags_NoTitleBar |
-                            ImGuiWindowFlags_NoResize |
-                            ImGuiWindowFlags_NoCollapse |
-                            ImGuiWindowFlags_AlwaysAutoResize |
-                            ImGuiWindowFlags_NoSavedSettings |
-                            ImGuiWindowFlags_NoFocusOnAppearing |
-                            ImGuiWindowFlags_NoNav;
+                                ImGuiWindowFlags_MenuBar |
+                                ImGuiWindowFlags_NoTitleBar |
+                                ImGuiWindowFlags_NoResize |
+                                ImGuiWindowFlags_NoCollapse |
+                                ImGuiWindowFlags_AlwaysAutoResize |
+                                ImGuiWindowFlags_NoSavedSettings |
+                                ImGuiWindowFlags_NoFocusOnAppearing |
+                                ImGuiWindowFlags_NoNav;
 
 
   const float DISTANCE = 10.0f;

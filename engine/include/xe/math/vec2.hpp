@@ -7,6 +7,7 @@
 
 #include <xe/common.hpp>
 #include <xe/math/vecmath.hpp>
+#include <xe/serialization/node.hpp>
 
 namespace xe {
 
@@ -89,6 +90,18 @@ namespace xe {
 
     template<typename OStream>
     friend OStream &operator<<(OStream &os, const tvec2<T> &v) { return os << "vec2(" << v.x << ", " << v.y << ")"; }
+
+    friend const Node &operator>>(const Node &node, tvec2<T> &vector) {
+      node["x"].get(vector.x);
+      node["y"].get(vector.y);
+      return node;
+    }
+
+    friend Node &operator<<(Node &node, const tvec2<T> &vector) {
+      node["x"].set(vector.x);
+      node["y"].set(vector.y);
+      return node;
+    }
 
     template<typename K>
     constexpr auto operator+(const tvec2<K> &other) const;

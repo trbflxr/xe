@@ -22,7 +22,7 @@ namespace xe {
     explicit vec3(const Vector &vecIn);
 
     template<typename T>
-    explicit vec3(const tvec2 <T> &vec) :
+    explicit vec3(const tvec2<T> &vec) :
         data_(Vector::make(static_cast<float>(vec.x), static_cast<float>(vec.y), 0.0f, 0.0f)) { }
 
     void set(float x, float y, float z);
@@ -49,16 +49,16 @@ namespace xe {
     vec3 reflect(const vec3 &normal) const;
     vec3 refract(const vec3 &normal, float indexOfRefraction) const;
 
-    inline float dot(const vec3 &other) const { return data_.dot3(other.data_)[0]; }
-    inline vec3 dotToVector(const vec3 &other) const { return vec3(data_.dot3(other.data_)); }
+    float dot(const vec3 &other) const { return data_.dot3(other.data_)[0]; }
+    vec3 dotToVector(const vec3 &other) const { return vec3(data_.dot3(other.data_)); }
 
-    inline vec3 cross(const vec3 &other) const { return vec3(data_.cross3(other.data_)); }
+    vec3 cross(const vec3 &other) const { return vec3(data_.cross3(other.data_)); }
 
-    inline float dist(const vec3 &other) const { return sqrtf(distSquared(other)); }
+    float dist(const vec3 &other) const { return sqrtf(distSquared(other)); }
     float distSquared(const vec3 &other) const;
 
-    inline float length() const { return sqrtf(lengthSquared()); }
-    inline float lengthSquared() const { return data_.dot3(data_)[0]; }
+    float length() const { return sqrtf(lengthSquared()); }
+    float lengthSquared() const { return data_.dot3(data_)[0]; }
 
     vec3 toDeg() const;
     vec3 toRad() const;
@@ -66,8 +66,8 @@ namespace xe {
     bool equals(const vec3 &other, float errorMargin = 1.e-4f) const;
     bool equals(float val, float errorMargin = 1.e-4f) const;
 
-    inline Vector toVector() const { return data_; }
-    inline Vector toVector(float w) const { return data_.select(VectorConstants::MaskW(), Vector::load1f(w)); }
+    Vector toVector() const { return data_; }
+    Vector toVector(float w) const { return data_.select(VectorConstants::MaskW(), Vector::load1f(w)); }
 
     static const vec3 &unitX();
     static const vec3 &unitY();
@@ -77,36 +77,52 @@ namespace xe {
     static const vec3 &unitZN();
     static const vec3 &zero();
 
-    inline float operator[](uint32_t index) const { return data_[index]; }
+    float operator[](uint32_t index) const { return data_[index]; }
 
     template<typename OStream>
-    inline friend OStream &operator<<(OStream &os, const vec3 &v) {
+    friend OStream &operator<<(OStream &os, const vec3 &v) {
       return os << "vec3(" << v[0] << ", " << v[1] << ", " << v[2] << ")";
     }
 
-    inline vec3 operator+(const vec3 &other) const;
-    inline vec3 operator-(const vec3 &other) const;
-    inline vec3 operator*(const vec3 &other) const;
-    inline vec3 operator/(const vec3 &other) const;
+    friend const Node &operator>>(const Node &node, vec3 &vector) {
+      float x, y, z;
+      node["x"].get(x);
+      node["y"].get(y);
+      node["z"].get(z);
+      vector.set(x, y, z);
+      return node;
+    }
 
-    inline vec3 operator+(float amt) const;
-    inline vec3 operator-(float amt) const;
-    inline vec3 operator*(float amt) const;
-    inline vec3 operator/(float amt) const;
+    friend Node &operator<<(Node &node, const vec3 &vector) {
+      node["x"].set(vector[0]);
+      node["y"].set(vector[1]);
+      node["z"].set(vector[2]);
+      return node;
+    }
 
-    inline vec3 operator-() const;
-    inline vec3 operator+=(const vec3 &other);
-    inline vec3 operator-=(const vec3 &other);
-    inline vec3 operator*=(const vec3 &other);
-    inline vec3 operator/=(const vec3 &other);
+    vec3 operator+(const vec3 &other) const;
+    vec3 operator-(const vec3 &other) const;
+    vec3 operator*(const vec3 &other) const;
+    vec3 operator/(const vec3 &other) const;
 
-    inline vec3 operator+=(float val);
-    inline vec3 operator-=(float val);
-    inline vec3 operator*=(float val);
-    inline vec3 operator/=(float val);
+    vec3 operator+(float amt) const;
+    vec3 operator-(float amt) const;
+    vec3 operator*(float amt) const;
+    vec3 operator/(float amt) const;
 
-    inline bool operator==(const vec3 &other) const;
-    inline bool operator!=(const vec3 &other) const;
+    vec3 operator-() const;
+    vec3 operator+=(const vec3 &other);
+    vec3 operator-=(const vec3 &other);
+    vec3 operator*=(const vec3 &other);
+    vec3 operator/=(const vec3 &other);
+
+    vec3 operator+=(float val);
+    vec3 operator-=(float val);
+    vec3 operator*=(float val);
+    vec3 operator/=(float val);
+
+    bool operator==(const vec3 &other) const;
+    bool operator!=(const vec3 &other) const;
 
   private:
     Vector data_;

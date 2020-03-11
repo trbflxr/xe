@@ -8,6 +8,7 @@
 
 #include <xe/common.hpp>
 #include <xe/math/vecmath.hpp>
+#include <xe/serialization/node.hpp>
 
 namespace xe {
 
@@ -52,31 +53,49 @@ namespace xe {
 
     vec3 toEulerAngles() const;
 
-    inline Vector toVector() const { return data_; }
+    Vector toVector() const { return data_; }
 
     static quat lookRotation(const vec3 &forward, const vec3 &up);
 
-    inline float operator[](uint32_t index) const { return data_[index]; }
+    float operator[](uint32_t index) const { return data_[index]; }
 
     template<typename OStream>
-    inline friend OStream &operator<<(OStream &os, const quat &q) {
+    friend OStream &operator<<(OStream &os, const quat &q) {
       return os << "quat(" << q[0] << ", " << q[1] << ", " << q[2] << ", " << q[3] << ")";
     }
 
-    inline quat operator+(const quat &other) const;
-    inline quat operator+=(const quat &other);
-    inline quat operator-(const quat &other) const;
-    inline quat operator-=(const quat &other);
-    inline quat operator*(const quat &other) const;
-    inline quat operator*=(const quat &other);
-    inline quat operator*(float amt) const;
-    inline quat operator*=(float amt);
-    inline quat operator/(float amt) const;
-    inline quat operator/=(float amt);
+    friend const Node &operator>>(const Node &node, quat &q) {
+      float x, y, z, w;
+      node["x"].get(x);
+      node["y"].get(y);
+      node["z"].get(z);
+      node["w"].get(w);
+      q = quat(x, y, z, w);
+      return node;
+    }
+
+    friend Node &operator<<(Node &node, const quat &q) {
+      node["x"].set(q[0]);
+      node["y"].set(q[1]);
+      node["z"].set(q[2]);
+      node["w"].set(q[3]);
+      return node;
+    }
+
+    quat operator+(const quat &other) const;
+    quat operator+=(const quat &other);
+    quat operator-(const quat &other) const;
+    quat operator-=(const quat &other);
+    quat operator*(const quat &other) const;
+    quat operator*=(const quat &other);
+    quat operator*(float amt) const;
+    quat operator*=(float amt);
+    quat operator/(float amt) const;
+    quat operator/=(float amt);
     vec3 operator*(const vec3 &other) const;
 
-    inline bool operator==(const quat &other) const;
-    inline bool operator!=(const quat &other) const;
+    bool operator==(const quat &other) const;
+    bool operator!=(const quat &other) const;
 
   private:
     Vector data_;

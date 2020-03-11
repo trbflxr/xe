@@ -22,49 +22,67 @@ namespace xe {
     explicit vec4(const Vector &vecIn);
 
     template<typename T>
-    explicit vec4(const tvec2 <T> &vec) :
+    explicit vec4(const tvec2<T> &vec) :
         data_(Vector::make(static_cast<float>(vec.x), static_cast<float>(vec.y), 0.0f, 0.0f)) { }
 
     void set(float x, float y, float z, float w);
     void set(uint32_t index, float val);
 
-    inline float dot(const vec4 &other) const { return data_.dot4(other.data_)[0]; }
+    float dot(const vec4 &other) const { return data_.dot4(other.data_)[0]; }
 
-    inline Vector toVector() const { return data_; }
+    Vector toVector() const { return data_; }
 
     bool equals(const vec4 &other, float errorMargin = 1.e-4f) const;
     bool equals(float val, float errorMargin = 1.e-4f) const;
 
-    inline float operator[](uint32_t index) const { return data_[index]; }
+    float operator[](uint32_t index) const { return data_[index]; }
 
     template<typename OStream>
-    inline friend OStream &operator<<(OStream &os, const vec4 &v) {
+    friend OStream &operator<<(OStream &os, const vec4 &v) {
       return os << "vec4(" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << ")";
     }
 
-    inline vec4 operator+(const vec4 &other) const;
-    inline vec4 operator-(const vec4 &other) const;
-    inline vec4 operator*(const vec4 &other) const;
-    inline vec4 operator/(const vec4 &other) const;
+    friend const Node &operator>>(const Node &node, vec4 &vector) {
+      float x, y, z, w;
+      node["x"].get(x);
+      node["y"].get(y);
+      node["z"].get(z);
+      node["w"].get(w);
+      vector.set(x, y, z, w);
+      return node;
+    }
 
-    inline vec4 operator+(float amt) const;
-    inline vec4 operator-(float amt) const;
-    inline vec4 operator*(float amt) const;
-    inline vec4 operator/(float amt) const;
+    friend Node &operator<<(Node &node, const vec4 &vector) {
+      node["x"].set(vector[0]);
+      node["y"].set(vector[1]);
+      node["z"].set(vector[2]);
+      node["w"].set(vector[3]);
+      return node;
+    }
 
-    inline vec4 operator-() const;
-    inline vec4 operator+=(const vec4 &other);
-    inline vec4 operator-=(const vec4 &other);
-    inline vec4 operator*=(const vec4 &other);
-    inline vec4 operator/=(const vec4 &other);
+    vec4 operator+(const vec4 &other) const;
+    vec4 operator-(const vec4 &other) const;
+    vec4 operator*(const vec4 &other) const;
+    vec4 operator/(const vec4 &other) const;
 
-    inline vec4 operator+=(float val);
-    inline vec4 operator-=(float val);
-    inline vec4 operator*=(float val);
-    inline vec4 operator/=(float val);
+    vec4 operator+(float amt) const;
+    vec4 operator-(float amt) const;
+    vec4 operator*(float amt) const;
+    vec4 operator/(float amt) const;
 
-    inline bool operator==(const vec4 &other) const;
-    inline bool operator!=(const vec4 &other) const;
+    vec4 operator-() const;
+    vec4 operator+=(const vec4 &other);
+    vec4 operator-=(const vec4 &other);
+    vec4 operator*=(const vec4 &other);
+    vec4 operator/=(const vec4 &other);
+
+    vec4 operator+=(float val);
+    vec4 operator-=(float val);
+    vec4 operator*=(float val);
+    vec4 operator/=(float val);
+
+    bool operator==(const vec4 &other) const;
+    bool operator!=(const vec4 &other) const;
 
   private:
     Vector data_;

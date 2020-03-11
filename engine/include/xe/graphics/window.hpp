@@ -46,9 +46,13 @@ namespace xe {
     vec2u size() const;
     void setSize(const vec2u &size);
 
+    std::string_view getTitle() const;
     void setTitle(std::string title);
+
+    bool isVsyncEnabled() const;
+    void setVsyncEnabled(bool enabled);
+
     void setIcon(uint32_t width, uint32_t height, uint8_t *pixels);
-    void setSwapInterval(bool enabled);
 
     void setCursor(Cursor::Enum cursor) const;
     Cursor::Enum activeCursor() const;
@@ -58,9 +62,6 @@ namespace xe {
 
     bool shouldClose() const;
     Timestep uptime() const;
-
-    inline Params::Window params() const { return params_; }
-    inline void setParams(const Params::Window &params) { params_ = params; }
 
   protected:
     void init();
@@ -76,7 +77,7 @@ namespace xe {
     vec2 getMousePosition();
     void setMousePosition(const vec2 &position);
 
-  protected:
+  private:
     Data *data_;
     std::function<void(void *)> ui_ = [](void *) { };
     void *uiData_ = nullptr;

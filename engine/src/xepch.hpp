@@ -32,6 +32,8 @@
 #include <xe/memory.hpp>
 #include <xe/math/math.hpp>
 
+#include <xe/serialization/file.hpp>
+
 #include <xe/utils/debug_trace.hpp>
 #include <xe/utils/logger.hpp>
 

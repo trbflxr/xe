@@ -5,6 +5,7 @@
 #include "xepch.hpp"
 #include <xe/core/engine.hpp>
 
+#include "global_config.hpp"
 #include <xe/core/vfs.hpp>
 
 namespace xe {
@@ -41,9 +42,19 @@ namespace xe {
   }
 
   void Engine::setParams(const Params &params) {
-    params_ = params;
-    gpu_->setParams(params_.gpu);
-    gpu_->window_->setParams(params_.window);
+    auto &config = GlobalConfig::ref();
+
+    XE_ASSERT(!config.initialized_, "[Engine] Params are already set");
+
+    config.params_ = params;
+    config.initialized_ = true;
+
+    gpu_->params_ = config.params_.gpu;
+    gpu_->window_->params_ = config.params_.window;
+  }
+
+  Params Engine::getParams() const {
+    return GlobalConfig::ref().getParams();
   }
 
   void Engine::setUiFunction(const std::function<void(void *)> &function, void *data) {

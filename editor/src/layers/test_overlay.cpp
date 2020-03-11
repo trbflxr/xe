@@ -14,6 +14,11 @@ TestOverlay::TestOverlay(xe::Application &app) :
 }
 
 bool TestOverlay::onKeyPressed(const Event::Key &e) {
+  if (e.code == Keyboard::T) {
+    static std::string title = std::string(Engine::ref().window().getTitle());
+    title += std::to_string(e.code);
+    Engine::ref().window().setTitle(title);
+  }
 //  XE_INFO("[TestOverlay] key pressed ({})", e.code);
   return false;
 }

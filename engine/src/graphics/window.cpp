@@ -4,8 +4,10 @@
 
 #include "xepch.hpp"
 #include <xe/graphics/window.hpp>
-#include <xe/utils/debug_trace.hpp>
+
 #include "ui/xe_imgui.hpp"
+#include "global_config.hpp"
+#include <xe/utils/debug_trace.hpp>
 
 #ifdef XE_PLATFORM_GL
   #include "graphics/opengl/gl_window.hpp"
@@ -87,11 +89,22 @@ namespace xe {
   void Window::setSize(const vec2u &size) {
     data_->width = size.x;
     data_->height = size.y;
+
+    GlobalConfig::ref().getParams().window.width = size.x;
+    GlobalConfig::ref().getParams().window.height = size.y;
+
     WindowBackend::setSize(data_);
+  }
+
+  std::string_view Window::getTitle() const {
+    return data_->title;
   }
 
   void Window::setTitle(std::string title) {
     data_->title = std::move(title);
+
+    GlobalConfig::ref().getParams().window.title = data_->title;
+
     WindowBackend::setTitle(data_);
   }
 
@@ -102,8 +115,15 @@ namespace xe {
     WindowBackend::setIcon(data_);
   }
 
-  void Window::setSwapInterval(bool enabled) {
+  bool Window::isVsyncEnabled() const {
+    return data_->swapInterval;
+  }
+
+  void Window::setVsyncEnabled(bool enabled) {
     data_->swapInterval = enabled;
+
+    GlobalConfig::ref().getParams().window.swapInterval = enabled;
+
     WindowBackend::setSwapInterval(data_);
   }
 

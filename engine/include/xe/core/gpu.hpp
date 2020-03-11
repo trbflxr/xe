@@ -23,8 +23,6 @@ namespace xe {
   public:
     ~GPU() override;
 
-    inline void setParams(const Params::GPU &params) { params_ = params; }
-
     gpu::Buffer createBuffer(const gpu::Buffer::Info &info) const;
     gpu::Texture createTexture(const gpu::Texture::Info &info) const;
     gpu::Pipeline createPipeline(const gpu::Pipeline::Info &info) const;

@@ -31,6 +31,7 @@ namespace xe {
     void submitDrawList(DisplayList &&dl);
 
     void setParams(const Params &params);
+    Params getParams() const;
 
     void setUiFunction(const std::function<void(void *)> &function, void *data);
 
@@ -68,8 +69,6 @@ namespace xe {
 
   private:
     static Engine *instance_;
-
-    Params params_;
 
     std::vector<std::string> args_;
 

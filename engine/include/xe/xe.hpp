@@ -6,5 +6,7 @@
 #define XE_XE_HPP
 
 #include <xe/core/engine.hpp>
+#include <xe/core/application.hpp>
+#include <xe/serialization/file.hpp>
 
 #endif //XE_XE_HPP

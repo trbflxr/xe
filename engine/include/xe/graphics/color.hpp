@@ -5,60 +5,124 @@
 #ifndef XE_COLOR_HPP
 #define XE_COLOR_HPP
 
-#include <xe/math/math.hpp>
+#include <xe/math/mathfunc.hpp>
+#include <xe/serialization/node.hpp>
 
 namespace xe {
 
   struct XE_API Color {
-    float r, g, b, a;
+  public:
+    enum class Type {
+      RGBA,
+      ARGB,
+      RGB
+    };
 
-    Color();
-    Color(const Color &o);
-    explicit Color(const vec4 &rgba);
-    Color(float r, float g, float b, float a);
-    explicit Color(uint32_t hex);
+    float r = 0.0f;
+    float g = 0.0f;
+    float b = 0.0f;
+    float a = 1.0f;
 
-    inline vec4 rgba() const { return vec4(r, g, b, a); }
-    inline vec3 rgb() const { return vec3(r, g, b); }
-    uint32_t hex() const;
+    Color() = default;
+    Color(float r, float g, float b, float a = 1.0f);
+    Color(uint32_t hex, Type type = Type::RGB);
+    Color(std::string hex, float a = 1.0f);
 
-    float luminance() const;
-    Color desaturate(float factor) const;
+    Color add(const Color &other) const;
+    Color subtract(const Color &other) const;
+    Color multiply(const Color &other) const;
+    Color divide(const Color &other) const;
 
-    static Color lerp(const Color &a, const Color &b, float alpha);
+    Color scale(float scalar) const;
+    Color lerp(const Color &other, float progression) const;
+    Color normalize() const;
 
-    static Color transparent();
-    static Color black();
-    static Color white();
-    static Color red();
-    static Color green();
-    static Color blue();
-    static Color yellow();
-    static Color magenta();
-    static Color cyan();
+    float lengthSquared() const;
+    float length() const;
 
-    inline Color operator+(const Color& o) const { return Color(r + o.r, g + o.g, b + o.b, a + o.a); }
-    inline Color& operator+=(const Color& o) { r += o.r; g += o.g; b += o.b; a += o.a; return *this; }
+    Color smoothDamp(const Color &target, const Color &rate) const;
 
-    inline Color operator-(const Color& o) const { return Color(r - o.r, g - o.g, b - o.b, a - o.a); }
-    inline Color& operator-=(const Color& o) { r -= o.r; g -= o.g; b -= o.b; a -= o.a; return *this; }
+    Color getUnit() const;
 
-    inline Color operator*(const Color& o) const { return Color(r * o.r, g * o.g, b * o.b, a * o.a); }
-    inline Color& operator*=(const Color& o) { r *= o.r; g *= o.g; b *= o.b; a *= o.a; return *this; }
+    uint32_t getInt(Type type = Type::RGBA) const;
 
-    inline Color operator*(float value) const { return Color(r * value, g * value, b * value, a * value); }
-    inline Color& operator*=(float value) { r *= value; g *= value; b *= value; a *= value; return *this; }
+    std::string getHex() const;
 
-    inline Color operator/(const Color& o) const { return Color(r / o.r, g / o.g, b / o.b, a / o.a); }
-    inline Color& operator/=(const Color& o) { r /= o.r; g /= o.g; b /= o.b; a /= o.a; return *this; }
+    bool operator==(const Color &other) const;
+    bool operator!=(const Color &other) const;
 
-    inline Color operator/(float value) const { return Color(r / value, g / value, b / value, a / value); }
-    inline Color& operator/=(float value) { r /= value; g /= value; b /= value; a /= value; return *this; }
+    friend Color operator+(const Color &left, const Color &right);
+    friend Color operator-(const Color &left, const Color &right);
+    friend Color operator*(const Color &left, const Color &right);
+    friend Color operator/(const Color &left, const Color &right);
+    friend Color operator+(float value, const Color &left);
+    friend Color operator-(float value, const Color &left);
+    friend Color operator*(float value, const Color &left);
+    friend Color operator/(float value, const Color &left);
+    friend Color operator+(const Color &left, float value);
+    friend Color operator-(const Color &left, float value);
+    friend Color operator*(const Color &left, float value);
+    friend Color operator/(const Color &left, float value);
 
-    inline bool operator==(const Color& o) const { return r == o.r && g == o.g && b == o.b && a == o.a; }
-    inline bool operator!=(const Color& o) const { return r != o.r || g != o.g || b != o.b || a != o.a; }
+    Color &operator+=(const Color &other);
+    Color &operator-=(const Color &other);
+    Color &operator*=(const Color &other);
+    Color &operator/=(const Color &other);
+    Color &operator+=(float value);
+    Color &operator-=(float value);
+    Color &operator*=(float value);
+    Color &operator/=(float value);
+
+    template<typename OStream>
+    friend OStream &operator<<(OStream &os, const Color &c) { return os << "Color(" << c.r << ", " << c.g << ", " << c.b << ", " << c.a << ")"; }
+
+    friend const Node &operator>>(const Node &node, Color &color) {
+      std::string hex;
+      node["hex"].get(hex);
+      node["alpha"].get(color.a);
+      color = {hex, color.a};
+      return node;
+    }
+
+    friend Node &operator<<(Node &node, const Color &color) {
+      node["hex"].set(color.getHex());
+      node["alpha"].set(color.a);
+      return node;
+    }
+
+    static const Color Clear;
+    static const Color Black;
+    static const Color Grey;
+    static const Color Silver;
+    static const Color White;
+    static const Color Maroon;
+    static const Color Red;
+    static const Color Olive;
+    static const Color Yellow;
+    static const Color Green;
+    static const Color Lime;
+    static const Color Teal;
+    static const Color Aqua;
+    static const Color Navy;
+    static const Color Blue;
+    static const Color Purple;
+    static const Color Fuchsia;
   };
 
+}
+
+namespace std {
+  template<>
+  struct hash<xe::Color> {
+    size_t operator()(const xe::Color &color) const {
+      size_t seed = 0;
+      xe::math::hashCombine(seed, color.r);
+      xe::math::hashCombine(seed, color.g);
+      xe::math::hashCombine(seed, color.b);
+      xe::math::hashCombine(seed, color.a);
+      return seed;
+    }
+  };
 }
 
 #endif //XE_COLOR_HPP

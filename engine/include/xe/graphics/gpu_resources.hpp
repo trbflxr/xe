@@ -5,6 +5,7 @@
 #ifndef XE_GPU_RESOURCES_HPP
 #define XE_GPU_RESOURCES_HPP
 
+#include <xe/math/math.hpp>
 #include <xe/graphics/types.hpp>
 
 namespace xe {

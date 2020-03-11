@@ -185,7 +185,7 @@ void TestLayer::onRender() {
       .set_colorAttachment(0, true)
       .set_colorAttachment(1, true);
   frame.clearCommand()
-      .set_color(Color(0xFFA6A6A6))
+      .set_color(Color(0xF4A1AA))
       .set_clearColor(true)
       .set_clearDepth(true);
   frame.fillBufferCommand()
@@ -206,13 +206,13 @@ void TestLayer::onRender() {
       .set_type(IndexFormat::Uint16)
       .set_instances(instances_);
 
-  Color tint = Color::cyan();
+  Color tint = Color::Aqua;
 
   //framebuffer
   frame.setupViewCommand()
       .set_viewport({0, 0, 800, 600});
   frame.clearCommand()
-      .set_color(Color(0xFF131313))
+      .set_color(Color(0x131313))
       .set_clearColor(true)
       .set_clearDepth(true);
   frame.setupPipelineCommand()

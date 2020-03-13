@@ -173,10 +173,10 @@ namespace xe::gpu {
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, toGL(info.minFilter)));
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, toGL(info.magFilter)));
     GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_S, toGL(info.wrapping[0])));
-    if (target > (uint32_t) TextureType::T1D) {
+    if (target > static_cast<uint32_t>(TextureType::T1D)) {
       GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_T, toGL(info.wrapping[1])));
     }
-    if (target > (uint32_t) TextureType::T2D) {
+    if (target > static_cast<uint32_t>(TextureType::T2D)) {
       GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, toGL(info.wrapping[2])));
     }
   }
@@ -690,11 +690,21 @@ namespace xe::gpu {
           }
         }
 
-        if (shaderV != -1) GLCHECK(glDeleteShader(shaderV));
-        if (shaderF != -1) GLCHECK(glDeleteShader(shaderF));
-        if (shaderTC != -1) GLCHECK(glDeleteShader(shaderTC));
-        if (shaderTE != -1) GLCHECK(glDeleteShader(shaderTE));
-        if (shaderG != -1) GLCHECK(glDeleteShader(shaderG));
+        if (shaderV != -1) {
+          GLCHECK(glDeleteShader(shaderV));
+        }
+        if (shaderF != -1) {
+          GLCHECK(glDeleteShader(shaderF));
+        }
+        if (shaderTC != -1) {
+          GLCHECK(glDeleteShader(shaderTC));
+        }
+        if (shaderTE != -1) {
+          GLCHECK(glDeleteShader(shaderTE));
+        }
+        if (shaderG != -1) {
+          GLCHECK(glDeleteShader(shaderG));
+        }
 
         if (success) {
           mat.second->uniformData.alloc(bufferSize);
@@ -730,8 +740,8 @@ namespace xe::gpu {
             default: break;
           }
 
-          if ((uint32_t) mat.first->info.textures[i]) {
-            int32_t loc;
+          if (static_cast<uint32_t>(mat.first->info.textures[i])) {
+            int32_t loc = -1;
             GLCHECK(loc = glGetUniformLocation(programId, name));
             if (loc != -1) {
               mat.second->textureUniformsLoc[i] = loc;
@@ -801,7 +811,7 @@ namespace xe::gpu {
           GLCHECK(glDisableVertexAttribArray(i));
         }
       }
-    }
+    }//lastPipelineChanged
 
     //uniformfs setup
     for (auto &&u : d.uniform) {
@@ -819,7 +829,10 @@ namespace xe::gpu {
     }
 
     if (d.scissor[2] > 0.0f && d.scissor[3] > 0.0f) {
-      GLCHECK(glScissor((int32_t) d.scissor[0], (int32_t) d.scissor[1], (int32_t) d.scissor[2], (int32_t) d.scissor[3]));
+      GLCHECK(glScissor(static_cast<int32_t>(d.scissor[0]),
+                        static_cast<int32_t>(d.scissor[1]),
+                        static_cast<int32_t>(d.scissor[2]),
+                        static_cast<int32_t>(d.scissor[3])));
       GLCHECK(glEnable(GL_SCISSOR_TEST));
     } else {
       GLCHECK(glDisable(GL_SCISSOR_TEST));

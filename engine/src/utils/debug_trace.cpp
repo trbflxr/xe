@@ -3,9 +3,10 @@
 //
 
 #include "xepch.hpp"
-#define MTR_ENABLED
-#include "external/minitrace/minitrace.hpp"
 #include <xe/utils/debug_trace.hpp>
+
+#define MTR_ENABLED 1
+#include "external/minitrace/minitrace.h"
 
 namespace xe::detail {
 

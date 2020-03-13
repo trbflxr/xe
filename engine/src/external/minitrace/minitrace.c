@@ -26,8 +26,9 @@
 #include <unistd.h>
 #endif
 
-#include "minitrace.hpp"
-#define MTR_ENABLED
+#include "minitrace.h"
+#define MTR_ENABLED 1 //enable by default
+#define MTR_COPY_EVENT_CATEGORY_AND_NAME 1
 
 #ifdef __GNUC__
 #define ATTR_NORETURN __attribute__((noreturn))
@@ -40,8 +41,13 @@
 // Ugh, this struct is already pretty heavy.
 // Will probably need to move arguments to a second buffer to support more than one.
 typedef struct raw_event {
-	const char *name;
+#ifdef MTR_COPY_EVENT_CATEGORY_AND_NAME
+  char *name;
+  char *cat;
+#else
+  const char *name;
 	const char *cat;
+#endif
 	void *id;
 	int64_t ts;
 	uint32_t pid;
@@ -289,13 +295,13 @@ void mtr_flush() {
 		// On Windows, we often end up with backslashes in category.
 		char temp[256];
 		{
-			int len1 = (int)strlen(cat);
-			int i1;
-			if (len1 > 255) len1 = 255;
-			for (i1 = 0; i1 < len1; i1++) {
-				temp[i1] = cat[i1] == '\\' ? '/' : cat[i1];
+			int len = (int)strlen(cat);
+			int i;
+			if (len > 255) len = 255;
+			for (i = 0; i < len; i++) {
+				temp[i] = cat[i] == '\\' ? '/' : cat[i];
 			}
-			temp[len1] = 0;
+			temp[len] = 0;
 			cat = temp;
 		}
 #endif
@@ -305,6 +311,11 @@ void mtr_flush() {
 				cat, raw->pid, raw->tid, raw->ts - time_offset, raw->ph, raw->name, arg_buf, id_buf);
 		fwrite(linebuf, 1, len, f);
 		first_line = 0;
+
+		#ifdef MTR_COPY_EVENT_CATEGORY_AND_NAME
+		free(raw->name);
+		free(raw->cat);
+		#endif
 	}
 	count = 0;
 	is_tracing = old_tracing;
@@ -335,8 +346,20 @@ void internal_mtr_raw_event(const char *category, const char *name, char ph, voi
 	pthread_mutex_unlock(&mutex);
 #endif
 
+#ifdef MTR_COPY_EVENT_CATEGORY_AND_NAME
+	const size_t category_len = strlen(category);
+	ev->cat = malloc(category_len + 1);
+	strcpy(ev->cat, category);
+
+	const size_t name_len = strlen(name);
+	ev->name = malloc(name_len + 1);
+	strcpy(ev->name, name);
+
+#else
 	ev->cat = category;
 	ev->name = name;
+#endif
+
 	ev->id = id;
 	ev->ph = ph;
 	if (ev->ph == 'X') {
@@ -376,8 +399,20 @@ void internal_mtr_raw_event_arg(const char *category, const char *name, char ph,
 	pthread_mutex_unlock(&mutex);
 #endif
 
+#ifdef MTR_COPY_EVENT_CATEGORY_AND_NAME
+	const size_t category_len = strlen(category);
+	ev->cat = malloc(category_len + 1);
+	strcpy(ev->cat, category);
+
+	const size_t name_len = strlen(name);
+	ev->name = malloc(name_len + 1);
+	strcpy(ev->name, name);
+
+#else
 	ev->cat = category;
 	ev->name = name;
+#endif
+
 	ev->id = id;
 	ev->ts = (int64_t)(ts * 1000000);
 	ev->ph = ph;

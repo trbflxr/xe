@@ -88,7 +88,7 @@ add_subdirectory(external/spdlog)
 #engine sources
 file(GLOB ENGINE_EXTERNAL_SRC
     src/external/glad/*.c
-    src/external/minitrace/*.cpp)
+    src/external/minitrace/*.c)
 
 file(GLOB ENGINE_SRC
     src/*.cpp

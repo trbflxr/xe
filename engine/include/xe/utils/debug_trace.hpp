@@ -14,20 +14,20 @@
   #define XE_TRACE_END(category, name)     ::xe::detail::traceEnd(category, name)
   #define XE_TRACE_META_THREAD_NAME(name)  ::xe::detail::traceMetaThreadName(name)
 #else
-  #define XE_TRACE_INIT(file)
-  #define XE_TRACE_SHUTDOWN()
-  #define XE_TRACE_BEGIN(category, name)
-  #define XE_TRACE_END(category, name)
-  #define XE_TRACE_META_THREAD_NAME(name)
+  #define XE_TRACE_INIT(file)              ((void)0)
+  #define XE_TRACE_SHUTDOWN()              ((void)0)
+  #define XE_TRACE_BEGIN(category, name)   ((void)0)
+  #define XE_TRACE_END(category, name)     ((void)0)
+  #define XE_TRACE_META_THREAD_NAME(name)  ((void)0)
 #endif
 
 namespace xe::detail {
 
-  void XE_API traceInit(const char *file);
-  void XE_API traceShutdown();
-  void XE_API traceBegin(const char *category, const char *name);
-  void XE_API traceEnd(const char *category, const char *name);
-  void XE_API traceMetaThreadName(const char *name);
+  XE_API void traceInit(const char *file);
+  XE_API void traceShutdown();
+  XE_API void traceBegin(const char *category, const char *name);
+  XE_API void traceEnd(const char *category, const char *name);
+  XE_API void traceMetaThreadName(const char *name);
 
 }
 

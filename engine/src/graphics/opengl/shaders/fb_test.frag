@@ -1,12 +1,11 @@
-out vec4 color;
+layout(location = 0) out vec4 color;
 
 in vec2 v_texCoords;
 
 uniform sampler2D u_tex2d0;
 uniform sampler2D u_tex2d1;
 
-//uniform float u_alpha;
-uniform vec4 u_tint;
+layout(location = 0) uniform vec4 u_tint;
 
 void main() {
   if (v_texCoords.x <= 0.5) {

@@ -11,8 +11,6 @@
 #include <xe/graphics/color.hpp>
 #include <xe/graphics/gpu_resources.hpp>
 
-#pragma warning(disable : 4114) //same type qualifier used more than once
-
 namespace xe {
 
   struct Uniform {
@@ -22,7 +20,7 @@ namespace xe {
     Uniform() : name(nullptr) { }
 
     Uniform(const char *name, void *data, size_t size) : name(name) {
-      memcpy(Uniform::data, data, size);
+      std::memcpy(Uniform::data, data, size);
     }
   };
 
@@ -105,7 +103,6 @@ namespace xe {
       PROP(gpu::Pipeline, pipeline, { });
       PROP_ARRAY(gpu::Texture, cMaxTextureUnits, texture);
       PROP_ARRAY(gpu::Buffer, cMaxVertexAttribs, buffer);
-      PROP_ARRAY(gpu::Buffer, cMaxUniformBuffers, uniformBuffer);
       PROP_ARRAY(Uniform, cMaxShaderUniforms, uniform);
       PROP(vec4, scissor, vec4(0.0f));
     };

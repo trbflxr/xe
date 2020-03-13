@@ -67,13 +67,12 @@ void TestLayer::start() {
   camera_->setName("Camera");
   camera_->transform()->setLocalPositionX(2.0f);
 
-  state_.cube.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
-  state_.cube.view = mat4::transformation({-10, 25, 60},
+  state_.uniforms.cubeProj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
+  state_.uniforms.cubeView = mat4::transformation({-10, 25, 60},
                                           quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
 
-
-  state_.quad.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
-  state_.quad.view = mat4::translation({0.0f, 0.0f, 2.0f}).inverse();
+  state_.uniforms.quadProj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
+  state_.uniforms.quadView = mat4::translation({0.0f, 0.0f, 2.0f}).inverse();
 
 
   state_.cube.vertexBuff = Engine::ref().gpu().createBuffer(
@@ -87,6 +86,9 @@ void TestLayer::start() {
       {BufferType::Vertex, Usage::Static, sizeof(quad::vertexData)});
   state_.quad.indexBuff = Engine::ref().gpu().createBuffer(
       {BufferType::Index, Usage::Static, sizeof(quad::indexData)});
+
+  state_.stateUbo = Engine::ref().gpu().createBuffer(
+      {BufferType::Uniform, Usage::Dynamic, sizeof(state_.uniforms), 0});
 
   {
     gpu::Pipeline::Info matInfo;
@@ -104,6 +106,16 @@ void TestLayer::start() {
     texInfo.magFilter = TextureMagFilter::Linear;
     texInfo.minFilter = TextureMinFilter::LinearMipmapLinear;
     state_.cube.texture = Engine::ref().gpu().createTexture(texInfo);
+
+    {
+      //fill uniforms
+      DisplayList frame;
+      frame.fillBufferCommand()
+          .set_buffer(state_.stateUbo)
+          .set_data(&state_.uniforms)
+          .set_size(sizeof(state_.uniforms));
+      Engine::ref().submitDrawList(std::move(frame));
+    }
 
     state_.cube.material = Engine::ref().gpu().createPipeline(matInfo);
     {
@@ -178,6 +190,11 @@ void TestLayer::stop() {
 
 void TestLayer::render() {
   DisplayList frame;
+  frame.fillBufferCommand()
+      .set_buffer(state_.stateUbo)
+      .set_data(&state_.uniforms)
+      .set_size(sizeof(state_.uniforms));
+
   frame.setupViewCommand()
       .set_viewport({0, 0, 800, 600})
       .set_framebuffer(state_.fb)
@@ -195,9 +212,6 @@ void TestLayer::render() {
       .set_pipeline(state_.cube.material)
       .set_buffer(0, state_.cube.vertexBuff)
       .set_buffer(1, state_.cube.instanceBuffer)
-      .set_uniform(0, {"u_model", &state_.cube.model, sizeof(mat4)})
-      .set_uniform(1, {"u_view", &state_.cube.view, sizeof(mat4)})
-      .set_uniform(2, {"u_projection", &state_.cube.proj, sizeof(mat4)})
       .set_texture(0, state_.cube.texture);
   frame.renderCommand()
       .set_indexBuffer(state_.cube.indexBuff)
@@ -217,10 +231,7 @@ void TestLayer::render() {
   frame.setupPipelineCommand()
       .set_pipeline(state_.quad.material)
       .set_buffer(0, state_.quad.vertexBuff)
-      .set_uniform(0, {"u_model", &state_.quad.model, sizeof(mat4)})
-      .set_uniform(1, {"u_view", &state_.quad.view, sizeof(mat4)})
-      .set_uniform(2, {"u_projection", &state_.quad.proj, sizeof(mat4)})
-      .set_uniform(3, {"u_tint", &tint, sizeof(Color)})
+      .set_uniform(0, {"u_tint", &tint, sizeof(Color)})
       .set_texture(0, state_.fb.colorAttachment(0))
       .set_texture(1, state_.fb.colorAttachment(1));
   frame.renderCommand()
@@ -246,7 +257,7 @@ void TestLayer::update(Timestep ts) {
   static float angle = 0.0f;
   angle += 45.0f * ts;
 
-  state_.quad.model = mat4::transformation(vec3(), {{0, 1, 0}, angle});
+  state_.uniforms.quadModel = mat4::transformation(vec3(), {{0, 1, 0}, angle});
 
   camera_->transform()->rotate({0, ts, 0});
 

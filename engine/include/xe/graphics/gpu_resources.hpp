@@ -34,7 +34,7 @@ namespace xe {
         BufferType bufferType = BufferType::Invalid;
         Usage usage = Usage::Static;
         uint32_t size = 0;
-        std::string_view name;
+        int32_t binding = -1;
       };
     };
 

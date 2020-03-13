@@ -551,7 +551,10 @@ namespace xe::gpu {
     GLCHECK(glBufferSubData(target, d.offset, d.size, d.data));
 
     if (target == GL_UNIFORM_BUFFER) {
-      GLCHECK(glBindBufferBase(target, id, id));
+      if (b.second->binding == -1) {
+        b.second->binding = b.first->info.binding;
+      }
+      GLCHECK(glBindBufferBase(target, b.second->binding, id));
     }
   }
 
@@ -798,16 +801,6 @@ namespace xe::gpu {
           GLCHECK(glDisableVertexAttribArray(i));
         }
       }
-
-      for (auto &ub : d.uniformBuffer) {
-        if (ub.id) {
-          auto ubo = RenderContext::getResource(ub.id, &d.pipeline.ctx->buffers_, &d.pipeline.ctx->backend_->buffers_);
-          uint32_t uniformIndex = 0;
-
-          GLCHECK(uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name.data()));
-          GLCHECK(glUniformBlockBinding(mat.second->program, uniformIndex, ubo.second->buffer));
-        }
-      }
     }
 
     //uniformfs setup
@@ -818,7 +811,7 @@ namespace xe::gpu {
       for (uint32_t i = 0; i < mat.second->usedUniforms; ++i) {
         auto &&mu = mat.second->uniforms[i];
         if (mu.name == u.name) {
-          memcpy(mat.second->uniformData.data.get() + mu.offset, u.data, mu.size);
+          std::memcpy(mat.second->uniformData.data.get() + mu.offset, u.data, mu.size);
           setUniform(mu.loc, mu.type, mat.second->uniformData.data.get() + mu.offset);
           break;
         }

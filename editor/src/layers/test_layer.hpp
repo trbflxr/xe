@@ -17,18 +17,23 @@ struct State {
     xe::gpu::Buffer indexBuff;
     xe::gpu::Buffer instanceBuffer;
     xe::gpu::Texture texture;
-    xe::mat4 model;
-    xe::mat4 view;
-    xe::mat4 proj;
   } cube;
   struct {
     xe::gpu::Pipeline material;
     xe::gpu::Buffer vertexBuff;
     xe::gpu::Buffer indexBuff;
-    xe::mat4 model;
-    xe::mat4 view;
-    xe::mat4 proj;
   } quad;
+
+  xe::gpu::Buffer stateUbo;
+  struct {
+    xe::mat4 cubeModel;
+    xe::mat4 cubeView;
+    xe::mat4 cubeProj;
+
+    xe::mat4 quadModel;
+    xe::mat4 quadView;
+    xe::mat4 quadProj;
+  } uniforms;
 };
 
 class TestLayer {

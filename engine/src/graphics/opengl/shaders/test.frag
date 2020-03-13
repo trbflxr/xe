@@ -1,5 +1,5 @@
-layout(location = 0)out vec4 color0;
-layout(location = 1)out vec4 color1;
+layout(location = 0) out vec4 color0;
+layout(location = 1) out vec4 color1;
 
 in vec4 v_color;
 in vec2 v_texCoords;

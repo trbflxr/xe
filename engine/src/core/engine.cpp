@@ -246,7 +246,10 @@ namespace xe {
 
   void Engine::processEvents() {
     Event e{ };
-    while (Engine::ref().window().pollEvent(e)) {
+    while (!events_.empty()) {
+      e = events_.front();
+      events_.pop();
+
       app_->onEvent(e);
 
       if (e.type == Event::Closed) {
@@ -287,6 +290,13 @@ namespace xe {
     startSystems();
 
     XE_TRACE_END("XE", "Load scene");
+  }
+
+  void Engine::pushEvents(const std::vector<Event> &events) {
+    std::unique_lock<std::mutex> lock(eventsMutex_);
+    for (const auto &e : events) {
+      events_.push(e);
+    }
   }
 
   bool Engine::isKeyPressed(Keyboard::Key key) {

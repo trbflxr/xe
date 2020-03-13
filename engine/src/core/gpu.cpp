@@ -3,8 +3,10 @@
 //
 
 #include "xepch.hpp"
-#include "embedded/embedded.hpp"
 #include <xe/core/gpu.hpp>
+
+#include "embedded/embedded.hpp"
+#include <xe/core/engine.hpp>
 #include <xe/graphics/window.hpp>
 #include <xe/graphics/render_context.hpp>
 
@@ -43,7 +45,6 @@ namespace xe {
 
   void GPU::init() {
     ctx_->init(params_);
-    window_->init();
 
     threadSync_.thread = std::thread(&xe::GPU::run, this);
     XE_CORE_INFO("[GPU] Launched rendering thread");
@@ -53,7 +54,7 @@ namespace xe {
 
   void GPU::run() {
     XE_TRACE_META_THREAD_NAME("Render thread");
-    window_->initContext();
+    window_->init();
     shouldClose_ = window_->shouldClose();
 
     threadSync_.initialized = true;
@@ -79,6 +80,14 @@ namespace xe {
 
         renderFrame_.update();
         window_->update();
+
+
+        Event e{ };
+        std::vector<Event> events;
+        while (window_->pollEvent(e)) {
+          events.push_back(e);
+        }
+        Engine::ref().pushEvents(events);
 
         XE_TRACE_END("XE", "Frame");
         XE_TRACE_BEGIN("XE", "Frame");

@@ -62,7 +62,6 @@ namespace xe {
 
   private:
     void init();
-    void initContext();
     void update();
     void stop();
 

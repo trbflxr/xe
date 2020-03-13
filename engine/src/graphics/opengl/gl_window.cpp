@@ -4,6 +4,7 @@
 
 #include "xepch.hpp"
 #include "gl_window.hpp"
+
 #include <xe/utils/logger.hpp>
 
 namespace xe {
@@ -163,7 +164,7 @@ namespace xe {
     glfwSetWindowUserPointer(data->window, data);
 
     glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32_t key, int32_t /*scanCode*/, int32_t action, int32_t mods) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 
       Event e{ };
       if (action == GLFW_PRESS) {
@@ -178,11 +179,11 @@ namespace xe {
       e.key.control = mods == GLFW_MOD_CONTROL;
       e.key.alt = mods == GLFW_MOD_ALT;
       e.key.system = mods == GLFW_MOD_SUPER;
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
 
     glfwSetMouseButtonCallback(data->window, [](GLFWwindow *window, int32_t button, int32_t action, int32_t mods) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 
       Event e{ };
       if (action == GLFW_PRESS) {
@@ -195,62 +196,62 @@ namespace xe {
       e.mouseButton.control = mods == GLFW_MOD_CONTROL;
       e.mouseButton.alt = mods == GLFW_MOD_ALT;
       e.mouseButton.system = mods == GLFW_MOD_SUPER;
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
 
     glfwSetScrollCallback(data->window, [](GLFWwindow *window, double xOffset, double yOffset) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 
       Event e{ };
       e.type = Event::MouseScrolled;
       e.mouseScroll.x = static_cast<float>(xOffset);
       e.mouseScroll.y = static_cast<float>(yOffset);
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
 
     glfwSetCursorPosCallback(data->window, [](GLFWwindow *window, double xPos, double yPos) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 
       Event e{ };
       e.type = Event::MouseMoved;
       e.mouseMove.x = static_cast<float>(xPos);
       e.mouseMove.y = static_cast<float>(yPos);
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
 
     glfwSetCharCallback(data->window, [](GLFWwindow *window, uint32_t ch) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 
       Event e{ };
       e.type = Event::TextEntered;
       e.text.unicode = ch;
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
 
     glfwSetWindowSizeCallback(data->window, [](GLFWwindow *window, int32_t width, int32_t height) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
-//todo:cast
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
+
       Event e{ };
       e.type = Event::Resized;
       e.size.width = static_cast<uint32_t>(width);
       e.size.height = static_cast<uint32_t>(height);
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
 
     glfwSetCursorEnterCallback(data->window, [](GLFWwindow *window, int32_t entered) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 
       Event e{ };
       e.type = entered ? Event::MouseEntered : Event::MouseLeft;
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
 
     glfwSetWindowFocusCallback(data->window, [](GLFWwindow *window, int32_t focused) {
-      Window::Data &data = *(Window::Data *) glfwGetWindowUserPointer(window);
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 
       Event e{ };
       e.type = focused ? Event::GainedFocus : Event::LostFocus;
-      data.pushEvent(e);
+      data->pushEvent(e);
     });
   }
 

@@ -42,9 +42,8 @@ namespace xe {
     WindowBackend::init(data_);
 
     ui::init(data_);
-  }
 
-  void Window::initContext() {
+
     WindowBackend::initContext(data_, params_.srgb);
   }
 

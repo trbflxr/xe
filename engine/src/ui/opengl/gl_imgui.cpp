@@ -198,15 +198,15 @@ namespace xe::ui::impl {
           const int32_t button = e.mouseButton.button;
           if (e.type == Event::MouseButtonPressed && button >= 0 && button < 3) {
             mousePressed[e.mouseButton.button] = true;
-            return io.WantCaptureKeyboard;
+            return io.WantCaptureMouse;
           }
           break;
         }
 
         case Event::MouseScrolled: {
-          io.MouseWheel += static_cast<float>(e.mouseScroll.y);
-          io.MouseWheelH += static_cast<float>(e.mouseScroll.x);
-          return io.WantCaptureKeyboard;
+          io.MouseWheel += e.mouseScroll.y;
+          io.MouseWheelH += e.mouseScroll.x;
+          return io.WantCaptureMouse;
         }
 
         case Event::KeyPressed: // fall-through
@@ -219,9 +219,7 @@ namespace xe::ui::impl {
         }
 
         case Event::TextEntered: {
-          if (e.text.unicode > 0 && e.text.unicode < 0x10000) {
-            io.AddInputCharactersUTF8((const char *) &e.text.unicode);
-          }
+          io.AddInputCharacter(static_cast<uint16_t>(e.text.unicode));
           return io.WantCaptureKeyboard;
         }
         default: break;
@@ -348,7 +346,7 @@ namespace xe::ui::impl {
                       (int32_t) (clipRect.z - clipRect.x), (int32_t) (clipRect.w - clipRect.y));
 
             // Bind texture, Draw
-            glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<const uint32_t*>(&pcmd->TextureId));
+            glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<const uint32_t *>(&pcmd->TextureId));
             glDrawElements(GL_TRIANGLES, static_cast<int32_t>(pcmd->ElemCount), GL_UNSIGNED_SHORT, idxBufferOffset);
           }
         }
@@ -417,7 +415,7 @@ namespace xe::ui::impl {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
     // Store our identifier
-    io.Fonts->TexID = *(ImTextureID*) &gFontTexture;
+    io.Fonts->TexID = *(ImTextureID *) &gFontTexture;
 
     // Restore state
     glBindTexture(GL_TEXTURE_2D, lastTexture);

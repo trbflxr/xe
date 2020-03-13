@@ -6,6 +6,7 @@
 #define XE_ENGINE_HPP
 
 #include <memory>
+#include <queue>
 #include <xe/params.hpp>
 #include <xe/core/vfs.hpp>
 #include <xe/core/gpu.hpp>
@@ -59,6 +60,8 @@ namespace xe {
 
     const std::vector<std::string> &getArgs() const { return args_; }
 
+    void pushEvents(const std::vector<Event> &events);
+
     static bool isKeyPressed(Keyboard::Key key);
     static bool isMouseButtonPressed(Mouse::Button button);
 
@@ -94,6 +97,9 @@ namespace xe {
     std::unique_ptr<AssetManager> assetManager_;
 
     std::shared_ptr<System::Transform> transform_;
+
+    std::mutex eventsMutex_;
+    std::queue<Event> events_;
 
     struct Framerate {
       float timeStep = 1.0f / 60.0f;

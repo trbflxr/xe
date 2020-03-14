@@ -26,6 +26,8 @@
 #include <sstream>
 #include <string>
 
+#include <entt/entt.hpp>
+
 #include <xe/common.hpp>
 
 #include <xe/string.hpp>

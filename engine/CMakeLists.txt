@@ -72,6 +72,7 @@ set(XE_INCLUDE_DIRS
     #engine
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     #libs
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/entt/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/physfs/include

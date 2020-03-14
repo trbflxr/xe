@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <queue>
+#include <entt/entt.hpp>
 #include <xe/params.hpp>
 #include <xe/core/vfs.hpp>
 #include <xe/core/gpu.hpp>
@@ -15,7 +16,6 @@
 #include <xe/core/application.hpp>
 #include <xe/core/scene.hpp>
 #include <xe/graphics/window.hpp>
-#include <xe/components/transform.hpp>
 
 namespace xe {
 
@@ -53,10 +53,9 @@ namespace xe {
 
     VFS &vfs() { return *vfs_; }
     GPU &gpu() { return *gpu_; }
+    entt::registry &registry() { return *registry_; }
     Window &window() { return *gpu_->window_; }
     AssetManager &assetManager() { return *assetManager_; }
-
-    const std::shared_ptr<System::Transform> &transform() { return transform_; }
 
     const std::vector<std::string> &getArgs() const { return args_; }
 
@@ -87,6 +86,8 @@ namespace xe {
   private:
     static Engine *instance_;
 
+    std::unique_ptr<entt::registry> registry_;
+
     std::vector<std::string> args_;
 
     std::unique_ptr<Application> app_;
@@ -95,8 +96,6 @@ namespace xe {
     std::unique_ptr<VFS> vfs_;
     std::unique_ptr<GPU> gpu_;
     std::unique_ptr<AssetManager> assetManager_;
-
-    std::shared_ptr<System::Transform> transform_;
 
     std::mutex eventsMutex_;
     std::queue<Event> events_;

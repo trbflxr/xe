@@ -27,6 +27,7 @@ protected:
   }
 
   void onStart() override {
+    overlay_->start();
     layer_->start();
   }
 
@@ -35,11 +36,13 @@ protected:
   }
 
   void onUpdate() override {
+    overlay_->update(Engine::ref().delta());
     layer_->update(Engine::ref().delta());
   }
 
   void onRender() override {
     layer_->render();
+    overlay_->render();
   }
 
   void onKeyPressed(const Event::Key &key) override {

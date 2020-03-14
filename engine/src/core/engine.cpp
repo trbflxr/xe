@@ -23,6 +23,7 @@ namespace xe {
     }
 
     XE_TRACE_BEGIN("XE", "Creating modules");
+    registry_ = std::make_unique<entt::registry>();
     vfs_.reset(new VFS());
     gpu_.reset(new GPU());
     assetManager_.reset(new AssetManager());
@@ -154,8 +155,6 @@ namespace xe {
     XE_TRACE_BEGIN("XE", "Engine systems init");
     XE_CORE_INFO("[Engine] Initializing engine systems");
 
-    transform_ = std::make_shared<System::Transform>();
-
     gpu_->init();
     assetManager_->init();
 
@@ -177,8 +176,6 @@ namespace xe {
     if (!scene_) return;
 
     XE_TRACE_BEGIN("XE", "Engine systems pre update");
-
-    transform_->preUpdate();
 
     XE_TRACE_END("XE", "Engine systems pre update");
   }
@@ -284,8 +281,6 @@ namespace xe {
     stopSystems();
 
     scene_ = scene;
-
-    transform_->onSceneChanged();
 
     startSystems();
 

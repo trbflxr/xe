@@ -58,9 +58,20 @@ TestOverlay::TestOverlay() {
 }
 
 void TestOverlay::start() {
-  Quad quad;
+  camera_ = std::make_unique<Camera>();
 
-  quad.proj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
+  camera_->set_fov(70.0f);
+  camera_->set_aspect(800.0f / 600.0f);
+  camera_->set_nearPlane(1.0f);
+  camera_->set_farPlane(1000.0f);
+  camera_->set_backgroundColor(Color::Teal);
+  camera_->set_clearColor(true);
+  camera_->set_clearDepth(true);
+
+  camera_->transform().translateZ(-4.0f);
+
+  Quad quad;
+  quad.proj = mat4::perspective(70.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
   quad.view = mat4::translation({0.0f, 0.0f, 4.0f}).inverse();
 
   quad.vertexBuff = Engine::ref().gpu().createBuffer(
@@ -112,22 +123,20 @@ void TestOverlay::start() {
 }
 
 void TestOverlay::render() {
-  auto view = Engine::ref().registry().view<Quad>();
-
   DisplayList frame;
 
-  Engine::ref().registry().view<Quad, Transform>().each([&](auto &quad, auto &transform) {
+  Engine::ref().registry().view<Quad, Transform>().each([&frame, this](auto &quad, auto &transform) {
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600});
     frame.clearCommand()
-        .set_color(Color::Teal)
-        .set_clearColor(true)
-        .set_clearDepth(true);
+        .set_color(camera_->backgroundColor())
+        .set_clearColor(camera_->clearColor())
+        .set_clearDepth(camera_->clearDepth());
     frame.setupPipelineCommand()
         .set_pipeline(quad.material)
         .set_buffer(0, quad.vertexBuff)
-        .set_uniform(0, {"u_proj", &quad.proj, sizeof(mat4)})
-        .set_uniform(1, {"u_view", &quad.view, sizeof(mat4)})
+        .set_uniform(0, {"u_proj", &camera_->projection(), sizeof(mat4)})
+        .set_uniform(1, {"u_view", &camera_->view(), sizeof(mat4)})
         .set_uniform(2, {"u_model", &transform.worldTransform(), sizeof(mat4)})
         .set_texture(0, quad.texture);
     frame.renderCommand()
@@ -140,6 +149,8 @@ void TestOverlay::render() {
 }
 
 void TestOverlay::update(Timestep ts) {
+  camera_->update();
+
   Engine::ref().registry().view<Quad, Transform>().each([ts](auto &quad, auto &transform) {
     transform.rotateY(45.0f * ts);
   });

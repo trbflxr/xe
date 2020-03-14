@@ -6,6 +6,7 @@
 #define XE_TEST_OVERLAY_HPP
 
 #include <xe/core/engine.hpp>
+#include <xe/graphics/camera.hpp>
 
 struct Quad {
   xe::gpu::Pipeline material;
@@ -32,6 +33,8 @@ public:
 
 private:
   void *texData_ = nullptr;
+
+  std::unique_ptr<xe::Camera> camera_;
 };
 
 #endif //XE_TEST_OVERLAY_HPP

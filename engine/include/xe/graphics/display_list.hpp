@@ -19,7 +19,7 @@ namespace xe {
 
     Uniform() : name(nullptr) { }
 
-    Uniform(const char *name, void *data, size_t size) : name(name) {
+    Uniform(const char *name, const void *data, size_t size) : name(name) {
       std::memcpy(Uniform::data, data, size);
     }
   };

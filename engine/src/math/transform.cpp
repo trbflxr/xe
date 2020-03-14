@@ -5,8 +5,6 @@
 #include "xepch.hpp"
 #include <xe/math/transform.hpp>
 
-#include <xe/core/engine.hpp>
-
 namespace xe {
 
   Transform::Transform() :

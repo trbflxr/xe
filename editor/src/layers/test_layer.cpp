@@ -3,6 +3,7 @@
 //
 
 #include "test_layer.hpp"
+
 #include <xe/core/vfs.hpp>
 #include <xe/utils/logger.hpp>
 #include <xe/ui/ui.hpp>
@@ -60,13 +61,6 @@ TestLayer::TestLayer() :
 void TestLayer::start() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
 
-  std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-  Engine::ref().loadScene(scene);
-
-  camera_ = std::make_shared<GameObject>();
-  camera_->setName("Camera");
-  camera_->transform()->setLocalPositionX(2.0f);
-
   state_.uniforms.cubeProj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
   state_.uniforms.cubeView = mat4::transformation({-10, 25, 60},
                                           quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
@@ -88,7 +82,7 @@ void TestLayer::start() {
       {BufferType::Index, Usage::Static, sizeof(quad::indexData)});
 
   state_.stateUbo = Engine::ref().gpu().createBuffer(
-      {BufferType::Uniform, Usage::Dynamic, sizeof(state_.uniforms), 0});
+      {BufferType::Uniform, Usage::Dynamic, sizeof(state_.uniforms), 1});
 
   {
     gpu::Pipeline::Info matInfo;
@@ -258,10 +252,6 @@ void TestLayer::update(Timestep ts) {
   angle += 45.0f * ts;
 
   state_.uniforms.quadModel = mat4::transformation(vec3(), {{0, 1, 0}, angle});
-
-  camera_->transform()->rotate({0, ts, 0});
-
-//  XE_CORE_CRITICAL(camera_->transform()->localRotation().toEulerAngles());
 }
 
 bool TestLayer::onKeyPressed(const Event::Key &e) {

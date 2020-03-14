@@ -22,6 +22,8 @@ public:                                                                   \
     Object();
     virtual ~Object() = default;
 
+    virtual void onUi();
+
     void setName(std::string_view name) { name_ = name; }
     std::string_view name() const { return name_; }
 
@@ -29,6 +31,9 @@ public:                                                                   \
 
     virtual std::string_view type() const = 0;
     virtual std::string_view baseType() const = 0;
+
+  protected:
+    std::string uiText(std::string_view label);
 
   private:
     std::string name_;

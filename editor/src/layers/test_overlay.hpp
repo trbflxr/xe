@@ -14,11 +14,6 @@ struct Quad {
   xe::gpu::Texture texture;
   xe::mat4 proj;
   xe::mat4 view;
-  xe::mat4 model;
-};
-
-struct Rotation {
-  float angle;
 };
 
 struct Renderer {

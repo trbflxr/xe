@@ -3,8 +3,8 @@
 //
 
 #include "xepch.hpp"
-#include <xe/components/transform.hpp>
-#include <xe/core/game_object.hpp>
+#include <xe/math/transform.hpp>
+
 #include <xe/core/engine.hpp>
 
 namespace xe {
@@ -194,15 +194,15 @@ namespace xe {
     rotate(quat(delta), space);
   }
 
-  void Transform::rotateX(const float &angle, Space space) {
+  void Transform::rotateX(float angle, Space space) {
     rotate(quat(vec3(1.0f, 0.0f, 0.0f) * angle), space);
   }
 
-  void Transform::rotateY(const float &angle, Space space) {
+  void Transform::rotateY(float angle, Space space) {
     rotate(quat(vec3(0.0f, 1.0f, 0.0f) * angle), space);
   }
 
-  void Transform::rotateZ(const float &angle, Space space) {
+  void Transform::rotateZ(float angle, Space space) {
     rotate(quat(vec3(0.0f, 0.0f, 1.0f) * angle), space);
   }
 
@@ -241,12 +241,12 @@ namespace xe {
     rotateAround(point, quat(delta), space);
   }
 
-  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, Space space) {
-    rotateAround(obj->transform()->worldPosition(), delta, space);
+  void Transform::rotateAround(const Transform &other, const quat &delta, Space space) {
+    rotateAround(other.worldPosition(), delta, space);
   }
 
-  void Transform::rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, Space space) {
-    rotateAround(obj->transform()->worldPosition(), quat(delta), space);
+  void Transform::rotateAround(const Transform &other, const vec3 &delta, Space space) {
+    rotateAround(other.worldPosition(), quat(delta), space);
   }
 
   void Transform::lookAt(const vec3 &target, const vec3 &up, Space space) {
@@ -376,11 +376,6 @@ namespace xe {
       const mat4 prev = worldTransform();
 
       setTransform(vec3(prev.getTranslation()), prev.getRotation(), vec3(prev.getScale()));
-
-      gameObject()->sceneId_ = parent->gameObject()->sceneId_;
-      for (auto &&g : transform()->children_) {
-        g->gameObject()->sceneId_ = parent->gameObject()->sceneId_;
-      }
     }
   }
 
@@ -432,27 +427,6 @@ namespace xe {
 
   bool Transform::hasChanged() const {
     return dirty_;
-  }
-
-  System::Transform::Transform() {
-    setName("System::Transform");
-  }
-
-  void System::Transform::preUpdate() {
-    XE_TRACE_BEGIN("XE", "Transform render update");
-    for (auto &&c : components_) {
-      if (scene_->id() != c->gameObject()->sceneId()) {
-        continue;
-      }
-      if (c->hasChanged()) {
-        c->updateWorldTransform();
-      }
-    }
-    XE_TRACE_END("XE", "Transform render update");
-  }
-
-  const std::shared_ptr<System::Transform> &System::Getter<Transform>::get() {
-    return Engine::ref().transform();
   }
 
 }

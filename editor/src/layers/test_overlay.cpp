@@ -3,7 +3,9 @@
 //
 
 #include "test_overlay.hpp"
+
 #include <xe/utils/logger.hpp>
+#include <xe/math/transform.hpp>
 
 using namespace xe;
 
@@ -67,7 +69,6 @@ void TestOverlay::start() {
       {BufferType::Index, Usage::Static, sizeof(quad1::indexData)});
 
 
-
   gpu::Pipeline::Info::Shader quadShader;
   quadShader.vert = quad1::ecs_quad_vert;
   quadShader.frag = quad1::ecs_quad_frag;
@@ -106,8 +107,8 @@ void TestOverlay::start() {
 
   auto entity = Engine::ref().registry().create();
   Engine::ref().registry().assign<Quad>(entity, quad);
-  Engine::ref().registry().assign<Rotation>(entity, 10.0f);
   Engine::ref().registry().assign<Renderer>(entity);
+  Engine::ref().registry().assign<Transform>(entity);
 }
 
 void TestOverlay::render() {
@@ -115,7 +116,7 @@ void TestOverlay::render() {
 
   DisplayList frame;
 
-  Engine::ref().registry().view<Quad>().each([&](auto &quad) {
+  Engine::ref().registry().view<Quad, Transform>().each([&](auto &quad, auto &transform) {
     frame.setupViewCommand()
         .set_viewport({0, 0, 800, 600});
     frame.clearCommand()
@@ -127,7 +128,7 @@ void TestOverlay::render() {
         .set_buffer(0, quad.vertexBuff)
         .set_uniform(0, {"u_proj", &quad.proj, sizeof(mat4)})
         .set_uniform(1, {"u_view", &quad.view, sizeof(mat4)})
-        .set_uniform(2, {"u_model", &quad.model, sizeof(mat4)})
+        .set_uniform(2, {"u_model", &transform.worldTransform(), sizeof(mat4)})
         .set_texture(0, quad.texture);
     frame.renderCommand()
         .set_indexBuffer(quad.indexBuff)
@@ -138,10 +139,9 @@ void TestOverlay::render() {
   Engine::ref().submitDrawList(std::move(frame));
 }
 
-void TestOverlay::update(xe::Timestep ts) {
-  Engine::ref().registry().view<Quad, Rotation>().each([ts](auto &quad, auto &rot) {
-    rot.angle += 45.0f * ts;
-    quad.model = mat4::transformation(vec3(), {{0, 1, 0}, rot.angle});
+void TestOverlay::update(Timestep ts) {
+  Engine::ref().registry().view<Quad, Transform>().each([ts](auto &quad, auto &transform) {
+    transform.rotateY(45.0f * ts);
   });
 }
 

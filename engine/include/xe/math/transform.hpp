@@ -5,12 +5,15 @@
 #ifndef XE_TRANSFORM_HPP
 #define XE_TRANSFORM_HPP
 
-#include <xe/core/component.hpp>
+#include <xe/math/vec3.hpp>
+#include <xe/math/quat.hpp>
+#include <xe/math/mat4.hpp>
+#include <xe/core/object.hpp>
 
 namespace xe {
 
-  class XE_API Transform : public Component {
-  XE_OBJECT(Transform, Component);
+  class XE_API Transform : public Object {
+  XE_OBJECT(Transform, Object);
   public:
     enum class Space {
       Local,
@@ -53,14 +56,14 @@ namespace xe {
 
     void rotate(const quat &delta, Space space = Space::Local);
     void rotate(const vec3 &delta, Space space = Space::Local);
-    void rotateX(const float &angle, Space space = Space::Local);
-    void rotateY(const float &angle, Space space = Space::Local);
-    void rotateZ(const float &angle, Space space = Space::Local);
+    void rotateX(float angle, Space space = Space::Local);
+    void rotateY(float angle, Space space = Space::Local);
+    void rotateZ(float angle, Space space = Space::Local);
 
     void rotateAround(const vec3 &point, const quat &delta, Space space = Space::Local);
     void rotateAround(const vec3 &point, const vec3 &delta, Space space = Space::Local);
-    void rotateAround(const std::shared_ptr<GameObject> &obj, const quat &delta, Space space = Space::Local);
-    void rotateAround(const std::shared_ptr<GameObject> &obj, const vec3 &delta, Space space = Space::Local);
+    void rotateAround(const Transform &other, const quat &delta, Space space = Space::Local);
+    void rotateAround(const Transform &other, const vec3 &delta, Space space = Space::Local);
 
     void lookAt(const vec3 &target, const vec3 &up = vec3::unitY(), Space space = Space::World);
 
@@ -112,23 +115,6 @@ namespace xe {
 
     vec3 eulerAngles_;
   };
-
-  namespace System {
-    class XE_API Transform : public ComponentSystem {
-    XE_COMPONENT_SYSTEM(Transform, ComponentSystem);
-    public:
-      Transform();
-
-      void preUpdate() override;
-    };
-
-    template<>
-    class Getter<xe::Transform> {
-    public:
-      static const std::shared_ptr<System::Transform> &get();
-    };
-
-  }
 
 }
 

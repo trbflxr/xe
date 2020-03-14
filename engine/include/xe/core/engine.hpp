@@ -14,7 +14,6 @@
 #include <xe/core/assets.hpp>
 #include <xe/core/timestep.hpp>
 #include <xe/core/application.hpp>
-#include <xe/core/scene.hpp>
 #include <xe/graphics/window.hpp>
 
 namespace xe {
@@ -30,8 +29,7 @@ namespace xe {
     int32_t run();
     void requestClose();
 
-    Application *getApp() const { return app_.get(); }
-    void setApp(std::unique_ptr<Application> &&app) { app_ = std::move(app); }
+    void setApp(std::shared_ptr<Application> &&app);
 
     bool isRunning() const;
 
@@ -42,18 +40,16 @@ namespace xe {
 
     void setUiFunction(const std::function<void(void *)> &function, void *data);
 
-    void loadScene(const std::shared_ptr<Scene> &scene);
-    const std::shared_ptr<Scene> &scene() { return scene_; }
-
     void setTimestep(float step) { framerate_.timeStep = step; }
     void setMaxSteps(uint32_t steps) { framerate_.maxSteps = steps; }
 
     Timestep delta() const { return framerate_.timeStep; }
     uint32_t fps() const { return framerate_.fps; }
 
+    std::shared_ptr<Application> &app() { return app_; }
+    entt::registry &registry() { return *registry_; }
     VFS &vfs() { return *vfs_; }
     GPU &gpu() { return *gpu_; }
-    entt::registry &registry() { return *registry_; }
     Window &window() { return *gpu_->window_; }
     AssetManager &assetManager() { return *assetManager_; }
 
@@ -90,8 +86,7 @@ namespace xe {
 
     std::vector<std::string> args_;
 
-    std::unique_ptr<Application> app_;
-    std::shared_ptr<Scene> scene_;
+    std::shared_ptr<Application> app_;
 
     std::unique_ptr<VFS> vfs_;
     std::unique_ptr<GPU> gpu_;

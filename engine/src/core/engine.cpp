@@ -122,6 +122,21 @@ namespace xe {
     gpu_->window_->forceExit();
   }
 
+  void Engine::setApp(std::shared_ptr<Application> &&app) {
+    XE_TRACE_BEGIN("XE", "Set application");
+
+    if (!app) {
+      XE_CORE_ERROR("[Engine] Could not set application (nullptr)");
+      return;
+    }
+
+    stopSystems();
+    app_ = std::move(app);
+    startSystems();
+
+    XE_TRACE_END("XE", "Set application");
+  }
+
   bool Engine::isRunning() const {
     return gpu_->isExisting();
   }
@@ -163,9 +178,8 @@ namespace xe {
   }
 
   void Engine::start() {
+    if (!app_) return;
     app_->onStart();
-
-    if (!scene_) return;
 
     startSystems();
   }
@@ -173,7 +187,7 @@ namespace xe {
   void Engine::preUpdate() {
     app_->onPreUpdate();
 
-    if (!scene_) return;
+    if (!app_) return;
 
     XE_TRACE_BEGIN("XE", "Engine systems pre update");
 
@@ -181,9 +195,8 @@ namespace xe {
   }
 
   void Engine::update(Timestep /*ts*/) {
+    if (!app_) return;
     app_->onUpdate();
-
-    if (!scene_) return;
 
     XE_TRACE_BEGIN("XE", "Engine systems update");
 
@@ -191,9 +204,8 @@ namespace xe {
   }
 
   void Engine::postUpdate() {
+    if (!app_) return;
     app_->onPostUpdate();
-
-    if (!scene_) return;
 
     XE_TRACE_BEGIN("XE", "Engine systems post update");
 
@@ -201,11 +213,10 @@ namespace xe {
   }
 
   void Engine::renderPreUpdate() {
+    gpu_->prepareRender();
     app_->onRreRender();
 
-    gpu_->prepareRender();
-
-    if (!scene_) return;
+    if (!app_) return;
 
     XE_TRACE_BEGIN("XE", "Engine systems pre render");
 
@@ -213,9 +224,8 @@ namespace xe {
   }
 
   void Engine::renderUpdate() {
+    if (!app_) return;
     app_->onRender();
-
-    if (!scene_) return;
 
     XE_TRACE_BEGIN("XE", "Engine systems render");
 
@@ -223,9 +233,9 @@ namespace xe {
   }
 
   void Engine::renderPostUpdate() {
-    app_->onPostRender();
+    if (app_) {
+      app_->onPostRender();
 
-    if (scene_) {
       XE_TRACE_BEGIN("XE", "Engine systems post render");
 
       XE_TRACE_END("XE", "Engine systems post render");
@@ -235,7 +245,9 @@ namespace xe {
   }
 
   void Engine::stop() {
-    app_->onStop();
+    if (app_) {
+      app_->onStop();
+    }
 
     gpu_->stop();
     stopSystems();
@@ -247,7 +259,9 @@ namespace xe {
       e = events_.front();
       events_.pop();
 
-      app_->onEvent(e);
+      if (app_) {
+        app_->onEvent(e);
+      }
 
       if (e.type == Event::Closed) {
         requestClose();
@@ -268,23 +282,6 @@ namespace xe {
     XE_CORE_INFO("[Engine] Engine stop");
 
     XE_TRACE_END("XE", "Engine systems stop");
-  }
-
-  void Engine::loadScene(const std::shared_ptr<Scene> &scene) {
-    XE_TRACE_BEGIN("XE", "Load scene");
-
-    if (!scene) {
-      XE_CORE_ERROR("[Engine] Could not load scene (nullptr)");
-      return;
-    }
-
-    stopSystems();
-
-    scene_ = scene;
-
-    startSystems();
-
-    XE_TRACE_END("XE", "Load scene");
   }
 
   void Engine::pushEvents(const std::vector<Event> &events) {

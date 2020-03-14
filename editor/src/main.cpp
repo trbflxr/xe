@@ -77,7 +77,7 @@ int32_t main(int32_t argc, char **argv) {
   }
 
   engine.setParams(params);
-  engine.setApp(std::make_unique<Editor>());
+  engine.setApp(std::make_shared<Editor>());
 
   int32_t exitCode = engine.run();
 

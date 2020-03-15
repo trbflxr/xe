@@ -4,6 +4,7 @@
 
 #include <xe/xe.hpp>
 #include <xe/utils/logger.hpp>
+#include <xe/graphics/renderer2d.hpp>
 
 #include "layers/test_layer.hpp"
 #include "layers/test_overlay.hpp"
@@ -24,6 +25,12 @@ protected:
 
     layer_ = std::make_unique<TestLayer>();
     overlay_ = std::make_unique<TestOverlay>();
+
+
+    camera_ = std::make_unique<OrthographicCamera>(vec2(1280, 720), -10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
+    camera_->setBackgroundColor(Color::Purple);
+
+    renderer_ = std::make_unique<Renderer2d>(*camera_);
   }
 
   void onStart() override {
@@ -38,10 +45,26 @@ protected:
   void onUpdate() override {
     overlay_->update(Engine::ref().delta());
     layer_->update(Engine::ref().delta());
+
+    static float speed = 10.0f;
+
+    if (Engine::isKeyPressed(Keyboard::S)) {
+      camera_->transform().translateY(speed * Engine::ref().delta());
+    } else if (Engine::isKeyPressed(Keyboard::W)) {
+      camera_->transform().translateY(-speed * Engine::ref().delta());
+    }
+
+    if (Engine::isKeyPressed(Keyboard::D)) {
+      camera_->transform().translateX(-speed * Engine::ref().delta());
+    } else if (Engine::isKeyPressed(Keyboard::A)) {
+      camera_->transform().translateX(speed * Engine::ref().delta());
+    }
+
+    camera_->update();
   }
 
   void onPreRender() override {
-
+    camera_->updateUniforms();
   }
 
   void onRender() override {
@@ -56,6 +79,18 @@ protected:
         .set_clearColor(true)
         .set_clearDepth(true);
     Engine::ref().submitDrawList(std::move(frame));
+
+
+    renderer_->begin();
+
+    for (int32_t x = 0; x < 1280; x += 8) {
+      for (int32_t y = 0; y < 720; y += 8) {
+        renderer_->submit({x + 3.0f, y + 3.0f}, {6.0f, 6.0f}, Color::Olive);
+      }
+    }
+
+    renderer_->end();
+    renderer_->flush();
 
     layer_->render();
     overlay_->render();
@@ -72,6 +107,9 @@ protected:
 private:
   std::unique_ptr<TestLayer> layer_;
   std::unique_ptr<TestOverlay> overlay_;
+
+  std::unique_ptr<xe::OrthographicCamera> camera_;
+  std::unique_ptr<Renderer2d> renderer_;
 };
 
 int32_t main(int32_t argc, char **argv) {

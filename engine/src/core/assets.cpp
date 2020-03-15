@@ -49,6 +49,11 @@ namespace xe {
     final->frag = makeShader({final_frag});
     addShader("final", final);
 
+    auto renderer2d = std::make_shared<gpu::Pipeline::Info::Shader>();
+    renderer2d->vert = makeShader({renderer2d_vert});
+    renderer2d->frag = makeShader({renderer2d_frag});
+    addShader("renderer2d", renderer2d);
+
     XE_TRACE_END("XE", "Default shaders init");
   }
 

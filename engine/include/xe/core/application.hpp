@@ -26,7 +26,7 @@ namespace xe {
     virtual void onPreUpdate() { }
     virtual void onUpdate() { }
     virtual void onPostUpdate() { }
-    virtual void onRreRender() { }
+    virtual void onPreRender() { }
     virtual void onRender() { }
     virtual void onPostRender() { }
     virtual void onStop() { }

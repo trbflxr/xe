@@ -112,6 +112,26 @@ namespace xe {
 
     void update() override;
 
+    friend const Node &operator>>(const Node &node, OrthographicCamera &cam) {
+      node["left"].get(cam.left_);
+      node["right"].get(cam.right_);
+      node["bottom"].get(cam.bottom_);
+      node["top"].get(cam.top_);
+      node["near"].get(cam.nearPlane_);
+      node["far"].get(cam.farPlane_);
+      return node;
+    }
+
+    friend Node &operator<<(Node &node, const OrthographicCamera &cam) {
+      node["left"].set(cam.left_);
+      node["right"].set(cam.right_);
+      node["bottom"].set(cam.bottom_);
+      node["top"].set(cam.top_);
+      node["near"].set(cam.nearPlane_);
+      node["far"].set(cam.farPlane_);
+      return node;
+    }
+
   private:
     float left_;
     float right_;
@@ -139,6 +159,22 @@ namespace xe {
     void setFarPlane(float farPlane);
 
     void update() override;
+
+    friend const Node &operator>>(const Node &node, PerspectiveCamera &cam) {
+      node["fov"].get(cam.fov_);
+      node["aspect"].get(cam.aspect_);
+      node["near"].get(cam.nearPlane_);
+      node["far"].get(cam.farPlane_);
+      return node;
+    }
+
+    friend Node &operator<<(Node &node, const PerspectiveCamera &cam) {
+      node["fov"].set(cam.fov_);
+      node["aspect"].set(cam.aspect_);
+      node["near"].set(cam.nearPlane_);
+      node["far"].set(cam.farPlane_);
+      return node;
+    }
 
   private:
     float fov_;

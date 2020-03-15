@@ -34,6 +34,7 @@ namespace xe {
         BufferType bufferType = BufferType::Invalid;
         Usage usage = Usage::Static;
         uint32_t size = 0;
+        std::string_view name;
         int32_t binding = -1;
       };
     };
@@ -41,9 +42,9 @@ namespace xe {
     struct XE_API Texture : public Resource {
       Texture(RenderContext *ctx = nullptr, uint32_t id = 0) : Resource{ctx, ResourceType::Texture, id} { }
       struct Info {
-        uint16_t width = 1;
-        uint16_t height = 1;
-        uint16_t depth = 1;
+        uint32_t width = 1;
+        uint32_t height = 1;
+        uint32_t depth = 1;
         TextureMinFilter minFilter = TextureMinFilter::Linear;
         TextureMagFilter magFilter = TextureMagFilter::Linear;
         TextureWrap wrapping[3] = {TextureWrap::Clamp, TextureWrap::Clamp, TextureWrap::Clamp};
@@ -98,10 +99,10 @@ namespace xe {
         vec2u size{ };
       };
 
-      Texture colorAttachment(uint16_t index = 0) const;
+      Texture colorAttachment(uint32_t index = 0) const;
       Texture depthStencilAttachment() const;
 
-      void setColorAttachment(Texture t, uint16_t index = 0);
+      void setColorAttachment(Texture t, uint32_t index = 0);
       void setDepthStencilAttachment(Texture t);
     };
 

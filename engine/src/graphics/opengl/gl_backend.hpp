@@ -25,7 +25,6 @@ namespace xe::gpu {
 
     struct Buffer {
       uint32_t buffer = 0;
-      int32_t binding = -1;
     };
 
     struct Texture {

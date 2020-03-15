@@ -551,10 +551,11 @@ namespace xe::gpu {
     GLCHECK(glBufferSubData(target, d.offset, d.size, d.data));
 
     if (target == GL_UNIFORM_BUFFER) {
-      if (b.second->binding == -1) {
-        b.second->binding = b.first->info.binding;
+      if (b.first->info.binding != -1) {
+        GLCHECK(glBindBufferBase(target, b.first->info.binding, id));
+      } else {
+        XE_CORE_ERROR("[GL Error] Unable to bind uniform buffer block '{}', id = -1", b.first->info.name);
       }
-      GLCHECK(glBindBufferBase(target, b.second->binding, id));
     }
   }
 
@@ -809,6 +810,17 @@ namespace xe::gpu {
           }
         } else {
           GLCHECK(glDisableVertexAttribArray(i));
+        }
+      }
+
+      for (uint32_t i = 0; i < cMaxUniformBuffers; ++i) {
+        if (d.uniformBuffer[i].id) {
+          auto ubo = RenderContext::getResource(d.uniformBuffer[i].id, &d.pipeline.ctx->buffers_, &d.pipeline.ctx->backend_->buffers_);
+          auto uniformIndex = glGetUniformBlockIndex(mat.second->program, ubo.first->info.name.data());
+          GLCHECK(glUniformBlockBinding(mat.second->program, uniformIndex, ubo.first->info.binding));
+          if (uniformIndex == GL_INVALID_INDEX) {
+            XE_CORE_ERROR("[GL Error] Unable to find uniform block '{}'. Invalid index.", ubo.first->info.name);
+          }
         }
       }
     }//lastPipelineChanged

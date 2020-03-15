@@ -83,12 +83,12 @@ namespace xe {
     struct FillTextureData {
       typedef FillTextureData Self;
       PROP(gpu::Texture, texture, { });
-      PROP(uint16_t, offsetX, 0);
-      PROP(uint16_t, offsetY, 0);
-      PROP(uint16_t, offsetZ, 0);
-      PROP(uint16_t, width, 0);
-      PROP(uint16_t, height, 0);
-      PROP(uint16_t, depth, 0);
+      PROP(uint32_t, offsetX, 0);
+      PROP(uint32_t, offsetY, 0);
+      PROP(uint32_t, offsetZ, 0);
+      PROP(uint32_t, width, 0);
+      PROP(uint32_t, height, 0);
+      PROP(uint32_t, depth, 0);
       PROP(bool, buildMipmap, false);
       PROP_PTR(void, data0);
       PROP_PTR(void, data1);
@@ -103,6 +103,7 @@ namespace xe {
       PROP(gpu::Pipeline, pipeline, { });
       PROP_ARRAY(gpu::Texture, cMaxTextureUnits, texture);
       PROP_ARRAY(gpu::Buffer, cMaxVertexAttribs, buffer);
+      PROP_ARRAY(gpu::Buffer, cMaxUniformBuffers, uniformBuffer);
       PROP_ARRAY(Uniform, cMaxShaderUniforms, uniform);
       PROP(vec4, scissor, vec4(0.0f));
     };

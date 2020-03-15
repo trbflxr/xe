@@ -108,7 +108,7 @@ namespace xe::gpu {
     return std::vector<void *>();
   }
 
-  Texture Framebuffer::colorAttachment(uint16_t index) const {
+  Texture Framebuffer::colorAttachment(uint32_t index) const {
     if (!ctx) {
       return Texture();
     }
@@ -126,7 +126,7 @@ namespace xe::gpu {
     return ctx->framebuffers_[loc].depthAttachment;
   }
 
-  void Framebuffer::setColorAttachment(Texture t, uint16_t index) {
+  void Framebuffer::setColorAttachment(Texture t, uint32_t index) {
     if (!ctx) {
       return;
     }

@@ -36,7 +36,7 @@ struct State {
 
 class TestLayer {
 public:
-  explicit TestLayer(xe::Camera *camera);
+  explicit TestLayer();
 
   void start();
   void stop();
@@ -50,7 +50,7 @@ private:
   static void uiFunc(void *data);
 
 private:
-  xe::Camera *camera_;
+  std::unique_ptr<xe::PerspectiveCamera> camera_;
   xe::vec2u size_;
 
   State state_;

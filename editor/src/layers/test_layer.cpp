@@ -54,11 +54,13 @@ namespace quad {
   uint16_t indexData[] = {0, 2, 1, 0, 3, 2};
 }
 
-TestLayer::TestLayer(Camera *camera) :
-    camera_(camera),
-    size_(camera->viewport()),
+TestLayer::TestLayer() :
+    size_(Engine::ref().getParams().window.width, Engine::ref().getParams().window.height),
     texData_(nullptr),
-    instances_(static_cast<int32_t>(State::INSTANCES / 8.0f)) { }
+    instances_(static_cast<int32_t>(State::INSTANCES / 8.0f)) {
+
+  camera_ = std::make_unique<PerspectiveCamera>(size_, 70.0f, static_cast<float>(size_.x) / size_.y, 1.0f, 1000.0f);
+}
 
 void TestLayer::start() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
@@ -181,6 +183,8 @@ void TestLayer::stop() {
 }
 
 void TestLayer::render() {
+  camera_->updateUniforms();
+
   DisplayList frame;
   frame.fillBufferCommand()
       .set_buffer(state_.stateUbo)
@@ -216,7 +220,7 @@ void TestLayer::render() {
 
   // framebuffer
   frame.setupViewCommand()
-      .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
+      .set_viewport(camera_->viewport())
       .set_framebuffer(Engine::ref().composer().framebuffer())
       .set_colorAttachment(0, true);
   frame.clearCommand()
@@ -240,6 +244,22 @@ void TestLayer::render() {
 }
 
 void TestLayer::update(Timestep ts) {
+  static float speed = 5.0f;
+
+  if (Engine::isKeyPressed(Keyboard::W)) {
+    camera_->transform().translateZ(speed * ts);
+  } else if (Engine::isKeyPressed(Keyboard::S)) {
+    camera_->transform().translateZ(-speed * ts);
+  }
+
+  if (Engine::isKeyPressed(Keyboard::A)) {
+    camera_->transform().translateX(speed * ts);
+  } else if (Engine::isKeyPressed(Keyboard::D)) {
+    camera_->transform().translateX(-speed * ts);
+  }
+
+  camera_->update();
+
   static float v = 0;
   for (size_t i = 0; i < (size_t) instances_; ++i) {
     state_.cube.instancePositions[i] = {
@@ -255,7 +275,7 @@ void TestLayer::update(Timestep ts) {
   angle += 45.0f * ts;
 
   state_.quad.transform.rotateY(15.0f * ts);
-  state_.quad.transform.setLocalPositionZ(3.5f);
+  state_.quad.transform.setLocalPositionZ(-2.5f);
 }
 
 bool TestLayer::onKeyPressed(const Event::Key &e) {

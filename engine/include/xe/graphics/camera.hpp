@@ -8,6 +8,7 @@
 #include <xe/core/object.hpp>
 #include <xe/graphics/color.hpp>
 #include <xe/graphics/composer.hpp>
+#include <xe/graphics/display_list.hpp>
 #include <xe/math/transform.hpp>
 
 namespace xe {
@@ -30,35 +31,28 @@ namespace xe {
     };
 
   public:
-    explicit Camera(const vec2u &resolution);
+    void updateUniforms();
 
-    void init();
+    Color getBackgroundColor() const { return backgroundColor_; }
+    void setBackgroundColor(const Color &color);
 
-    void onPreRender();
+    bool clearColor() const { return clearColor_; }
+    void setClearColor(bool clear);
 
-    void onUi() override;
+    bool clearDepth() const { return clearDepth_; }
+    void setClearDepth(bool clear);
 
-#define PROPERTY(type, name, fname, update, ...)                                    \
-     private:                                                                       \
-      type name = __VA_ARGS__;                                                      \
-     public:                                                                        \
-      void set_##fname(const type &c) { name = c; if(update) { markForUpdate(); } } \
-      type fname() const { return name; }
-
-  PROPERTY(float, fov_, fov, true, 70.0f);
-  PROPERTY(float, aspect_, aspect, true, 1280.0f / 720.0f);
-  PROPERTY(float, nearPlane_, nearPlane, true, 1.0f);
-  PROPERTY(float, farPlane_, farPlane, true, 1000.0f);
-  PROPERTY(Color, backgroundColor_, backgroundColor, false, Color::Teal);
-  PROPERTY(bool, clearColor_, clearColor, false, true);
-  PROPERTY(bool, clearDepth_, clearDepth, false, true);
-  PROPERTY(bool, clearStencil_, clearStencil, false, true);
-#undef PROPERTY
+    bool clearStencil() const { return clearStencil_; }
+    void setClearStencil(bool clear);
 
     void setClearFlags(ClearFlags::Enum flags) { clearFlags_ = flags; }
     ClearFlags::Enum clearFlags() const { return clearFlags_; }
 
-    const vec2u &viewport() const { return resolution_; }
+    const vec2u &resolution() const { return resolution_; }
+    uint32_t width() const { return resolution_.x; }
+    uint32_t height() const { return resolution_.y; }
+
+    DisplayList::ViewData::Viewport viewport() const { return {0, 0, resolution_.x, resolution_.y}; }
 
     const mat4 &projection() const { return projection_; }
     const mat4 &view() const { return view_; }
@@ -69,11 +63,17 @@ namespace xe {
     void markForUpdate() { dirty_ = true; }
     bool hasChanged() const { return dirty_; }
 
-    void update();
+    virtual void update() = 0;
 
-    static mat4 makeProjection(float hFov, float aspect, float nearZ, float farZ);
+  protected:
+    void init();
 
-  private:
+  protected:
+    Color backgroundColor_ = Color::Clear;
+    bool clearColor_ = true;
+    bool clearDepth_ = true;
+    bool clearStencil_ = true;
+
     bool dirty_ = true;
     ClearFlags::Enum clearFlags_ = ClearFlags::SolidColor;
 
@@ -85,6 +85,66 @@ namespace xe {
 
     CommonData data_;
     gpu::Buffer uniforms_;
+  };
+
+  class XE_API OrthographicCamera : public Camera {
+  XE_OBJECT(OrthographicCamera, Camera);
+  public:
+    explicit OrthographicCamera(const vec2u &resolution, float left, float right, float bottom, float top, float nearPlane, float farPlane);
+
+    float left() const { return left_; }
+    void setLeft(float left);
+
+    float right() const { return right_; }
+    void setRight(float right);
+
+    float bottom() const { return bottom_; }
+    void setBottom(float bottom);
+
+    float top() const { return top_; }
+    void setTop(float top);
+
+    float nearPlane() const { return nearPlane_; }
+    void setNearPlane(float nearPlane);
+
+    float farPlane() const { return farPlane_; }
+    void setFarPlane(float farPlane);
+
+    void update() override;
+
+  private:
+    float left_;
+    float right_;
+    float bottom_;
+    float top_;
+    float nearPlane_;
+    float farPlane_;
+  };
+
+  class XE_API PerspectiveCamera : public Camera {
+  XE_OBJECT(PerspectiveCamera, Camera);
+  public:
+    explicit PerspectiveCamera(const vec2u &resolution, float fovDeg, float aspect, float nearZ, float farZ);
+
+    float fov() const { return fov_; }
+    void setFov(float fov);
+
+    float aspect() const { return aspect_; }
+    void setAspect(float aspect);
+
+    float nearPlane() const { return nearPlane_; }
+    void setNearPlane(float nearPlane);
+
+    float farPlane() const { return farPlane_; }
+    void setFarPlane(float farPlane);
+
+    void update() override;
+
+  private:
+    float fov_;
+    float aspect_;
+    float nearPlane_;
+    float farPlane_;
   };
 
 }

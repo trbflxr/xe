@@ -54,9 +54,9 @@ namespace quad1 {
 
 }
 
-TestOverlay::TestOverlay(Camera *camera) :
-    camera_(camera) {
-
+TestOverlay::TestOverlay() {
+  const vec2u screenSize = {Engine::ref().getParams().window.width, Engine::ref().getParams().window.height};
+  camera_ = std::make_unique<OrthographicCamera>(screenSize, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
 }
 
 void TestOverlay::start() {
@@ -111,11 +111,13 @@ void TestOverlay::start() {
 }
 
 void TestOverlay::render() {
+  camera_->updateUniforms();
+
   DisplayList frame;
 
   Engine::ref().registry().view<Quad, Transform>().each([&frame, this](auto &quad, auto &transform) {
     frame.setupViewCommand()
-        .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
+        .set_viewport(camera_->viewport())
         .set_framebuffer(Engine::ref().composer().framebuffer())
         .set_colorAttachment(0, true);
     frame.clearCommand()
@@ -139,25 +141,28 @@ void TestOverlay::render() {
 }
 
 void TestOverlay::update(Timestep ts) {
+  static float speed = 1.0f;
+
+  if (Engine::isKeyPressed(Keyboard::Up)) {
+    camera_->transform().translateY(speed * ts);
+  } else if (Engine::isKeyPressed(Keyboard::Down)) {
+    camera_->transform().translateY(-speed * ts);
+  }
+
+  if (Engine::isKeyPressed(Keyboard::Left)) {
+    camera_->transform().translateX(-speed * ts);
+  } else if (Engine::isKeyPressed(Keyboard::Right)) {
+    camera_->transform().translateX(speed * ts);
+  }
+
+  camera_->update();
+
   Engine::ref().registry().view<Quad, Transform>().each([ts](auto &quad, auto &transform) {
     transform.rotateY(45.0f * ts);
     transform.setWorldScale(0.2f);
-    transform.setLocalPositionZ(3.5f);
+    transform.setLocalPositionX(0.7f);
+    transform.setLocalPositionY(0.6f);
   });
-
-  static float speed = 5.0f;
-
-  if (Engine::isKeyPressed(Keyboard::W)) {
-    camera_->transform().translateZ(speed * ts);
-  } else if (Engine::isKeyPressed(Keyboard::S)) {
-    camera_->transform().translateZ(-speed * ts);
-  }
-
-  if (Engine::isKeyPressed(Keyboard::A)) {
-    camera_->transform().translateX(speed * ts);
-  } else if (Engine::isKeyPressed(Keyboard::D)) {
-    camera_->transform().translateX(-speed * ts);
-  }
 }
 
 bool TestOverlay::onKeyPressed(const Event::Key &e) {

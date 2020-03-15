@@ -21,7 +21,7 @@ struct Renderer {
 
 class TestOverlay {
 public:
-  explicit TestOverlay(xe::Camera *camera);
+  explicit TestOverlay();
 
   void start();
   void render();
@@ -32,7 +32,7 @@ public:
 private:
   void *texData_ = nullptr;
 
-  xe::Camera *camera_;
+  std::unique_ptr<xe::OrthographicCamera> camera_;
 };
 
 #endif //XE_TEST_OVERLAY_HPP

@@ -111,7 +111,7 @@ void TestLayer::start() {
           .set_buffer(state_.stateUbo)
           .set_data(&state_.uniforms)
           .set_size(sizeof(state_.uniforms));
-      Engine::ref().submitDrawList(std::move(frame));
+      Engine::ref().executeOnGpu(std::move(frame));
     }
 
     state_.cube.material = Engine::ref().gpu().createPipeline(matInfo);
@@ -129,7 +129,7 @@ void TestLayer::start() {
           .set_texture(state_.cube.texture)
           .set_data0(texData_)
           .set_buildMipmap(true);
-      Engine::ref().submitDrawList(std::move(frame));
+      Engine::ref().executeOnGpu(std::move(frame));
     }
   }
 
@@ -156,7 +156,7 @@ void TestLayer::start() {
           .set_buffer(state_.quad.indexBuff)
           .set_data(quad::indexData)
           .set_size(sizeof(quad::indexData));
-      Engine::ref().submitDrawList(std::move(frame));
+      Engine::ref().executeOnGpu(std::move(frame));
     }
 
     gpu::Texture::Info fbColor0 = {size_.x, size_.y};
@@ -240,7 +240,7 @@ void TestLayer::render() {
       .set_count(sizeof(quad::indexData) / sizeof(uint16_t))
       .set_type(IndexFormat::Uint16);
 
-  Engine::ref().submitDrawList(std::move(frame));
+  Engine::ref().executeOnGpu(std::move(frame));
 }
 
 void TestLayer::update(Timestep ts) {

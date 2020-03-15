@@ -17,7 +17,7 @@ namespace xe {
         .set_buffer(uniforms_)
         .set_data(&data_)
         .set_size(sizeof(data_));
-    Engine::ref().submitDrawList(std::move(frame));
+    Engine::ref().executeOnGpu(std::move(frame));
   }
 
   void Camera::updateUniforms() {
@@ -26,7 +26,7 @@ namespace xe {
         .set_buffer(uniforms_)
         .set_data(&data_)
         .set_size(sizeof(data_));
-    Engine::ref().submitDrawList(std::move(frame));
+    Engine::ref().executeOnGpu(std::move(frame));
   }
 
 

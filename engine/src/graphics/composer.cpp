@@ -65,7 +65,7 @@ namespace xe {
         .set_buffer(quad_.indexBuffer)
         .set_data(composerIndexData)
         .set_size(sizeof(composerIndexData));
-    Engine::ref().submitDrawList(std::move(frame));
+    Engine::ref().executeOnGpu(std::move(frame));
   }
 
   void Composer::present() const {
@@ -86,7 +86,7 @@ namespace xe {
         .set_count(sizeof(composerIndexData) / sizeof(uint16_t))
         .set_type(IndexFormat::Uint16);
 
-    Engine::ref().submitDrawList(std::move(frame));
+    Engine::ref().executeOnGpu(std::move(frame));
   }
 
 }

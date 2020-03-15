@@ -102,7 +102,7 @@ void TestOverlay::start() {
       .set_texture(quad.texture)
       .set_data0(texData_)
       .set_buildMipmap(true);
-  Engine::ref().submitDrawList(std::move(frame));
+  Engine::ref().executeOnGpu(std::move(frame));
 
   auto entity = Engine::ref().registry().create();
   Engine::ref().registry().assign<Quad>(entity, quad);
@@ -137,7 +137,7 @@ void TestOverlay::render() {
         .set_type(IndexFormat::Uint16);
   });
 
-  Engine::ref().submitDrawList(std::move(frame));
+  Engine::ref().executeOnGpu(std::move(frame));
 }
 
 void TestOverlay::update(Timestep ts) {

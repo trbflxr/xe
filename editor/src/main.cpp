@@ -78,7 +78,7 @@ protected:
         .set_color(Color::Teal)
         .set_clearColor(true)
         .set_clearDepth(true);
-    Engine::ref().submitDrawList(std::move(frame));
+    Engine::ref().executeOnGpu(std::move(frame));
 
 
     renderer_->begin();

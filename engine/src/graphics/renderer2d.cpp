@@ -71,7 +71,7 @@ namespace xe {
         .set_texture(activeTexture_)
         .set_data0(texData)
         .set_buildMipmap(true);
-    Engine::ref().submitDrawList(std::move(executeOnGpu));
+    Engine::ref().executeOnGpu(std::move(executeOnGpu));
   }
 
   void Renderer2d::initBuffers() {
@@ -87,7 +87,7 @@ namespace xe {
         .set_buffer(indexBuffer_)
         .set_data(&indices_[0])
         .set_size(instancesBufferSize_);
-    Engine::ref().submitDrawList(std::move(executeOnGpu));
+    Engine::ref().executeOnGpu(std::move(executeOnGpu));
   }
 
   void Renderer2d::submit(const vec2 &pos, const vec2 &size, Color color) {
@@ -125,7 +125,7 @@ namespace xe {
         .set_color(Color::Fuchsia)
         .set_clearColor(false)
         .set_clearDepth(true);
-    Engine::ref().submitDrawList(std::move(executeOnGpu));
+    Engine::ref().executeOnGpu(std::move(executeOnGpu));
   }
 
   void Renderer2d::end() {
@@ -149,7 +149,7 @@ namespace xe {
         .set_indexBuffer(indexBuffer_)
         .set_count(indicesCount_)
         .set_type(IndexFormat::Uint32);
-    Engine::ref().submitDrawList(std::move(executeOnGpu));
+    Engine::ref().executeOnGpu(std::move(executeOnGpu));
 
     indicesCount_ = 0;
     verticesCount_ = 0;

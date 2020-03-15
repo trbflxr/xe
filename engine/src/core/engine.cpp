@@ -151,7 +151,7 @@ namespace xe {
     return gpu_->isExisting();
   }
 
-  void Engine::submitDrawList(DisplayList &&dl) {
+  void Engine::executeOnGpu(DisplayList &&dl) {
     gpu_->submitCommands(std::move(dl));
   }
 

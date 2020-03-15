@@ -36,7 +36,7 @@ namespace xe {
 
     bool isRunning() const;
 
-    void submitDrawList(DisplayList &&dl);
+    void executeOnGpu(DisplayList &&dl);
 
     Params getParams() const;
 

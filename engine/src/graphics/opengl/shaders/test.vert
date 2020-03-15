@@ -7,7 +7,7 @@ out vec4 v_color;
 out vec2 v_texCoords;
 
 void main() {
-  gl_Position = cubeProj * cubeView * cubeModel * vec4(a_position + a_instancePosition.xyz, 1.0);
+  gl_Position = state.cubeProj * state.cubeView * state.cubeModel * vec4(a_position + a_instancePosition.xyz, 1.0);
   v_color = a_color;
   v_texCoords = a_texCoords;
 }

@@ -22,8 +22,21 @@ protected:
     Engine::ref().vfs().mount(".");
     Engine::ref().vfs().mount("assets");
 
-    layer_ = std::make_unique<TestLayer>();
-    overlay_ = std::make_unique<TestOverlay>();
+    camera_ = std::make_shared<Camera>(vec2(1280, 720));
+    camera_->init();
+
+    camera_->set_fov(70.0f);
+    camera_->set_aspect(1280.0f / 720.0f);
+    camera_->set_nearPlane(1.0f);
+    camera_->set_farPlane(1000.0f);
+    camera_->set_backgroundColor(Color::Clear);
+    camera_->set_clearColor(false);
+    camera_->set_clearDepth(false);
+
+    camera_->transform().translateZ(-4.0f);
+
+    layer_ = std::make_unique<TestLayer>(camera_.get());
+    overlay_ = std::make_unique<TestOverlay>(camera_.get());
   }
 
   void onStart() override {
@@ -36,13 +49,35 @@ protected:
   }
 
   void onUpdate() override {
+    camera_->transform().setLocalPositionZ(-5.0f);
+
+    camera_->update();
+
     overlay_->update(Engine::ref().delta());
     layer_->update(Engine::ref().delta());
   }
 
+  void onPreRender() override {
+    camera_->onPreRender();
+  }
+
   void onRender() override {
+    // clear
+    DisplayList frame;
+    frame.setupViewCommand()
+        .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
+        .set_framebuffer(camera_->composer().framebuffer())
+        .set_colorAttachment(0, true);
+    frame.clearCommand()
+        .set_color(Color::Teal)
+        .set_clearColor(true)
+        .set_clearDepth(true);
+    Engine::ref().submitDrawList(std::move(frame));
+
     layer_->render();
     overlay_->render();
+
+    camera_->composer().present();
   }
 
   void onKeyPressed(const Event::Key &key) override {
@@ -52,16 +87,18 @@ protected:
 
 
 private:
+  std::shared_ptr<Camera> camera_;
+
   std::unique_ptr<TestLayer> layer_;
   std::unique_ptr<TestOverlay> overlay_;
 };
 
 int32_t main(int32_t argc, char **argv) {
-  static Params defaultParams = {{800, 600,
-                                            "test / жопа",
-                                                true, true,
+  static Params defaultParams = {{1280, 720,
+                                             "test / жопа",
+                                                 true, true,
                                      0, 0, nullptr},
-                                 {128, 128, 64, 128}};
+                                 {128,  128, 64, 128}};
 
   //step #0 create engine
   Engine engine(argc, argv);

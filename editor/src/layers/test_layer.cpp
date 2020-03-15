@@ -54,20 +54,20 @@ namespace quad {
   uint16_t indexData[] = {0, 2, 1, 0, 3, 2};
 }
 
-TestLayer::TestLayer() :
+TestLayer::TestLayer(Camera *camera) :
+    camera_(camera),
+    size_(camera->viewport()),
     texData_(nullptr),
     instances_(static_cast<int32_t>(State::INSTANCES / 8.0f)) { }
 
 void TestLayer::start() {
   Engine::ref().setUiFunction(TestLayer::uiFunc, this);
 
-  state_.uniforms.cubeProj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
+  state_.uniforms.cubeProj = mat4::perspective(60.0f, static_cast<float>(size_.x) / size_.y, 1.0f, 1000.0f);
   state_.uniforms.cubeView = mat4::transformation({-10, 25, 60},
-                                          quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
+                                                  quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
 
-  state_.uniforms.quadProj = mat4::perspective(60.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
-  state_.uniforms.quadView = mat4::translation({0.0f, 0.0f, 2.0f}).inverse();
-
+  state_.quad.transform.setLocalPositionZ(2.0f);
 
   state_.cube.vertexBuff = Engine::ref().gpu().createBuffer(
       {BufferType::Vertex, Usage::Static, sizeof(cube::vertexData)});
@@ -80,9 +80,8 @@ void TestLayer::start() {
       {BufferType::Vertex, Usage::Static, sizeof(quad::vertexData)});
   state_.quad.indexBuff = Engine::ref().gpu().createBuffer(
       {BufferType::Index, Usage::Static, sizeof(quad::indexData)});
-
   state_.stateUbo = Engine::ref().gpu().createBuffer(
-      {BufferType::Uniform, Usage::Dynamic, sizeof(state_.uniforms), 1});
+      {BufferType::Uniform, Usage::Dynamic, sizeof(state_.uniforms), "StateUniform", 1});
 
   {
     gpu::Pipeline::Info matInfo;
@@ -94,6 +93,8 @@ void TestLayer::start() {
     matInfo.attribs[3] = {"a_instancePosition", VertexFormat::Float4, 1, VertexStep::PerInstance};
 
     matInfo.textures[0] = TextureType::T2D;
+
+    matInfo.blend.enabled = true;
 
     gpu::Texture::Info texInfo;
     texData_ = gpu::Texture::loadFromFile("textures/test.png", texInfo);
@@ -140,6 +141,7 @@ void TestLayer::start() {
     matInfo.textures[0] = TextureType::T2D;
     matInfo.textures[1] = TextureType::T2D;
     matInfo.cull = Cull::Disabled;
+    matInfo.blend.enabled = true;
     state_.quad.material = Engine::ref().gpu().createPipeline(matInfo);
 
     {
@@ -155,13 +157,13 @@ void TestLayer::start() {
       Engine::ref().submitDrawList(std::move(frame));
     }
 
-    gpu::Texture::Info fbColor0 = {800, 600};
+    gpu::Texture::Info fbColor0 = {size_.x, size_.y};
     fbColor0.format = TexelsFormat::Rgba8;
 
-    gpu::Texture::Info fbColor1 = {800, 600};
+    gpu::Texture::Info fbColor1 = {size_.x, size_.y};
     fbColor1.format = TexelsFormat::Rgba8;
 
-    gpu::Texture::Info fbDepth = {800, 600};
+    gpu::Texture::Info fbDepth = {size_.x, size_.y};
     fbDepth.format = TexelsFormat::Depth16;
 
     gpu::Framebuffer::Info fbInfo;
@@ -172,10 +174,6 @@ void TestLayer::start() {
 
     state_.fb = Engine::ref().gpu().createFramebuffer(fbInfo);
   }
-}
-
-TestLayer::~TestLayer() {
-
 }
 
 void TestLayer::stop() {
@@ -190,7 +188,7 @@ void TestLayer::render() {
       .set_size(sizeof(state_.uniforms));
 
   frame.setupViewCommand()
-      .set_viewport({0, 0, 800, 600})
+      .set_viewport({0, 0, size_.x, size_.y})
       .set_framebuffer(state_.fb)
       .set_colorAttachment(0, true)
       .set_colorAttachment(1, true);
@@ -206,6 +204,7 @@ void TestLayer::render() {
       .set_pipeline(state_.cube.material)
       .set_buffer(0, state_.cube.vertexBuff)
       .set_buffer(1, state_.cube.instanceBuffer)
+      .set_uniformBuffer(0, state_.stateUbo)
       .set_texture(0, state_.cube.texture);
   frame.renderCommand()
       .set_indexBuffer(state_.cube.indexBuff)
@@ -215,17 +214,21 @@ void TestLayer::render() {
 
   Color tint = Color::Aqua;
 
-  //framebuffer
+  // framebuffer
   frame.setupViewCommand()
-      .set_viewport({0, 0, 800, 600});
+      .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
+      .set_framebuffer(camera_->composer().framebuffer())
+      .set_colorAttachment(0, true);
   frame.clearCommand()
-      .set_color(Color(0x131313))
-      .set_clearColor(true)
+      .set_color(Color::Clear)
+      .set_clearColor(false)
       .set_clearDepth(true);
   frame.setupPipelineCommand()
       .set_pipeline(state_.quad.material)
       .set_buffer(0, state_.quad.vertexBuff)
-      .set_uniform(0, {"u_tint", &tint, sizeof(Color)})
+      .set_uniformBuffer(0, camera_->uniformBuffer())
+      .set_uniform(0, {"u_model", &state_.quad.transform.worldTransform(), sizeof(mat4)})
+      .set_uniform(1, {"u_tint", &tint, sizeof(Color)})
       .set_texture(0, state_.fb.colorAttachment(0))
       .set_texture(1, state_.fb.colorAttachment(1));
   frame.renderCommand()
@@ -251,7 +254,8 @@ void TestLayer::update(Timestep ts) {
   static float angle = 0.0f;
   angle += 45.0f * ts;
 
-  state_.uniforms.quadModel = mat4::transformation(vec3(), {{0, 1, 0}, angle});
+  state_.quad.transform.rotateY(15.0f * ts);
+  state_.quad.transform.setLocalPositionZ(3.5f);
 }
 
 bool TestLayer::onKeyPressed(const Event::Key &e) {

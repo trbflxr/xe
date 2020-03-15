@@ -13,8 +13,6 @@ struct Quad {
   xe::gpu::Buffer vertexBuff;
   xe::gpu::Buffer indexBuff;
   xe::gpu::Texture texture;
-  xe::mat4 proj;
-  xe::mat4 view;
 };
 
 struct Renderer {
@@ -23,7 +21,7 @@ struct Renderer {
 
 class TestOverlay {
 public:
-  explicit TestOverlay();
+  explicit TestOverlay(xe::Camera *camera);
 
   void start();
   void render();
@@ -34,7 +32,7 @@ public:
 private:
   void *texData_ = nullptr;
 
-  std::unique_ptr<xe::Camera> camera_;
+  xe::Camera *camera_;
 };
 
 #endif //XE_TEST_OVERLAY_HPP

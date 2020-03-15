@@ -6,6 +6,7 @@
 #define XE_TEST_LAYER_HPP
 
 #include <xe/core/engine.hpp>
+#include <xe/graphics/camera.hpp>
 
 struct State {
   xe::gpu::Framebuffer fb;
@@ -22,6 +23,7 @@ struct State {
     xe::gpu::Pipeline material;
     xe::gpu::Buffer vertexBuff;
     xe::gpu::Buffer indexBuff;
+    xe::Transform transform;
   } quad;
 
   xe::gpu::Buffer stateUbo;
@@ -29,17 +31,12 @@ struct State {
     xe::mat4 cubeModel;
     xe::mat4 cubeView;
     xe::mat4 cubeProj;
-
-    xe::mat4 quadModel;
-    xe::mat4 quadView;
-    xe::mat4 quadProj;
   } uniforms;
 };
 
 class TestLayer {
 public:
-  explicit TestLayer();
-  ~TestLayer();
+  explicit TestLayer(xe::Camera *camera);
 
   void start();
   void stop();
@@ -53,6 +50,9 @@ private:
   static void uiFunc(void *data);
 
 private:
+  xe::Camera *camera_;
+  xe::vec2u size_;
+
   State state_;
   void *texData_;
   int32_t instances_;

@@ -6,6 +6,7 @@
 
 #include <xe/utils/logger.hpp>
 #include <xe/math/transform.hpp>
+#include <xe/graphics/gpu_resources.hpp>
 
 using namespace xe;
 
@@ -53,27 +54,13 @@ namespace quad1 {
 
 }
 
-TestOverlay::TestOverlay() {
+TestOverlay::TestOverlay(Camera *camera) :
+    camera_(camera) {
 
 }
 
 void TestOverlay::start() {
-  camera_ = std::make_unique<Camera>();
-
-  camera_->set_fov(70.0f);
-  camera_->set_aspect(800.0f / 600.0f);
-  camera_->set_nearPlane(1.0f);
-  camera_->set_farPlane(1000.0f);
-  camera_->set_backgroundColor(Color::Teal);
-  camera_->set_clearColor(true);
-  camera_->set_clearDepth(true);
-
-  camera_->transform().translateZ(-4.0f);
-
   Quad quad;
-  quad.proj = mat4::perspective(70.0f, 800.0f / 600.0f, 1.0f, 1000.0f);
-  quad.view = mat4::translation({0.0f, 0.0f, 4.0f}).inverse();
-
   quad.vertexBuff = Engine::ref().gpu().createBuffer(
       {BufferType::Vertex, Usage::Static, sizeof(quad1::vertexData)});
   quad.indexBuff = Engine::ref().gpu().createBuffer(
@@ -92,6 +79,7 @@ void TestOverlay::start() {
 
   matInfo.textures[0] = TextureType::T2D;
   matInfo.cull = Cull::Disabled;
+  matInfo.blend.enabled = true;
 
   gpu::Texture::Info texInfo;
   texData_ = gpu::Texture::loadFromFile("textures/test.png", texInfo);
@@ -127,11 +115,13 @@ void TestOverlay::render() {
 
   Engine::ref().registry().view<Quad, Transform>().each([&frame, this](auto &quad, auto &transform) {
     frame.setupViewCommand()
-        .set_viewport({0, 0, 800, 600});
+        .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
+        .set_framebuffer(camera_->composer().framebuffer())
+        .set_colorAttachment(0, true);
     frame.clearCommand()
-        .set_color(camera_->backgroundColor())
-        .set_clearColor(camera_->clearColor())
-        .set_clearDepth(camera_->clearDepth());
+        .set_color(Color::Clear)
+        .set_clearColor(false)
+        .set_clearDepth(true);
     frame.setupPipelineCommand()
         .set_pipeline(quad.material)
         .set_buffer(0, quad.vertexBuff)
@@ -149,10 +139,10 @@ void TestOverlay::render() {
 }
 
 void TestOverlay::update(Timestep ts) {
-  camera_->update();
-
   Engine::ref().registry().view<Quad, Transform>().each([ts](auto &quad, auto &transform) {
     transform.rotateY(45.0f * ts);
+    transform.setWorldScale(0.2f);
+    transform.setLocalPositionZ(3.5f);
   });
 }
 

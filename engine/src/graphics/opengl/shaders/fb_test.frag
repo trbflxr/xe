@@ -5,7 +5,7 @@ in vec2 v_texCoords;
 uniform sampler2D u_tex2d0;
 uniform sampler2D u_tex2d1;
 
-layout(location = 0) uniform vec4 u_tint;
+layout(location = 1) uniform vec4 u_tint;
 
 void main() {
   if (v_texCoords.x <= 0.5) {

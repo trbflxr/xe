@@ -214,7 +214,7 @@ namespace xe {
 
   void Engine::renderPreUpdate() {
     gpu_->prepareRender();
-    app_->onRreRender();
+    app_->onPreRender();
 
     if (!app_) return;
 

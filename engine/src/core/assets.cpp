@@ -44,6 +44,11 @@ namespace xe {
     fb_test->frag = makeShader({fb_test_frag});
     addShader("fb_test", fb_test);
 
+    auto final = std::make_shared<gpu::Pipeline::Info::Shader>();
+    final->vert = makeShader({final_vert});
+    final->frag = makeShader({final_frag});
+    addShader("final", final);
+
     XE_TRACE_END("XE", "Default shaders init");
   }
 

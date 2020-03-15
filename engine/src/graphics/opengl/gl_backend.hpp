@@ -48,6 +48,12 @@ namespace xe::gpu {
     };
 
   public:
+    memory<Buffer> buffers;
+    memory<Texture> textures;
+    memory<Pipeline> pipelines;
+    memory<Framebuffer> framebuffers;
+
+  public:
     static void initBackend(Backend **b, const Params::GPU &params);
     static void destroyBackend(Backend **b);
 
@@ -57,12 +63,6 @@ namespace xe::gpu {
     static void fillTexture(DisplayList::FillTextureData &d);
     static void setupPipeline(DisplayList::SetupPipelineData &d);
     static void render(DisplayList::RenderData &d);
-
-  private:
-    memory<Buffer> buffers_;
-    memory<Texture> textures_;
-    memory<Pipeline> pipelines_;
-    memory<Framebuffer> framebuffers_;
   };
 
 }

@@ -22,11 +22,13 @@ protected:
     Engine::ref().vfs().mount(".");
     Engine::ref().vfs().mount("assets");
 
-    camera_ = std::make_shared<Camera>(vec2(1280, 720));
+    vec2u size = {Engine::ref().getParams().window.width, Engine::ref().getParams().window.height};
+
+    camera_ = std::make_shared<Camera>(size);
     camera_->init();
 
     camera_->set_fov(70.0f);
-    camera_->set_aspect(1280.0f / 720.0f);
+    camera_->set_aspect(static_cast<float>(size.x) / size.y);
     camera_->set_nearPlane(1.0f);
     camera_->set_farPlane(1000.0f);
     camera_->set_backgroundColor(Color::Clear);
@@ -49,8 +51,6 @@ protected:
   }
 
   void onUpdate() override {
-    camera_->transform().setLocalPositionZ(-5.0f);
-
     camera_->update();
 
     overlay_->update(Engine::ref().delta());
@@ -66,7 +66,7 @@ protected:
     DisplayList frame;
     frame.setupViewCommand()
         .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
-        .set_framebuffer(camera_->composer().framebuffer())
+        .set_framebuffer(Engine::ref().composer().framebuffer())
         .set_colorAttachment(0, true);
     frame.clearCommand()
         .set_color(Color::Teal)
@@ -77,7 +77,7 @@ protected:
     layer_->render();
     overlay_->render();
 
-    camera_->composer().present();
+    Engine::ref().composer().present();
   }
 
   void onKeyPressed(const Event::Key &key) override {
@@ -113,7 +113,7 @@ int32_t main(int32_t argc, char **argv) {
     params = defaultParams;
   }
 
-  engine.setParams(params);
+  engine.init(params);
   engine.setApp(std::make_shared<Editor>());
 
   int32_t exitCode = engine.run();

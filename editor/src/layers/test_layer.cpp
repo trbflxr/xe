@@ -217,7 +217,7 @@ void TestLayer::render() {
   // framebuffer
   frame.setupViewCommand()
       .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
-      .set_framebuffer(camera_->composer().framebuffer())
+      .set_framebuffer(Engine::ref().composer().framebuffer())
       .set_colorAttachment(0, true);
   frame.clearCommand()
       .set_color(Color::Clear)
@@ -259,7 +259,7 @@ void TestLayer::update(Timestep ts) {
 }
 
 bool TestLayer::onKeyPressed(const Event::Key &e) {
-  XE_INFO("[TestLayer] key pressed ({})", e.code);
+//  XE_INFO("[TestLayer] key pressed ({})", e.code);
   return false;
 }
 

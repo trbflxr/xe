@@ -15,6 +15,7 @@
 #include <xe/core/timestep.hpp>
 #include <xe/core/application.hpp>
 #include <xe/graphics/window.hpp>
+#include <xe/graphics/composer.hpp>
 
 namespace xe {
 
@@ -22,9 +23,11 @@ namespace xe {
   XE_OBJECT(Engine, Object);
   public:
     explicit Engine(int32_t argc, char **argv);
-    ~Engine() override;
+    ~Engine() override = default;
 
     static Engine &ref() { return *instance_; }
+
+    void init(const Params &params);
 
     int32_t run();
     void requestClose();
@@ -35,7 +38,6 @@ namespace xe {
 
     void submitDrawList(DisplayList &&dl);
 
-    void setParams(const Params &params);
     Params getParams() const;
 
     void setUiFunction(const std::function<void(void *)> &function, void *data);
@@ -52,6 +54,7 @@ namespace xe {
     GPU &gpu() { return *gpu_; }
     Window &window() { return *gpu_->window_; }
     AssetManager &assetManager() { return *assetManager_; }
+    Composer &composer() { return *composer_; }
 
     const std::vector<std::string> &getArgs() const { return args_; }
 
@@ -91,6 +94,8 @@ namespace xe {
     std::unique_ptr<VFS> vfs_;
     std::unique_ptr<GPU> gpu_;
     std::unique_ptr<AssetManager> assetManager_;
+
+    std::unique_ptr<Composer> composer_;
 
     std::mutex eventsMutex_;
     std::queue<Event> events_;

@@ -27,11 +27,21 @@ namespace xe {
     vfs_.reset(new VFS());
     gpu_.reset(new GPU());
     assetManager_.reset(new AssetManager());
+
+    composer_ = std::make_unique<Composer>();
     XE_TRACE_END("XE", "Creating modules");
   }
 
-  Engine::~Engine() {
+  void Engine::init(const Params &params) {
+    auto &config = GlobalConfig::ref();
 
+    XE_ASSERT(!config.initialized_, "[Engine] Params are already set");
+
+    config.params_ = params;
+    config.initialized_ = true;
+
+    gpu_->params_ = config.params_.gpu;
+    gpu_->window_->params_ = config.params_.window;
   }
 
   int32_t Engine::run() {
@@ -145,18 +155,6 @@ namespace xe {
     gpu_->submitCommands(std::move(dl));
   }
 
-  void Engine::setParams(const Params &params) {
-    auto &config = GlobalConfig::ref();
-
-    XE_ASSERT(!config.initialized_, "[Engine] Params are already set");
-
-    config.params_ = params;
-    config.initialized_ = true;
-
-    gpu_->params_ = config.params_.gpu;
-    gpu_->window_->params_ = config.params_.window;
-  }
-
   Params Engine::getParams() const {
     return GlobalConfig::ref().getParams();
   }
@@ -172,6 +170,8 @@ namespace xe {
 
     gpu_->init();
     assetManager_->init();
+
+    composer_->init({getParams().window.width, getParams().window.height}, TexelsFormat::Rgba16f);
 
     XE_TRACE_END("XE", "Engine systems init");
     return true;

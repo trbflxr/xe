@@ -13,9 +13,9 @@ namespace xe {
   class XE_API Composer : public Object {
   XE_OBJECT(Composer, Object);
   public:
-    explicit Composer(const vec2u &size, TexelsFormat format = TexelsFormat::Rgba16f);
+    explicit Composer();
 
-    void init();
+    void init(const vec2u &size, TexelsFormat format = TexelsFormat::Rgba16f);
 
     void present() const;
 
@@ -27,7 +27,7 @@ namespace xe {
 
   private:
     vec2u size_;
-    TexelsFormat format_;
+    TexelsFormat format_ = TexelsFormat::None;
 
     gpu::Framebuffer framebuffer_;
 

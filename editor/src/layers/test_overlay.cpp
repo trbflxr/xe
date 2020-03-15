@@ -116,7 +116,7 @@ void TestOverlay::render() {
   Engine::ref().registry().view<Quad, Transform>().each([&frame, this](auto &quad, auto &transform) {
     frame.setupViewCommand()
         .set_viewport({0, 0, camera_->viewport().x, camera_->viewport().y})
-        .set_framebuffer(camera_->composer().framebuffer())
+        .set_framebuffer(Engine::ref().composer().framebuffer())
         .set_colorAttachment(0, true);
     frame.clearCommand()
         .set_color(Color::Clear)
@@ -144,14 +144,28 @@ void TestOverlay::update(Timestep ts) {
     transform.setWorldScale(0.2f);
     transform.setLocalPositionZ(3.5f);
   });
+
+  static float speed = 5.0f;
+
+  if (Engine::isKeyPressed(Keyboard::W)) {
+    camera_->transform().translateZ(speed * ts);
+  } else if (Engine::isKeyPressed(Keyboard::S)) {
+    camera_->transform().translateZ(-speed * ts);
+  }
+
+  if (Engine::isKeyPressed(Keyboard::A)) {
+    camera_->transform().translateX(speed * ts);
+  } else if (Engine::isKeyPressed(Keyboard::D)) {
+    camera_->transform().translateX(-speed * ts);
+  }
 }
 
 bool TestOverlay::onKeyPressed(const Event::Key &e) {
-  if (e.code == Keyboard::T) {
-    static std::string title = std::string(Engine::ref().window().getTitle());
-    title += std::to_string(e.code);
-    Engine::ref().window().setTitle(title);
-  }
-  XE_INFO("[TestOverlay] key pressed ({})", e.code);
+//  if (e.code == Keyboard::T) {
+//    static std::string title = std::string(Engine::ref().window().getTitle());
+//    title += std::to_string(e.code);
+//    Engine::ref().window().setTitle(title);
+//  }
+//  XE_INFO("[TestOverlay] key pressed ({})", e.code);
   return false;
 }

@@ -10,8 +10,7 @@
 namespace xe {
 
   Camera::Camera(const vec2u &resolution) :
-      resolution_(resolution),
-      composer_(resolution_) {
+      resolution_(resolution) {
     setName("Camera");
 
   }
@@ -25,8 +24,6 @@ namespace xe {
         .set_data(&data_)
         .set_size(sizeof(data_));
     Engine::ref().submitDrawList(std::move(frame));
-
-    composer_.init();
   }
 
   void Camera::onPreRender() {
@@ -43,7 +40,7 @@ namespace xe {
   }
 
   void Camera::update() {
-    if (dirty_) {
+    if (dirty_ || transform_.hasChanged()) {
       XE_TRACE_BEGIN("XE", "Compute camera transformations");
       projection_ = mat4::perspective(fov_, aspect_, nearPlane_, farPlane_);
       view_ = mat4::transformation(transform_.worldPosition(), transform_.worldRotation(), transform_.worldScale());
@@ -51,7 +48,7 @@ namespace xe {
       data_.view = view_;
       data_.proj = projection_;
       data_.model = transform_.worldTransform();
-//      data_.resolution = vec4(resolution_);
+      data_.resolution = vec4(resolution_);
 
       dirty_ = false;
       XE_TRACE_END("XE", "Compute camera transformations");

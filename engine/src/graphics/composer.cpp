@@ -19,14 +19,15 @@ namespace xe {
   static uint16_t composerIndexData[] = {0, 2, 1, 0, 3, 2};
 
 
-  Composer::Composer(const vec2u &size, TexelsFormat format) :
-      size_(size),
-      format_(format) {
+  Composer::Composer() {
     setName("Composer");
 
   }
 
-  void Composer::init() {
+  void Composer::init(const vec2u &size, TexelsFormat format) {
+    size_ = size;
+    format_ = format;
+
     gpu::Texture::Info colorAttachment0 = {size_.x, size_.y};
     colorAttachment0.format = format_;
 

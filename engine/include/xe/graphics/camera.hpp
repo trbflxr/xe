@@ -63,7 +63,6 @@ namespace xe {
     const mat4 &projection() const { return projection_; }
     const mat4 &view() const { return view_; }
     Transform &transform() { return transform_; }
-    Composer &composer() { return composer_; }
 
     const gpu::Buffer &uniformBuffer() const { return uniforms_; }
 
@@ -83,8 +82,6 @@ namespace xe {
 
     vec2u resolution_;
     Transform transform_;
-
-    Composer composer_;
 
     CommonData data_;
     gpu::Buffer uniforms_;

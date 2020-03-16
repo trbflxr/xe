@@ -68,8 +68,8 @@ namespace xe::gpu {
       return nullptr;
     }
 
-    tex.width = static_cast<uint16_t>(width);
-    tex.height = static_cast<uint16_t>(height);
+    tex.width = static_cast<uint32_t>(width);
+    tex.height = static_cast<uint32_t>(height);
 
     switch (bpp) {
       case 1: {

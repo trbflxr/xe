@@ -16,9 +16,9 @@ namespace xe {
       info.height = size;
       info.minFilter = TextureMinFilter::Nearest;
       info.magFilter = TextureMagFilter::Nearest;
-      info.wrapping[0] = TextureWrap::Repeat;
-      info.wrapping[1] = TextureWrap::Repeat;
-      info.wrapping[2] = TextureWrap::Repeat;
+      info.wrapS = TextureWrap::Repeat;
+      info.wrapT = TextureWrap::Repeat;
+      info.wrapR = TextureWrap::Repeat;
       info.format = TexelsFormat::Rgb8;
       info.type = TextureType::T2D;
     }

@@ -20,6 +20,7 @@ namespace xe {
 
   class XE_API RenderContext {
     friend class GPU;
+    friend class Texture;
     friend class gpu::Backend;
     friend struct gpu::Framebuffer;
   public:

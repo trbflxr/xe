@@ -172,12 +172,12 @@ namespace xe::gpu {
   static void initTextureParams(uint32_t target, const Texture::Info &info) {
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, toGL(info.minFilter)));
     GLCHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, toGL(info.magFilter)));
-    GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_S, toGL(info.wrapping[0])));
+    GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_S, toGL(info.wrapS)));
     if (target > static_cast<uint32_t>(TextureType::T1D)) {
-      GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_T, toGL(info.wrapping[1])));
+      GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_T, toGL(info.wrapT)));
     }
     if (target > static_cast<uint32_t>(TextureType::T2D)) {
-      GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, toGL(info.wrapping[2])));
+      GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, toGL(info.wrapR)));
     }
   }
 
@@ -593,8 +593,7 @@ namespace xe::gpu {
         break;
       }
       case TextureType::CubeMap: {
-        void *data[6] = {(void *) d.data0, (void *) d.data1, (void *) d.data2,
-                         (void *) d.data3, (void *) d.data4, (void *) d.data5};
+        const void *data[6] = {d.data0, d.data1, d.data2, d.data3, d.data4, d.data5};
         for (uint32_t i = 0; i < 6; ++i) {
           GLCHECK(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, d.offsetX, d.offsetY, d.width, d.height,
                                   backEnd.format, backEnd.type, !data[i] ? Embedded::defaultTextureData() : data[i]));

@@ -47,7 +47,9 @@ namespace xe {
         uint32_t depth = 1;
         TextureMinFilter minFilter = TextureMinFilter::Linear;
         TextureMagFilter magFilter = TextureMagFilter::Linear;
-        TextureWrap wrapping[3] = {TextureWrap::Clamp, TextureWrap::Clamp, TextureWrap::Clamp};
+        TextureWrap wrapS = TextureWrap::Clamp;
+        TextureWrap wrapT = TextureWrap::Clamp;
+        TextureWrap wrapR = TextureWrap::Clamp;
         TexelsFormat format = TexelsFormat::None;
         Usage usage = Usage::Static;
         TextureType type = TextureType::T2D;

@@ -178,7 +178,7 @@ namespace xe {
     static uint8_t backgroundColor[] = {
         static_cast<uint8_t>(color.r * 255.0f),
         static_cast<uint8_t>(color.g * 255.0f),
-        static_cast<uint8_t>(color.b * 255.0f),
+        static_cast<uint8_t>(color.b * 255.0f)
     };
 
     dirty_ = true;

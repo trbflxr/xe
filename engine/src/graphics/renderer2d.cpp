@@ -56,58 +56,52 @@ namespace xe {
     pipelineInfo.cull = Cull::Disabled;
 
     pipeline_ = Engine::ref().gpu().createPipeline(pipelineInfo);
-
-
-    //todo: remove
-    gpu::Texture::Info texInfo;
-    void *texData = gpu::Texture::loadFromFile("textures/test.png", texInfo);
-    texInfo.magFilter = TextureMagFilter::Linear;
-    texInfo.minFilter = TextureMinFilter::LinearMipmapLinear;
-    activeTexture_ = Engine::ref().gpu().createTexture(texInfo);
-
-
-    DisplayList executeOnGpu;
-    executeOnGpu.fillTextureCommand()
-        .set_texture(activeTexture_)
-        .set_data0(texData)
-        .set_buildMipmap(true);
-    Engine::ref().executeOnGpu(std::move(executeOnGpu));
   }
 
   void Renderer2d::initBuffers() {
     vertexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Vertex, Usage::Dynamic, verticesBufferSize_});
     indexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Index, Usage::Static, instancesBufferSize_});
 
-    DisplayList executeOnGpu;
-    executeOnGpu.fillBufferCommand()
+    DisplayList commands;
+    commands.fillBufferCommand()
         .set_buffer(vertexBuffer_)
         .set_data(&bufferData_[0])
         .set_size(verticesBufferSize_);
-    executeOnGpu.fillBufferCommand()
+    commands.fillBufferCommand()
         .set_buffer(indexBuffer_)
         .set_data(&indices_[0])
         .set_size(instancesBufferSize_);
-    Engine::ref().executeOnGpu(std::move(executeOnGpu));
+    Engine::ref().executeOnGpu(std::move(commands));
   }
 
-  void Renderer2d::submit(const vec2 &pos, const vec2 &size, Color color) {
+  void Renderer2d::submit(const vec2 &pos, const vec2 &size, Color color, const std::shared_ptr<Texture> &texture, const rect &textureArea01) {
+    if (texture) {
+      if (activeTexture_) {
+        if (activeTexture_->textureId() != texture->textureId()) {
+          activeTexture_ = texture;
+        }
+      } else {
+        activeTexture_ = texture;
+      }
+    }
+
     buffer_->position = pos;
-    buffer_->texCoords = {0.0f, 0.0f};
+    buffer_->texCoords = {textureArea01.x, textureArea01.y};
     buffer_->color = color;
     buffer_++;
 
     buffer_->position = {pos.x + size.x, pos.y};
-    buffer_->texCoords = {1.0f, 0.0f};
+    buffer_->texCoords = {textureArea01.width, textureArea01.y};
     buffer_->color = color;
     buffer_++;
 
     buffer_->position = pos + size;
-    buffer_->texCoords = {1.0f, 1.0f};
+    buffer_->texCoords = {textureArea01.width, textureArea01.height};
     buffer_->color = color;
     buffer_++;
 
     buffer_->position = {pos.x, pos.y + size.y};
-    buffer_->texCoords = {0.0f, 1.0f};
+    buffer_->texCoords = {textureArea01.x, textureArea01.height};
     buffer_->color = color;
     buffer_++;
 
@@ -116,16 +110,16 @@ namespace xe {
   }
 
   void Renderer2d::begin() {
-    DisplayList executeOnGpu;
-    executeOnGpu.setupViewCommand()
+    DisplayList commands;
+    commands.setupViewCommand()
         .set_viewport(camera_.viewport())
         .set_framebuffer(Engine::ref().composer().framebuffer())
         .set_colorAttachment(0, true);
-    executeOnGpu.clearCommand()
+    commands.clearCommand()
         .set_color(Color::Fuchsia)
         .set_clearColor(false)
         .set_clearDepth(true);
-    Engine::ref().executeOnGpu(std::move(executeOnGpu));
+    Engine::ref().executeOnGpu(std::move(commands));
   }
 
   void Renderer2d::end() {
@@ -133,23 +127,26 @@ namespace xe {
   }
 
   void Renderer2d::flush() {
-    DisplayList executeOnGpu;
-    executeOnGpu.fillBufferCommand()
+    DisplayList commands;
+    commands.fillBufferCommand()
         .set_buffer(vertexBuffer_)
         .set_data(&bufferData_[0])
         .set_size(sizeof(VertexData) * verticesCount_);
 
-    executeOnGpu.setupPipelineCommand()
+    auto &cmd = commands.setupPipelineCommand()
         .set_pipeline(pipeline_)
         .set_buffer(0, vertexBuffer_)
         .set_uniform(0, {"u_proj", &camera_.projection(), sizeof(mat4)})
-        .set_uniform(1, {"u_view", &camera_.view(), sizeof(mat4)})
-        .set_texture(0, activeTexture_);
-    executeOnGpu.renderCommand()
+        .set_uniform(1, {"u_view", &camera_.view(), sizeof(mat4)});
+    if (activeTexture_) {
+      cmd.set_texture(0, activeTexture_->raw());
+    }
+
+    commands.renderCommand()
         .set_indexBuffer(indexBuffer_)
         .set_count(indicesCount_)
         .set_type(IndexFormat::Uint32);
-    Engine::ref().executeOnGpu(std::move(executeOnGpu));
+    Engine::ref().executeOnGpu(std::move(commands));
 
     indicesCount_ = 0;
     verticesCount_ = 0;

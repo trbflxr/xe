@@ -7,6 +7,8 @@
 
 #include <xe/core/object.hpp>
 #include <xe/graphics/camera.hpp>
+#include <xe/graphics/texture.hpp>
+#include <xe/math/rect.hpp>
 
 namespace xe {
 
@@ -19,10 +21,17 @@ namespace xe {
       Color color;
     };
 
+    struct CameraData {
+      mat4 proj;
+      mat4 view;
+    };
+
   public:
     explicit Renderer2d(Camera &camera);
 
-    void submit(const vec2 &pos, const vec2 &size, Color color);
+    void submit(const vec2 &pos, const vec2 &size, Color color,
+                const std::shared_ptr<Texture> &texture,
+                const rect &textureArea01 = {0.0f, 0.0f, 1.0f, 1.0f});
 
     void begin();
     void end();
@@ -49,16 +58,16 @@ namespace xe {
     uint32_t verticesCount_ = 0;
     uint32_t indicesCount_ = 0;
 
-    uint32_t verticesSize_;
-    uint32_t instancesSize_;
-    uint32_t verticesBufferSize_;
-    uint32_t instancesBufferSize_;
+    uint32_t verticesSize_ = 0;
+    uint32_t instancesSize_ = 0;
+    uint32_t verticesBufferSize_ = 0;
+    uint32_t instancesBufferSize_ = 0;
 
     VertexData *buffer_;
     std::unique_ptr<VertexData[]> bufferData_;
     std::unique_ptr<uint32_t[]> indices_;
 
-    gpu::Texture activeTexture_;
+    std::shared_ptr<Texture> activeTexture_;
 
     gpu::Pipeline pipeline_;
     gpu::Buffer vertexBuffer_;

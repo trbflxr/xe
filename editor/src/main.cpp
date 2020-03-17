@@ -5,6 +5,7 @@
 #include <xe/xe.hpp>
 #include <xe/utils/logger.hpp>
 #include <xe/graphics/renderer2d.hpp>
+#include <xe/graphics/texture.hpp>
 
 #include "layers/test_layer.hpp"
 #include "layers/test_overlay.hpp"
@@ -26,6 +27,7 @@ protected:
     layer_ = std::make_unique<TestLayer>();
     overlay_ = std::make_unique<TestOverlay>();
 
+    texture_ = std::make_shared<Texture>();
 
     camera_ = std::make_unique<OrthographicCamera>(vec2(1280, 720), -10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
     camera_->setBackgroundColor(Color::Purple);
@@ -36,6 +38,15 @@ protected:
   void onStart() override {
     overlay_->start();
     layer_->start();
+
+    gpu::Texture::Info info;
+    info.minFilter = TextureMinFilter::Linear;
+    info.magFilter = TextureMagFilter::Linear;
+
+    texture_->setInfo(info);
+    texture_->loadFromFile("textures/test.png");
+    texture_->setup();
+
   }
 
   void onStop() override {
@@ -85,7 +96,7 @@ protected:
 
     for (int32_t x = 0; x < 1280; x += 8) {
       for (int32_t y = 0; y < 720; y += 8) {
-        renderer_->submit({x + 3.0f, y + 3.0f}, {6.0f, 6.0f}, Color::Olive);
+        renderer_->submit({x + 3.0f, y + 3.0f}, {6.0f, 6.0f}, Color::Olive, texture_);
       }
     }
 
@@ -108,8 +119,10 @@ private:
   std::unique_ptr<TestLayer> layer_;
   std::unique_ptr<TestOverlay> overlay_;
 
-  std::unique_ptr<xe::OrthographicCamera> camera_;
+  std::unique_ptr<OrthographicCamera> camera_;
   std::unique_ptr<Renderer2d> renderer_;
+
+  std::shared_ptr<Texture> texture_;
 };
 
 int32_t main(int32_t argc, char **argv) {

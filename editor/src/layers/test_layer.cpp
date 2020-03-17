@@ -330,6 +330,7 @@ void TestLayer::uiFunc(void *data) {
   }
 
   ImGui::Text("uptime: %.2f", Engine::ref().window().uptime().seconds());
+  ImGui::Text("draw calls: %u", GPU::drawCalls());
   ImGui::Separator();
   ImGui::Dummy({10.0f, 0.0f});
 

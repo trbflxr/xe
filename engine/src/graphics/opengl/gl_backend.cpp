@@ -4,9 +4,11 @@
 
 #include "xepch.hpp"
 #include "gl_backend.hpp"
+
 #include "gl_shader_parser.hpp"
 #include "embedded/embedded.hpp"
 #include "external/glad/glad.h"
+#include <xe/core/gpu.hpp>
 #include <xe/graphics/render_context.hpp>
 
 namespace xe::gpu {
@@ -428,6 +430,8 @@ namespace xe::gpu {
       default: break;
     }
   }
+
+  std::atomic<uint32_t> Backend::drawCalls = 0;
 
   void Backend::initBackend(Backend **b, const Params::GPU &params) {
     *b = new Backend();
@@ -930,6 +934,7 @@ namespace xe::gpu {
         GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
         GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
                                         d.count, toGL(d.type), reinterpret_cast<void *>((size_t) d.offset), d.instances));
+        ++drawCalls;
         break;
       }
       case RenderMode::Wireframe: {
@@ -937,6 +942,7 @@ namespace xe::gpu {
         GLCHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.second->buffer));
         GLCHECK(glDrawElementsInstanced(toGL(mat.first->info.primitive),
                                         d.count, toGL(d.type), reinterpret_cast<void *>((size_t) d.offset), d.instances));
+        ++drawCalls;
         break;
       }
       default: break;

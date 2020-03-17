@@ -53,6 +53,8 @@ namespace xe::gpu {
     memory<Pipeline> pipelines;
     memory<Framebuffer> framebuffers;
 
+    static std::atomic<uint32_t> drawCalls;
+
   public:
     static void initBackend(Backend **b, const Params::GPU &params);
     static void destroyBackend(Backend **b);

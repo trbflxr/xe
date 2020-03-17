@@ -5,6 +5,12 @@
 #include "xepch.hpp"
 #include <xe/core/gpu.hpp>
 
+#ifdef XE_PLATFORM_GL
+  #include "graphics/opengl/gl_backend.hpp"
+#else
+  #error only gl currently supported
+#endif
+
 #include "embedded/embedded.hpp"
 #include <xe/core/engine.hpp>
 #include <xe/graphics/window.hpp>
@@ -65,6 +71,8 @@ namespace xe {
 
     while (!shouldClose_) {
       shouldClose_ = window_->shouldClose();
+
+      gpu::Backend::drawCalls = 0;
 
       XE_CORE_TRACE("[GPU] GPU Synchronization (render waiting)");
       std::unique_lock<std::mutex> lock(threadSync_.mxR);
@@ -237,6 +245,10 @@ namespace xe {
     ++usedFramebuffers_;
 
     return gpu::Framebuffer{ctx_, id};
+  }
+
+  uint32_t GPU::drawCalls() {
+    return gpu::Backend::drawCalls;
   }
 
 }

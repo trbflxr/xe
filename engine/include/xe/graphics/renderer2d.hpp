@@ -69,9 +69,12 @@ namespace xe {
 
     std::shared_ptr<Texture> activeTexture_;
 
+    CameraData cameraData_;
+
     gpu::Pipeline pipeline_;
     gpu::Buffer vertexBuffer_;
     gpu::Buffer indexBuffer_;
+    gpu::Buffer uniformBuffer_;
   };
 
 }

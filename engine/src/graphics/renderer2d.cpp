@@ -61,6 +61,7 @@ namespace xe {
   void Renderer2d::initBuffers() {
     vertexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Vertex, Usage::Dynamic, verticesBufferSize_});
     indexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Index, Usage::Static, instancesBufferSize_});
+    uniformBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Uniform, Usage::Dynamic, sizeof(cameraData_), "Camera2DUniform", 0});
 
     DisplayList commands;
     commands.fillBufferCommand()
@@ -71,6 +72,10 @@ namespace xe {
         .set_buffer(indexBuffer_)
         .set_data(&indices_[0])
         .set_size(instancesBufferSize_);
+    commands.fillBufferCommand()
+        .set_buffer(uniformBuffer_)
+        .set_data(&cameraData_)
+        .set_size(sizeof(cameraData_));
     Engine::ref().executeOnGpu(std::move(commands));
   }
 
@@ -110,6 +115,9 @@ namespace xe {
   }
 
   void Renderer2d::begin() {
+    cameraData_.view = camera_.view();
+    cameraData_.proj = camera_.projection();
+
     DisplayList commands;
     commands.setupViewCommand()
         .set_viewport(camera_.viewport())
@@ -119,6 +127,10 @@ namespace xe {
         .set_color(Color::Fuchsia)
         .set_clearColor(false)
         .set_clearDepth(true);
+    commands.fillBufferCommand()
+        .set_buffer(uniformBuffer_)
+        .set_data(&cameraData_)
+        .set_size(sizeof(cameraData_));
     Engine::ref().executeOnGpu(std::move(commands));
   }
 
@@ -136,8 +148,7 @@ namespace xe {
     auto &cmd = commands.setupPipelineCommand()
         .set_pipeline(pipeline_)
         .set_buffer(0, vertexBuffer_)
-        .set_uniform(0, {"u_proj", &camera_.projection(), sizeof(mat4)})
-        .set_uniform(1, {"u_view", &camera_.view(), sizeof(mat4)});
+        .set_uniformBuffer(0, uniformBuffer_);
     if (activeTexture_) {
       cmd.set_texture(0, activeTexture_->raw());
     }

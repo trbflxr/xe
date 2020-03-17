@@ -162,6 +162,18 @@ namespace xe {
 
     template<typename K>
     constexpr bool operator!=(const tvec2<K> &other) const;
+
+    template<typename K>
+    constexpr bool operator<(const tvec2<K> &other) const;
+
+    template<typename K>
+    constexpr bool operator>(const tvec2<K> &other) const;
+
+    template<typename K>
+    constexpr bool operator<=(const tvec2<K> &other) const;
+
+    template<typename K>
+    constexpr bool operator>=(const tvec2<K> &other) const;
   };
 
   using vec2  = tvec2<float>;

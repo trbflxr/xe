@@ -15,7 +15,7 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr tvec2<T>::tvec2(const tvec2<K> &other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)) { }
+  constexpr tvec2<T>::tvec2(const tvec2 <K> &other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)) { }
 
   template<typename T>
   constexpr auto tvec2<T>::normalize() const {
@@ -55,13 +55,13 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::min(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::min(const tvec2 <K> &other) const {
     return tvec2<decltype(std::min(x, other.x))>(std::min(x, other.x), std::min(y, other.y));
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::max(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::max(const tvec2 <K> &other) const {
     return tvec2<decltype(std::max(x, other.x))>(std::max(x, other.x), std::max(y, other.y));
   }
 
@@ -78,31 +78,31 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::dot(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::dot(const tvec2 <K> &other) const {
     return x * other.x + y * other.y;
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::dotToVector(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::dotToVector(const tvec2 <K> &other) const {
     return tvec2<decltype(x * other.x)>(dot(other));
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::cross(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::cross(const tvec2 <K> &other) const {
     return x * other.y - y * other.x;
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::dist(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::dist(const tvec2 <K> &other) const {
     return std::sqrt(distSquared(other));
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::distSquared(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::distSquared(const tvec2 <K> &other) const {
     return (other - *this).lengthSquared();
   }
 
@@ -128,25 +128,25 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator+(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::operator+(const tvec2 <K> &other) const {
     return tvec2<decltype(x + other.x)>(x + other.x, y + other.y);
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator-(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::operator-(const tvec2 <K> &other) const {
     return tvec2<decltype(x - other.x)>(x - other.x, y - other.y);
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator*(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::operator*(const tvec2 <K> &other) const {
     return tvec2<decltype(x * other.x)>(x * other.x, y * other.y);
   }
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator/(const tvec2<K> &other) const {
+  constexpr auto tvec2<T>::operator/(const tvec2 <K> &other) const {
     return tvec2<decltype(x / other.x)>(x / other.x, y / other.y);
   }
 
@@ -181,7 +181,7 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator+=(const tvec2<K> &other) {
+  constexpr auto tvec2<T>::operator+=(const tvec2 <K> &other) {
     x += other.x;
     y += other.y;
     return *this;
@@ -189,7 +189,7 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator-=(const tvec2<K> &other) {
+  constexpr auto tvec2<T>::operator-=(const tvec2 <K> &other) {
     x -= other.x;
     y -= other.y;
     return *this;
@@ -197,7 +197,7 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator*=(const tvec2<K> &other) {
+  constexpr auto tvec2<T>::operator*=(const tvec2 <K> &other) {
     x *= other.x;
     y *= other.y;
     return *this;
@@ -205,7 +205,7 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr auto tvec2<T>::operator/=(const tvec2<K> &other) {
+  constexpr auto tvec2<T>::operator/=(const tvec2 <K> &other) {
     x /= other.x;
     y /= other.y;
     return *this;
@@ -245,14 +245,38 @@ namespace xe {
 
   template<typename T>
   template<typename K>
-  constexpr bool tvec2<T>::operator==(const tvec2<K> &other) const {
+  constexpr bool tvec2<T>::operator==(const tvec2 <K> &other) const {
     return x == other.x && y == other.y;
   }
 
   template<typename T>
   template<typename K>
-  constexpr bool tvec2<T>::operator!=(const tvec2<K> &other) const {
+  constexpr bool tvec2<T>::operator!=(const tvec2 <K> &other) const {
     return x != other.x || y != other.y;
+  }
+
+  template<typename T>
+  template<typename K>
+  constexpr bool tvec2<T>::operator<(const tvec2 <K> &other) const {
+    return x < other.x && y < other.y;
+  }
+
+  template<typename T>
+  template<typename K>
+  constexpr bool tvec2<T>::operator>(const tvec2 <K> &other) const {
+    return x > other.x && y > other.y;
+  }
+
+  template<typename T>
+  template<typename K>
+  constexpr bool tvec2<T>::operator<=(const tvec2 <K> &other) const {
+    return x <= other.x && y <= other.y;
+  }
+
+  template<typename T>
+  template<typename K>
+  constexpr bool tvec2<T>::operator>=(const tvec2 <K> &other) const {
+    return x >= other.x && y >= other.y;
   }
 
 }

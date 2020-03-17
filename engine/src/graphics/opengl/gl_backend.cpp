@@ -399,30 +399,30 @@ namespace xe::gpu {
   static void setUniform(int32_t loc, VertexFormat::Enum type, const void *data) {
     switch (type) {
       case VertexFormat::Float: {
-        GLCHECK(glUniform1f(loc, *(float *) data));
+        GLCHECK(glUniform1f(loc, *reinterpret_cast<const float *>(data)));
         break;
       }
       case VertexFormat::Float2: {
-        const float *v = (const float *) data;
+        const float *v = reinterpret_cast<const float *>(data);
         GLCHECK(glUniform2f(loc, v[0], v[1]));
         break;
       }
       case VertexFormat::Float3: {
-        const float *v = (const float *) data;
+        const float *v = reinterpret_cast<const float *>(data);
         GLCHECK(glUniform3f(loc, v[0], v[1], v[2]));
         break;
       }
       case VertexFormat::Float4: {
-        const float *v = (const float *) data;
+        const float *v = reinterpret_cast<const float *>(data);
         GLCHECK(glUniform4f(loc, v[0], v[1], v[2], v[3]));
         break;
       }
       case VertexFormat::Int32: {
-        glUniform1i(loc, *(int32_t *) data);
+        glUniform1i(loc, *reinterpret_cast<const int32_t *>(data));
         break;
       }
       case VertexFormat::Mat4: {
-        GLCHECK(glUniformMatrix4fv(loc, 1, GL_TRUE, (const float *) data));
+        GLCHECK(glUniformMatrix4fv(loc, 1, GL_TRUE, reinterpret_cast<const float *>(data)));
         break;
       }
       default: break;

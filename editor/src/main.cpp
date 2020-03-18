@@ -122,6 +122,10 @@ namespace xe {
       ImGui::Text("uptime: %.2f", Engine::ref().window().uptime().seconds());
       ImGui::Text("draw calls: %u", GPU::drawCalls());
       ImGui::Text("gpu commands: %u", GPU::gpuCommands());
+      ImGui::Text("used textures: %u / %u", Engine::ref().gpu().usedTextures(), Engine::ref().gpu().maxTextures());
+      ImGui::Text("used buffers: %u / %u", Engine::ref().gpu().usedBuffers(), Engine::ref().gpu().maxBuffers());
+      ImGui::Text("used pipelines: %u / %u", Engine::ref().gpu().usedPipelines(), Engine::ref().gpu().maxPipelines());
+      ImGui::Text("used framebuffers: %u / %u", Engine::ref().gpu().usedFramebuffers(), Engine::ref().gpu().maxFramebuffers());
 
       //layers ui
       auto &&editor = static_cast<Editor *>(data);

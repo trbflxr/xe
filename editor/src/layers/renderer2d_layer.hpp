@@ -26,6 +26,7 @@ namespace xe {
   private:
     std::unique_ptr<OrthographicCamera> camera_;
     std::unique_ptr<Renderer2d> renderer_;
+    uint32_t quadCount_ = 0;
 
     std::shared_ptr<Texture> texture_;
   };

@@ -115,6 +115,13 @@ namespace xe {
   }
 
   void Renderer2d::begin() {
+//    if (dirty_) {
+//      bufferData_.reset(nullptr);
+//      indices_.reset(nullptr);
+//      init();
+//      dirty_ = false;
+//    }
+
     cameraData_.view = camera_.view();
     cameraData_.proj = camera_.projection();
 
@@ -162,6 +169,12 @@ namespace xe {
     indicesCount_ = 0;
     verticesCount_ = 0;
     buffer_ = &bufferData_[0];
+  }
+
+  void Renderer2d::setMaxInstances(uint32_t instances) {
+    XE_ASSERT(false, "Unsupported");
+//    maxInstances_ = instances;
+//    dirty_ = true;
   }
 
 }

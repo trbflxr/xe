@@ -43,6 +43,9 @@ namespace xe {
     const Camera &camera() const { return camera_; }
     Transform &transform() { return transform_; }
 
+    uint32_t maxInstances() const { return maxInstances_; }
+    void setMaxInstances(uint32_t instances);
+
   private:
     void init();
     void initArrays();
@@ -53,7 +56,8 @@ namespace xe {
     Camera &camera_;
     Transform transform_;
 
-    uint32_t maxInstances_ = 50'000;
+    std::atomic<uint32_t> maxInstances_ = 50'000;
+    std::atomic<bool> dirty_ = false;
 
     uint32_t verticesCount_ = 0;
     uint32_t indicesCount_ = 0;

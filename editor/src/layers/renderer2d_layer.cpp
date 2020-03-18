@@ -10,11 +10,11 @@
 namespace xe {
 
   void Renderer2dLayer::onStart() {
-    camera_ = std::make_unique<OrthographicCamera>(vec2(1280, 720), -10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
+    camera_ = std::make_unique<OrthographicCamera>(vec2(1280, 720), -12.8f, 12.8f, -7.2f, 7.2f, -1.0f, 1.0f);
     camera_->setBackgroundColor(Color::Purple);
 
     renderer_ = std::make_unique<Renderer2d>(*camera_);
-
+    quadCount_ = renderer_->maxInstances();
 
     gpu::Texture::Info info;
     info.minFilter = TextureMinFilter::Linear;
@@ -53,10 +53,20 @@ namespace xe {
   void Renderer2dLayer::onRender() {
     renderer_->begin();
 
-    for (int32_t x = 0; x < 1280; x += 8) {
-      for (int32_t y = 0; y < 720; y += 8) {
-        renderer_->submit({x + 3.0f, y + 3.0f}, {6.0f, 6.0f}, Color::Olive, texture_);
+    static const float size = 0.2f;
+    static const float offset = size + 0.05f;
+
+    float x = 0.0f;
+    float y = 0.0f;
+    for (uint32_t i = 0; i < quadCount_; ++i) {
+      if (i % 100 == 0) {
+        x = 0.0f;
+        y += offset;
       }
+
+      renderer_->submit({x, y}, {size, size}, Color::Olive, texture_);
+
+      x += offset;
     }
 
     renderer_->end();
@@ -65,6 +75,9 @@ namespace xe {
 
   bool Renderer2dLayer::onUi() {
     ImGui::Text("Renderer2dLayer:");
+    if (ImGui::SliderInt("Max quads", reinterpret_cast<int32_t *>(&quadCount_), 1, renderer_->maxInstances())) {
+//      renderer_->setMaxInstances(quadCount_);
+    }
     return false;
   }
 

@@ -163,6 +163,14 @@ namespace xe {
 
     glfwSetWindowUserPointer(data->window, data);
 
+    glfwSetWindowCloseCallback(data->window, [](GLFWwindow *window) {
+      auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
+
+      Event e{ };
+      e.type = Event::Closed;
+      data->pushEvent(e);
+    });
+
     glfwSetKeyCallback(data->window, [](GLFWwindow *window, int32_t key, int32_t /*scanCode*/, int32_t action, int32_t mods) {
       auto &&data = static_cast<Window::Data *>(glfwGetWindowUserPointer(window));
 

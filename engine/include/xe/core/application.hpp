@@ -31,17 +31,17 @@ namespace xe {
     virtual void onPostRender() { }
     virtual void onStop() { }
 
-    virtual void onKeyPressed(const Event::Key &/*e*/) { }
-    virtual void onKeyReleased(const Event::Key &/*e*/) { }
-    virtual void onKeyRepeated(const Event::Key &/*e*/) { }
-    virtual void onTextEntered(const Event::Text &/*e*/) { }
+    virtual void onKeyPressed(Event::Key /*e*/) { }
+    virtual void onKeyReleased(Event::Key /*e*/) { }
+    virtual void onKeyRepeated(Event::Key /*e*/) { }
+    virtual void onTextEntered(Event::Text /*e*/) { }
 
-    virtual void onMousePressed(const Event::MouseButton &/*e*/) { }
-    virtual void onMouseReleased(const Event::MouseButton &/*e*/) { }
-    virtual void onMouseScrolled(const Event::MouseWheel &/*e*/) { }
-    virtual void onMouseMoved(const Event::MouseMove &/*e*/) { }
+    virtual void onMousePressed(Event::MouseButton /*e*/) { }
+    virtual void onMouseReleased(Event::MouseButton /*e*/) { }
+    virtual void onMouseScrolled(Event::MouseWheel /*e*/) { }
+    virtual void onMouseMoved(Event::MouseMove /*e*/) { }
 
-    virtual void onResize(const Event::SizeEvent &/*e*/) { }
+    virtual void onResize(Event::SizeEvent /*e*/) { }
 
     virtual void onMouseEntered() { }
     virtual void onMouseLeft() { }

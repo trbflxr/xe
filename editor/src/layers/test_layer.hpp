@@ -7,55 +7,58 @@
 
 #include <xe/core/engine.hpp>
 #include <xe/graphics/camera.hpp>
+#include "layer_base.hpp"
 
-struct State {
-  xe::gpu::Framebuffer fb;
-  static constexpr uint32_t INSTANCES = 50000;
-  struct {
-    xe::vec4 instancePositions[INSTANCES];
-    xe::gpu::Pipeline material;
-    xe::gpu::Buffer vertexBuff;
-    xe::gpu::Buffer indexBuff;
-    xe::gpu::Buffer instanceBuffer;
-    xe::gpu::Texture texture;
-  } cube;
-  struct {
-    xe::gpu::Pipeline material;
-    xe::gpu::Buffer vertexBuff;
-    xe::gpu::Buffer indexBuff;
-    xe::Transform transform;
-  } quad;
+namespace xe {
 
-  xe::gpu::Buffer stateUbo;
-  struct {
-    xe::mat4 cubeModel;
-    xe::mat4 cubeView;
-    xe::mat4 cubeProj;
-  } uniforms;
-};
+  class TestLayer : public LayerBase {
+  public:
+    explicit TestLayer();
 
-class TestLayer {
-public:
-  explicit TestLayer();
+    void onStart() override;
 
-  void start();
-  void stop();
+    void onRender() override;
+    void onUpdate() override;
 
-  void render();
-  void update(xe::Timestep ts);
+    bool onKeyPressed(Event::Key e) override;
 
-  bool onKeyPressed(const xe::Event::Key &e);
+    bool onUi() override;
 
-private:
-  static void uiFunc(void *data);
+  private:
+    static constexpr int32_t INSTANCES = 50000;
 
-private:
-  std::unique_ptr<xe::PerspectiveCamera> camera_;
-  xe::vec2u size_;
+    std::unique_ptr<PerspectiveCamera> camera_;
+    vec2u size_;
 
-  State state_;
-  void *texData_;
-  int32_t instances_;
-};
+    struct {
+      mat4 cubeModel;
+      mat4 cubeView;
+      mat4 cubeProj;
+    } uniforms_;
+    gpu::Buffer stateUbo_;
+
+    gpu::Framebuffer fb_;
+
+    struct {
+      vec4 instancePositions[INSTANCES];
+      gpu::Pipeline material;
+      gpu::Buffer vertexBuff;
+      gpu::Buffer indexBuff;
+      gpu::Buffer instanceBuffer;
+      gpu::Texture texture;
+    } cube_;
+
+    struct {
+      gpu::Pipeline material;
+      gpu::Buffer vertexBuff;
+      gpu::Buffer indexBuff;
+      Transform transform;
+    } quad_;
+
+    void *texData_ = nullptr;
+    int32_t instances_ = INSTANCES / 8;
+  };
+
+}
 
 #endif //XE_TEST_LAYER_HPP

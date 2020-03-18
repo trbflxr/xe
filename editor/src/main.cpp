@@ -4,141 +4,183 @@
 
 #include <xe/xe.hpp>
 #include <xe/utils/logger.hpp>
-#include <xe/graphics/renderer2d.hpp>
-#include <xe/graphics/texture.hpp>
+#include <xe/ui/imgui/imgui.h>
 
 #include "layers/test_layer.hpp"
 #include "layers/test_overlay.hpp"
+#include "layers/renderer2d_layer.hpp"
 
-using namespace xe;
+namespace xe {
 
-class Editor : public Application {
-XE_OBJECT(Editor, Application);
-public:
-  Editor() {
-    xe::Logger::setLogLevel(LogLevel::Info, LogLevel::Info);
-  }
+  class Editor : public Application {
+  XE_OBJECT(Editor, Application);
+  public:
+    Editor() {
+      xe::Logger::setLogLevel(LogLevel::Info, LogLevel::Info);
 
-protected:
-  void onInit() override {
-    Engine::ref().vfs().mount(".");
-    Engine::ref().vfs().mount("assets");
-
-    layer_ = std::make_unique<TestLayer>();
-    overlay_ = std::make_unique<TestOverlay>();
-
-    texture_ = std::make_shared<Texture>();
-
-    camera_ = std::make_unique<OrthographicCamera>(vec2(1280, 720), -10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 1.0f);
-    camera_->setBackgroundColor(Color::Purple);
-
-    renderer_ = std::make_unique<Renderer2d>(*camera_);
-  }
-
-  void onStart() override {
-    overlay_->start();
-    layer_->start();
-
-    gpu::Texture::Info info;
-    info.minFilter = TextureMinFilter::Linear;
-    info.magFilter = TextureMagFilter::Linear;
-
-    texture_->setInfo(info);
-    texture_->loadFromFile("textures/test.png");
-    texture_->setup();
-
-  }
-
-  void onStop() override {
-    layer_->stop();
-  }
-
-  void onUpdate() override {
-    overlay_->update(Engine::ref().delta());
-    layer_->update(Engine::ref().delta());
-
-    static float speed = 10.0f;
-
-    if (Engine::isKeyPressed(Keyboard::S)) {
-      camera_->transform().translateY(speed * Engine::ref().delta());
-    } else if (Engine::isKeyPressed(Keyboard::W)) {
-      camera_->transform().translateY(-speed * Engine::ref().delta());
+      Engine::ref().setUiFunction(Editor::uiFunc, this);
     }
 
-    if (Engine::isKeyPressed(Keyboard::D)) {
-      camera_->transform().translateX(-speed * Engine::ref().delta());
-    } else if (Engine::isKeyPressed(Keyboard::A)) {
-      camera_->transform().translateX(speed * Engine::ref().delta());
+  protected:
+    void onInit() override {
+      Engine::ref().vfs().mount(".");
+      Engine::ref().vfs().mount("assets");
+
+      layers_.emplace_back(std::make_shared<Renderer2dLayer>());
+      layers_.emplace_back(std::make_shared<TestLayer>());
+      layers_.emplace_back(std::make_shared<TestOverlay>());
     }
 
-    camera_->update();
-  }
-
-  void onPreRender() override {
-    camera_->updateUniforms();
-  }
-
-  void onRender() override {
-    // clear
-    DisplayList frame;
-    frame.setupViewCommand()
-        .set_viewport({0, 0, 1280, 720})
-        .set_framebuffer(Engine::ref().composer().framebuffer())
-        .set_colorAttachment(0, true);
-    frame.clearCommand()
-        .set_color(Color::Teal)
-        .set_clearColor(true)
-        .set_clearDepth(true);
-    Engine::ref().executeOnGpu(std::move(frame));
-
-
-    renderer_->begin();
-
-    for (int32_t x = 0; x < 1280; x += 8) {
-      for (int32_t y = 0; y < 720; y += 8) {
-        renderer_->submit({x + 3.0f, y + 3.0f}, {6.0f, 6.0f}, Color::Olive, texture_);
+    void onStart() override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onStart();
       }
     }
 
-    renderer_->end();
-    renderer_->flush();
+    void onUpdate() override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onUpdate();
+      }
+    }
 
-    layer_->render();
-    overlay_->render();
+    void onPreRender() override {
+      for (auto &&l : layers_) {
+        l->onPreRender();
+      }
+    }
 
-    Engine::ref().composer().present();
-  }
+    void onRender() override {
+      // clear
+      DisplayList frame;
+      frame.setupViewCommand()
+          .set_viewport({0, 0, 1280, 720})
+          .set_framebuffer(Engine::ref().composer().framebuffer())
+          .set_colorAttachment(0, true);
+      frame.clearCommand()
+          .set_color(Color::Teal)
+          .set_clearColor(true)
+          .set_clearDepth(true);
+      Engine::ref().executeOnGpu(std::move(frame));
 
-  void onKeyPressed(const Event::Key &key) override {
-    overlay_->onKeyPressed(key);
-    layer_->onKeyPressed(key);
-  }
+      for (auto &&l : layers_) {
+        l->onRender();
+      }
+
+      Engine::ref().composer().present();
+    }
+
+    void onKeyPressed(const Event::Key key) override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onKeyPressed(key);
+      }
+    }
+
+    static void uiFunc(void *data) {
+      static const uint32_t flags = ImGuiWindowFlags_NoDocking |
+                                    ImGuiWindowFlags_MenuBar |
+                                    ImGuiWindowFlags_NoTitleBar |
+                                    ImGuiWindowFlags_NoResize |
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_AlwaysAutoResize |
+                                    ImGuiWindowFlags_NoSavedSettings |
+                                    ImGuiWindowFlags_NoFocusOnAppearing |
+                                    ImGuiWindowFlags_NoNav;
 
 
-private:
-  std::unique_ptr<TestLayer> layer_;
-  std::unique_ptr<TestOverlay> overlay_;
+      const float DISTANCE = 10.0f;
+      static int32_t corner = 0;
 
-  std::unique_ptr<OrthographicCamera> camera_;
-  std::unique_ptr<Renderer2d> renderer_;
+      static bool showDemo = false;
 
-  std::shared_ptr<Texture> texture_;
-};
+      ImGuiIO &io = ImGui::GetIO();
+
+      if (corner != -1) {
+        const ImGuiViewport *viewport = ImGui::GetMainViewport();
+        const ImVec2 windowPos = ImVec2(
+            (corner & 1) ? (viewport->Pos.x + viewport->Size.x - DISTANCE) : (viewport->Pos.x + DISTANCE),
+            (corner & 2) ? (viewport->Pos.y + viewport->Size.y - DISTANCE) : (viewport->Pos.y + DISTANCE));
+
+        const ImVec2 windowPosPivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+        ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
+        ImGui::SetNextWindowViewport(viewport->ID);
+      }
+
+      ImGui::SetNextWindowBgAlpha(0.7f);
+      if (ImGui::Begin("MainMenu", nullptr, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | flags)) {
+        if (ImGui::BeginMenuBar()) {
+          if (ImGui::BeginMenu("Examples")) {
+            if (ImGui::MenuItem("Demo", nullptr)) {
+              showDemo = !showDemo;
+            }
+            ImGui::EndMenu();
+          }
+
+          ImGui::EndMenuBar();
+        }
+      }
+
+      ImGui::Text("uptime: %.2f", Engine::ref().window().uptime().seconds());
+      ImGui::Text("draw calls: %u", GPU::drawCalls());
+
+      //layers ui
+      auto &&editor = static_cast<Editor *>(data);
+      for (auto &&l = editor->layers_.rbegin(); l != editor->layers_.rend(); ++l) {
+        ImGui::Separator();
+        ImGui::Dummy({10.0f, 0.0f});
+        (*l)->onUi();
+      }
+
+      ImGui::Separator();
+      ImGui::Dummy({10.0f, 0.0f});
+
+      static const uint32_t TIMES_SIZE = 90;
+      static float times[TIMES_SIZE] = {0};
+      static uint32_t index = 0;
+
+      index = index >= TIMES_SIZE ? 0 : index;
+      times[index++] = io.DeltaTime * 1000.0f;
+
+      ImGui::PlotLines("", times, TIMES_SIZE, index, "Frametime (ms)", 0.0f, 100.0f, ImVec2(0, 80));
+      ImGui::Text("Frametime: %.3fms", io.DeltaTime * 1000.0f);
+      ImGui::Text("Deltatime: %.3fms", Engine::ref().delta().mills());
+
+      ImGui::Text("Right-click to change position");
+
+      if (ImGui::BeginPopupContextWindow()) {
+        if (ImGui::MenuItem("Custom", nullptr, corner == -1)) corner = -1;
+        if (ImGui::MenuItem("Top-left", nullptr, corner == 0)) corner = 0;
+        if (ImGui::MenuItem("Top-right", nullptr, corner == 1)) corner = 1;
+        if (ImGui::MenuItem("Bottom-left", nullptr, corner == 2)) corner = 2;
+        if (ImGui::MenuItem("Bottom-right", nullptr, corner == 3)) corner = 3;
+        ImGui::EndPopup();
+      }
+      ImGui::End();
+
+      if (showDemo) {
+        ImGui::ShowDemoWindow(&showDemo);
+      }
+    }
+
+  private:
+    std::vector<std::shared_ptr<LayerBase>> layers_;
+  };
+
+}
 
 int32_t main(int32_t argc, char **argv) {
-  static Params defaultParams = {{1280, 720,
-                                             "test / жопа",
-                                                 true, true,
-                                     0, 0, nullptr},
-                                 {128,  128, 64, 128}};
+  static xe::Params defaultParams = {{1280, 720,
+                                                 "test / жопа",
+                                                     true, true,
+                                         0, 0, nullptr},
+                                     {128,  128, 64, 128}};
 
   //step #0 create engine
-  Engine engine(argc, argv);
+  xe::Engine engine(argc, argv);
 
-  Params params;
+  xe::Params params;
 
   //load config
-  File paramsFile("config.json");
+  xe::File paramsFile("config.json");
   if (paramsFile.load()) {
     *paramsFile.getNode() >> params;
   } else {
@@ -146,13 +188,13 @@ int32_t main(int32_t argc, char **argv) {
   }
 
   engine.init(params);
-  engine.setApp(std::make_shared<Editor>());
+  engine.setApp(std::make_shared<xe::Editor>());
 
   int32_t exitCode = engine.run();
 
   //save config
   *paramsFile.getNode() << engine.getParams();
-  paramsFile.write(Node::Format::Beautified);
+  paramsFile.write(xe::Node::Format::Beautified);
 
   return exitCode;
 }

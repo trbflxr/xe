@@ -7,32 +7,40 @@
 
 #include <xe/core/engine.hpp>
 #include <xe/graphics/camera.hpp>
+#include "layer_base.hpp"
 
-struct Quad {
-  xe::gpu::Pipeline material;
-  xe::gpu::Buffer vertexBuff;
-  xe::gpu::Buffer indexBuff;
-  xe::gpu::Texture texture;
-};
+namespace xe {
 
-struct Renderer {
+  struct Quad {
+    gpu::Pipeline material;
+    gpu::Buffer vertexBuff;
+    gpu::Buffer indexBuff;
+    gpu::Texture texture;
+  };
 
-};
+  struct Renderer {
 
-class TestOverlay {
-public:
-  explicit TestOverlay();
+  };
 
-  void start();
-  void render();
-  void update(xe::Timestep ts);
+  class TestOverlay : public LayerBase {
+  public:
+    explicit TestOverlay();
 
-  bool onKeyPressed(const xe::Event::Key &e);
+    void onStart() override;
+    void onRender() override;
+    void onUpdate() override;
 
-private:
-  void *texData_ = nullptr;
+    bool onKeyPressed(Event::Key e) override;
 
-  std::unique_ptr<xe::OrthographicCamera> camera_;
-};
+    bool onUi() override;
+
+  private:
+    void *texData_ = nullptr;
+
+    std::unique_ptr<OrthographicCamera> camera_;
+    vec2 cameraPos_;
+  };
+
+}
 
 #endif //XE_TEST_OVERLAY_HPP

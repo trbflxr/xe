@@ -121,6 +121,7 @@ namespace xe {
 
       ImGui::Text("uptime: %.2f", Engine::ref().window().uptime().seconds());
       ImGui::Text("draw calls: %u", GPU::drawCalls());
+      ImGui::Text("gpu commands: %u", GPU::gpuCommands());
 
       //layers ui
       auto &&editor = static_cast<Editor *>(data);

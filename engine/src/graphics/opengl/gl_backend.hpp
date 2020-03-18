@@ -54,6 +54,7 @@ namespace xe::gpu {
     memory<Framebuffer> framebuffers;
 
     static std::atomic<uint32_t> drawCalls;
+    static std::atomic<uint32_t> gpuCommands;
 
   public:
     static void initBackend(Backend **b, const Params::GPU &params);

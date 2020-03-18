@@ -432,6 +432,7 @@ namespace xe::gpu {
   }
 
   std::atomic<uint32_t> Backend::drawCalls = 0;
+  std::atomic<uint32_t> Backend::gpuCommands = 0;
 
   void Backend::initBackend(Backend **b, const Params::GPU &params) {
     *b = new Backend();

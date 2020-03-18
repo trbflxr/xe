@@ -39,6 +39,7 @@ namespace xe {
     uint32_t usedFramebuffers() const { return usedFramebuffers_; }
 
     static uint32_t drawCalls();
+    static uint32_t gpuCommands();
 
   protected:
     GPU();

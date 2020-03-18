@@ -251,4 +251,8 @@ namespace xe {
     return gpu::Backend::drawCalls;
   }
 
+  uint32_t GPU::gpuCommands() {
+    return gpu::Backend::gpuCommands;
+  }
+
 }

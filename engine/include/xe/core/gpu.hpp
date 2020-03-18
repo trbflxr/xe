@@ -80,6 +80,8 @@ namespace xe {
     mutable uint32_t usedTextures_ = 0;
     mutable uint32_t usedPipelines_ = 0;
     mutable uint32_t usedFramebuffers_ = 0;
+
+    static std::atomic<uint32_t> gpuCommands_;
   };
 
 }

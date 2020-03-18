@@ -38,6 +38,8 @@ namespace xe::detail {
 
 namespace xe {
 
+  std::atomic<uint32_t> GPU::gpuCommands_ = 0;
+
   GPU::GPU() :
       window_(std::make_shared<Window>()),
       logicFrame_(std::make_unique<DisplayList>()),

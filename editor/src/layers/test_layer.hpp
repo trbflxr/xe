@@ -28,6 +28,7 @@ namespace xe {
     static constexpr int32_t INSTANCES = 50000;
 
     std::unique_ptr<PerspectiveCamera> camera_;
+    vec3 cameraPos_;
     vec2u size_;
 
     struct {

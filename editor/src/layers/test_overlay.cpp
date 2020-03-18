@@ -164,7 +164,7 @@ namespace xe {
 
   bool TestOverlay::onUi() {
     ImGui::Text("TestOverlay:");
-    if (ImGui::SliderFloat2("camera pos", reinterpret_cast<float *>(&cameraPos_), -1.0f, 1.0f)) {
+    if (ImGui::SliderFloat2("Camera pos##TestOverlay", reinterpret_cast<float *>(&cameraPos_), -1.0f, 1.0f)) {
       camera_->transform().setLocalPositionX(cameraPos_.x);
       camera_->transform().setLocalPositionY(cameraPos_.y);
     }

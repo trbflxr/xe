@@ -236,21 +236,7 @@ namespace xe {
   }
 
   void TestLayer::onUpdate() {
-    static float speed = 5.0f;
-
     auto ts = Engine::ref().delta();
-
-    if (Engine::isKeyPressed(Keyboard::W)) {
-      camera_->transform().translateZ(speed * ts);
-    } else if (Engine::isKeyPressed(Keyboard::S)) {
-      camera_->transform().translateZ(-speed * ts);
-    }
-
-    if (Engine::isKeyPressed(Keyboard::A)) {
-      camera_->transform().translateX(speed * ts);
-    } else if (Engine::isKeyPressed(Keyboard::D)) {
-      camera_->transform().translateX(-speed * ts);
-    }
 
     camera_->update();
 
@@ -280,6 +266,11 @@ namespace xe {
   bool TestLayer::onUi() {
     ImGui::Text("TestLayer:");
     ImGui::SliderInt("Instances", &instances_, 1, INSTANCES);
+    if (ImGui::SliderFloat3("Camera pos##TestLayer", reinterpret_cast<float *>(&cameraPos_), -5.0f, 5.0f)) {
+      camera_->transform().setLocalPositionX(cameraPos_[0]);
+      camera_->transform().setLocalPositionY(cameraPos_[1]);
+      camera_->transform().setLocalPositionZ(cameraPos_[2]);
+    }
     return false;
   }
 

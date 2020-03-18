@@ -47,6 +47,7 @@ namespace xe {
 
     Timestep delta() const { return framerate_.timeStep; }
     uint32_t fps() const { return framerate_.fps; }
+    uint32_t ups() const { return framerate_.ups; }
 
     std::shared_ptr<Application> &app() { return app_; }
     entt::registry &registry() { return *registry_; }
@@ -104,6 +105,7 @@ namespace xe {
       float timeStep = 1.0f / 60.0f;
       uint32_t maxSteps = 10;
       uint32_t fps = 0;
+      uint32_t ups = 0;
     } framerate_;
   };
 

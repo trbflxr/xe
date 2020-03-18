@@ -101,6 +101,7 @@ namespace xe {
 
         accumulator -= framerate_.timeStep;
         ++updates;
+        framerate_.ups = updates;
       }
 
       postUpdate();

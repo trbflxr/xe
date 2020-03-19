@@ -947,7 +947,82 @@ namespace xe::gpu {
       }
       default: break;
     }
+  }
 
+  void Backend::destroy(DisplayList::DestroyData &d) {
+    if (!d.resource.ctx && !d.resource.id) {
+      return;
+    }
+
+    const int32_t pos = RenderContext::index(d.resource.id);
+    XE_CORE_INFO("[GL Backend] Destroy resource '{}' [{} -> {})]", d.resource.type, d.resource.id, pos);
+    destroyResource(d.resource.ctx, d.resource.type, pos);
+    switch (d.resource.type) {
+      case Resource::ResourceType::Buffer: {
+        d.resource.ctx->buffers_[pos].state = 0;
+        break;
+      }
+      case Resource::ResourceType::Pipeline: {
+        d.resource.ctx->pipelines_[pos].state = 0;
+        break;
+      }
+      case Resource::ResourceType::Texture: {
+        d.resource.ctx->textures_[pos].state = 0;
+        break;
+      }
+      case Resource::ResourceType::Framebuffer: {
+        FramebufferInstance *fb = &d.resource.ctx->framebuffers_[pos];
+
+        for (auto &colorAttachment : fb->colorAttachments) {
+          const uint32_t texPos = RenderContext::index(colorAttachment.id);
+          destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
+          d.resource.ctx->textures_[texPos].state = 0;
+        }
+        if (RenderContext::checkValidResource(fb->depthAttachment.id, &d.resource.ctx->textures_)) {
+          const uint32_t texPos = RenderContext::index(fb->depthAttachment.id);
+          destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
+          d.resource.ctx->textures_[texPos].state = 0;
+        }
+        fb->state = 0;
+        break;
+      }
+      default:
+      case Resource::ResourceType::Invalid: {
+        XE_CORE_WARN("[GL Backend] Trying to destroy an invalid resource");
+        break;
+      }
+    }
+  }
+
+  void Backend::destroyResource(RenderContext *ctx, Resource::ResourceType type, uint32_t pos) {
+    Backend *b = ctx->backend_;
+    switch (type) {
+      case Resource::ResourceType::Buffer: {
+        GLCHECK(glDeleteBuffers(1, &b->buffers[pos].buffer));
+        b->buffers[pos].buffer = 0;
+        break;
+      }
+      case Resource::ResourceType::Pipeline: {
+        GLCHECK(glDeleteProgram(b->pipelines[pos].program));
+        b->pipelines[pos].program = 0;
+        break;
+      }
+      case Resource::ResourceType::Texture: {
+        GLCHECK(glDeleteTextures(1, &b->textures[pos].texture));
+        b->textures[pos].texture = 0;
+        break;
+      }
+      case Resource::ResourceType::Framebuffer: {
+        GLCHECK(glDeleteFramebuffers(1, &b->framebuffers[pos].framebuffer));
+        b->framebuffers[pos].framebuffer = 0;
+        break;
+      }
+      default:
+      case Resource::ResourceType::Invalid: {
+        XE_CORE_WARN("[GL Backend] Trying to destroy an invalid resource");
+        break;
+      }
+    }
   }
 
 }

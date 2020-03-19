@@ -55,6 +55,13 @@ namespace xe {
     DisplayList::RenderData data_;
   };
 
+  struct DestroyCommand : DisplayList::Command {
+    friend class DisplayList;
+    void execute() override;
+
+    DisplayList::DestroyData data_;
+  };
+
 }
 
 #endif //XE_DISPLAY_LIST_COMMAND_HPP

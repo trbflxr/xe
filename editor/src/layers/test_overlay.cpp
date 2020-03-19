@@ -67,6 +67,8 @@ namespace xe {
     quad.indexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(quad_indexData)});
 
+    auto buff = Engine::ref().gpu().createBuffer({BufferType::Vertex, Usage::Static, 20});
+    Engine::ref().gpu().destroyResource(buff);
 
     gpu::Pipeline::Info::Shader quadShader;
     quadShader.vert = quad_ecs_vert;
@@ -111,6 +113,15 @@ namespace xe {
     Engine::ref().registry().assign<Transform>(entity);
   }
 
+  void TestOverlay::onStop() {
+    Engine::ref().registry().view<Quad>().each([](auto &quad) {
+      Engine::ref().gpu().destroyResource(quad.texture);
+      Engine::ref().gpu().destroyResource(quad.material);
+      Engine::ref().gpu().destroyResource(quad.indexBuff);
+      Engine::ref().gpu().destroyResource(quad.vertexBuff);
+    });
+  }
+
   void TestOverlay::onRender() {
     camera_->updateUniforms();
 
@@ -153,11 +164,9 @@ namespace xe {
   }
 
   bool TestOverlay::onKeyPressed(Event::Key e) {
-//  if (e.code == Keyboard::T) {
-//    static std::string title = std::string(Engine::ref().window().getTitle());
-//    title += std::to_string(e.code);
-//    Engine::ref().window().setTitle(title);
-//  }
+    if (e.code == Keyboard::Escape) {
+      Engine::ref().requestClose();
+    }
 //  XE_INFO("[TestOverlay] key pressed ({})", e.code);
     return false;
   }

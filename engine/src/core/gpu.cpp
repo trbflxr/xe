@@ -12,6 +12,7 @@
 #endif
 
 #include "embedded/embedded.hpp"
+#include "graphics/display_list_command.hpp"
 #include <xe/core/engine.hpp>
 #include <xe/graphics/window.hpp>
 #include <xe/graphics/render_context.hpp>
@@ -57,59 +58,69 @@ namespace xe {
     threadSync_.thread = std::thread(&xe::GPU::run, this);
     XE_CORE_INFO("[GPU] Launched rendering thread");
     std::unique_lock<std::mutex> lock(threadSync_.mxL);
-    threadSync_.cvL.wait(lock, [this] { return threadSync_.initialized; });
+    threadSync_.cvL.wait(lock, [this] {
+      return threadSync_.initialized;
+    });
   }
 
   void GPU::run() {
     XE_TRACE_META_THREAD_NAME("Render thread");
     window_->init();
-    shouldClose_ = window_->shouldClose();
+    shouldStop_ = window_->shouldClose();
 
     threadSync_.initialized = true;
+    threadSync_.exit = false;
     threadSync_.cvL.notify_one();
 
     XE_TRACE_BEGIN("XE", "Frame");
     XE_TRACE_BEGIN("XE", "Waiting (render)");
 
-    while (!shouldClose_) {
-      shouldClose_ = window_->shouldClose();
-
+    XE_CORE_INFO("[GPU] Render loop begin");
+    while (!shouldStop_) {
       gpu::Backend::drawCalls = 0;
 
-      XE_CORE_TRACE("[GPU] GPU Synchronization (render waiting)");
       std::unique_lock<std::mutex> lock(threadSync_.mxR);
-      threadSync_.cvR.wait(lock, [this] { return renderFrame_.commands_.empty(); });
+      threadSync_.cvR.wait(lock, [this] {
+        return renderFrame_.commands_.empty();
+      });
 
       if (!threadSync_.nextFrame.commands_.empty()) {
         XE_TRACE_END("XE", "Waiting (render)");
-        XE_CORE_TRACE("[GPU] GPU Synchronization (render start)");
         renderFrame_.commands_.swap(threadSync_.nextFrame.commands_);
 
         threadSync_.cvL.notify_one();
-        XE_CORE_TRACE("[GPU] GPU Synchronization (render ready)");
+
+        gpuCommands_ = static_cast<uint32_t>(renderFrame_.commands_.size());
 
         renderFrame_.update();
         window_->update();
-
-
-        Event e{ };
-        std::vector<Event> events;
-        while (window_->pollEvent(e)) {
-          events.push_back(e);
-        }
-        Engine::ref().pushEvents(events);
 
         XE_TRACE_END("XE", "Frame");
         XE_TRACE_BEGIN("XE", "Frame");
         XE_TRACE_BEGIN("XE", "Waiting (render)");
       } else {
         threadSync_.cvL.notify_one();
-        XE_CORE_TRACE("[GPU] GPU Synchronization (render ready)");
       }
+
+      Event e{ };
+      std::vector<Event> events;
+      while (window_->pollEvent(e)) {
+        events.push_back(e);
+      }
+      Engine::ref().pushEvents(events);
     }
+    XE_CORE_INFO("[GPU] Render loop end");
 
     XE_TRACE_END("XE", "Frame");
     XE_TRACE_END("XE", "Waiting (render)");
+
+    while (!threadSync_.exit) { }
+
+    XE_TRACE_BEGIN("XE", "GPU resources cleaning");
+    for (auto &&cmd : logicFrame_->commands_) {
+      cmd->execute();
+    }
+    XE_TRACE_END("XE", "GPU resources cleaning");
 
     window_->stop();
     threadSync_.cvL.notify_one();
@@ -117,10 +128,10 @@ namespace xe {
 
   void GPU::prepareRender() {
     XE_TRACE_BEGIN("XE", "Waiting (update)");
-    XE_CORE_TRACE("[GPU] GPU Synchronization (update waiting)");
     std::unique_lock<std::mutex> lock(threadSync_.mxL);
-    threadSync_.cvL.wait(lock, [this] { return shouldClose_ || threadSync_.nextFrame.commands_.empty(); });
-    XE_CORE_TRACE("[GPU] GPU Synchronization (update start)");
+    threadSync_.cvL.wait(lock, [this] {
+      return shouldStop_ || threadSync_.nextFrame.commands_.empty();
+    });
     XE_TRACE_END("XE", "Waiting (update)");
   }
 
@@ -129,7 +140,6 @@ namespace xe {
       threadSync_.nextFrame.commands_ = std::move(logicFrame_->commands_);
     }
     threadSync_.cvR.notify_one();
-    XE_CORE_TRACE("[GPU] GPU Synchronization (logic ready)");
   }
 
   void GPU::submitCommands(DisplayList &&dl) {
@@ -143,6 +153,7 @@ namespace xe {
   }
 
   void GPU::stop() {
+    threadSync_.exit = true;
     threadSync_.thread.join();
     XE_CORE_INFO("[GPU] Joined rendering thread");
   }
@@ -249,12 +260,24 @@ namespace xe {
     return gpu::Framebuffer{ctx_, id};
   }
 
+  void GPU::destroyResource(const gpu::Resource &resource) const {
+    auto cmd = std::make_shared<DestroyCommand>();
+    cmd->data_.resource = resource;
+
+    if (logicFrame_->commands_.empty()) {
+      logicFrame_->commands_.emplace_back(std::move(cmd));
+    } else {
+      logicFrame_->commands_.reserve(logicFrame_->commands_.size() + 1);
+      logicFrame_->commands_.emplace_back(std::move(cmd));
+    }
+  }
+
   uint32_t GPU::drawCalls() {
     return gpu::Backend::drawCalls;
   }
 
   uint32_t GPU::gpuCommands() {
-    return gpu::Backend::gpuCommands;
+    return gpuCommands_;
   }
 
 }

@@ -16,7 +16,7 @@ namespace xe {
   XE_OBJECT(Editor, Application);
   public:
     Editor() {
-      xe::Logger::setLogLevel(LogLevel::Info, LogLevel::Info);
+      xe::Logger::setLogLevel(LogLevel::Trace, LogLevel::Trace);
 
       Engine::ref().setUiFunction(Editor::uiFunc, this);
     }
@@ -34,6 +34,12 @@ namespace xe {
     void onStart() override {
       for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
         (*l)->onStart();
+      }
+    }
+
+    void onStop() override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onStop();
       }
     }
 
@@ -120,6 +126,7 @@ namespace xe {
       }
 
       ImGui::Text("uptime: %.2f", Engine::ref().window().uptime().seconds());
+      ImGui::Text("fps: %u / ups: %u", Engine::ref().fps(), Engine::ref().ups());
       ImGui::Text("draw calls: %u", GPU::drawCalls());
       ImGui::Text("gpu commands: %u", GPU::gpuCommands());
       ImGui::Text("used textures: %u / %u", Engine::ref().gpu().usedTextures(), Engine::ref().gpu().maxTextures());

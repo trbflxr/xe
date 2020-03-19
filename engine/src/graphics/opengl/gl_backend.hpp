@@ -65,6 +65,10 @@ namespace xe::gpu {
     static void fillTexture(DisplayList::FillTextureData &d);
     static void setupPipeline(DisplayList::SetupPipelineData &d);
     static void render(DisplayList::RenderData &d);
+    static void destroy(DisplayList::DestroyData &d);
+
+  private:
+    static void destroyResource(RenderContext *ctx, Resource::ResourceType type, uint32_t pos);
   };
 
 }

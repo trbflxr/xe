@@ -117,10 +117,15 @@ namespace xe {
       PROP(IndexFormat, type, IndexFormat::Uint16);
     };
 
+    struct DestroyData {
+      gpu::Resource resource{ };
+    };
+
 #undef PROP
 #undef PROP_PTR
 #undef PROP_ARRAY
 
+  public:
     ViewData &setupViewCommand();
     ClearData &clearCommand();
     FillBufferData &fillBufferCommand();

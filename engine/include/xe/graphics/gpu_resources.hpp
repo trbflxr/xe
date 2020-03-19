@@ -23,6 +23,17 @@ namespace xe {
         Framebuffer
       };
 
+      template<typename OStream>
+      friend OStream &operator<<(OStream &os, Resource::ResourceType t) {
+        switch (t) {
+          case Resource::ResourceType::Buffer: return os << "Buffer";
+          case Resource::ResourceType::Texture: return os << "Texture";
+          case Resource::ResourceType::Pipeline: return os << "Pipeline";
+          case Resource::ResourceType::Framebuffer: return os << "Framebuffer";
+          default: return os << "Invalid";
+        }
+      }
+
       RenderContext *ctx = nullptr;
       ResourceType type = ResourceType::Invalid;
       uint32_t id = 0;

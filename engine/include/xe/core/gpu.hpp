@@ -28,6 +28,8 @@ namespace xe {
     gpu::Pipeline createPipeline(const gpu::Pipeline::Info &info) const;
     gpu::Framebuffer createFramebuffer(const gpu::Framebuffer::Info &info) const;
 
+    void destroyResource(const gpu::Resource &resource) const;
+
     uint32_t maxBuffers() const { return params_.maxBuffers; }
     uint32_t maxTextures() const { return params_.maxTextures; }
     uint32_t maxPipelines() const { return params_.maxPipelines; }
@@ -41,7 +43,7 @@ namespace xe {
     static uint32_t drawCalls();
     static uint32_t gpuCommands();
 
-  protected:
+  private:
     GPU();
 
     void init();
@@ -71,6 +73,7 @@ namespace xe {
       std::condition_variable cvR;
       std::condition_variable cvL;
       bool initialized;
+      bool exit;
     } threadSync_;
 
   private:

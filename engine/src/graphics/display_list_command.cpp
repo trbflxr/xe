@@ -48,4 +48,10 @@ namespace xe {
     XE_TRACE_END("XE", "Render");
   }
 
+  void xe::DestroyCommand::execute() {
+    XE_TRACE_BEGIN("XE", "Destroy");
+    gpu::Backend::destroy(data_);
+    XE_TRACE_END("XE", "Destroy");
+  }
+
 }

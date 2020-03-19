@@ -14,7 +14,6 @@ namespace xe {
 
   void DisplayList::update() {
     XE_TRACE_BEGIN("XE", "Draw list update");
-    XE_CORE_TRACE("[DisplayList] Executing DisplayList (Commands {})", commands_.size());
     for (auto &&cmd : commands_) {
       cmd->execute();
     }

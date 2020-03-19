@@ -27,6 +27,8 @@ namespace xe {
     explicit TestOverlay();
 
     void onStart() override;
+    void onStop() override;
+
     void onRender() override;
     void onUpdate() override;
 

@@ -21,20 +21,20 @@ namespace xe {
 
     const vec2u &viewport() const { return size_; }
 
-    const gpu::Framebuffer &framebuffer() const { return framebuffer_; }
-    gpu::Texture targetTexture() const { return framebuffer_.colorAttachment(0); }
-    gpu::Texture targetDepth() const { return framebuffer_.depthStencilAttachment(); }
+    const gpu::Framebuffer &framebuffer() const { return *framebuffer_; }
+    gpu::Texture targetTexture() const { return framebuffer_->colorAttachment(0); }
+    gpu::Texture targetDepth() const { return framebuffer_->depthStencilAttachment(); }
 
   private:
     vec2u size_;
     TexelsFormat format_ = TexelsFormat::None;
 
-    gpu::Framebuffer framebuffer_;
+    std::shared_ptr<gpu::Framebuffer> framebuffer_;
 
     struct {
-      xe::gpu::Pipeline material;
-      xe::gpu::Buffer vertexBuffer;
-      xe::gpu::Buffer indexBuffer;
+      std::shared_ptr<xe::gpu::Pipeline> material;
+      std::shared_ptr<xe::gpu::Buffer> vertexBuffer;
+      std::shared_ptr<xe::gpu::Buffer> indexBuffer;
     } quad_;
   };
 

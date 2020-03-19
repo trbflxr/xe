@@ -17,16 +17,21 @@ namespace xe {
 
   class Window;
 
+  namespace gpu {
+    class Backend;
+  }
+
   class XE_API GPU : public Object {
   XE_OBJECT(GPU, Object);
     friend class Engine;
+    friend class gpu::Backend;
   public:
     ~GPU() override;
 
-    gpu::Buffer createBuffer(const gpu::Buffer::Info &info) const;
-    gpu::Texture createTexture(const gpu::Texture::Info &info) const;
-    gpu::Pipeline createPipeline(const gpu::Pipeline::Info &info) const;
-    gpu::Framebuffer createFramebuffer(const gpu::Framebuffer::Info &info) const;
+    std::shared_ptr<gpu::Buffer> createBuffer(const gpu::Buffer::Info &info) const;
+    std::shared_ptr<gpu::Texture> createTexture(const gpu::Texture::Info &info) const;
+    std::shared_ptr<gpu::Pipeline> createPipeline(const gpu::Pipeline::Info &info) const;
+    std::shared_ptr<gpu::Framebuffer> createFramebuffer(const gpu::Framebuffer::Info &info) const;
 
     void destroyResource(const gpu::Resource &resource) const;
 

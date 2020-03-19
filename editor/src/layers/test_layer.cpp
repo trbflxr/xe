@@ -104,7 +104,7 @@ namespace xe {
         //fill uniforms
         DisplayList frame;
         frame.fillBufferCommand()
-            .set_buffer(stateUbo_)
+            .set_buffer(*stateUbo_)
             .set_data(&uniforms_)
             .set_size(sizeof(uniforms_));
         Engine::ref().executeOnGpu(std::move(frame));
@@ -114,15 +114,15 @@ namespace xe {
       {
         DisplayList frame;
         frame.fillBufferCommand()
-            .set_buffer(cube_.vertexBuff)
+            .set_buffer(*cube_.vertexBuff)
             .set_data(cube::vertexData)
             .set_size(sizeof(cube::vertexData));
         frame.fillBufferCommand()
-            .set_buffer(cube_.indexBuff)
+            .set_buffer(*cube_.indexBuff)
             .set_data(cube::indexData)
             .set_size(sizeof(cube::indexData));
         frame.fillTextureCommand()
-            .set_texture(cube_.texture)
+            .set_texture(*cube_.texture)
             .set_data0(texData_)
             .set_buildMipmap(true);
         Engine::ref().executeOnGpu(std::move(frame));
@@ -145,11 +145,11 @@ namespace xe {
       {
         DisplayList frame;
         frame.fillBufferCommand()
-            .set_buffer(quad_.vertexBuff)
+            .set_buffer(*quad_.vertexBuff)
             .set_data(quad::vertexData)
             .set_size(sizeof(quad::vertexData));
         frame.fillBufferCommand()
-            .set_buffer(quad_.indexBuff)
+            .set_buffer(*quad_.indexBuff)
             .set_data(quad::indexData)
             .set_size(sizeof(quad::indexData));
         Engine::ref().executeOnGpu(std::move(frame));
@@ -179,13 +179,13 @@ namespace xe {
 
     DisplayList frame;
     frame.fillBufferCommand()
-        .set_buffer(stateUbo_)
+        .set_buffer(*stateUbo_)
         .set_data(&uniforms_)
         .set_size(sizeof(uniforms_));
 
     frame.setupViewCommand()
         .set_viewport({0, 0, size_.x, size_.y})
-        .set_framebuffer(fb_)
+        .set_framebuffer(*fb_)
         .set_colorAttachment(0, true)
         .set_colorAttachment(1, true);
     frame.clearCommand()
@@ -193,17 +193,17 @@ namespace xe {
         .set_clearColor(true)
         .set_clearDepth(true);
     frame.fillBufferCommand()
-        .set_buffer(cube_.instanceBuffer)
+        .set_buffer(*cube_.instanceBuffer)
         .set_data(cube_.instancePositions)
         .set_size(sizeof(cube_.instancePositions));
     frame.setupPipelineCommand()
-        .set_pipeline(cube_.material)
-        .set_buffer(0, cube_.vertexBuff)
-        .set_buffer(1, cube_.instanceBuffer)
-        .set_uniformBuffer(0, stateUbo_)
-        .set_texture(0, cube_.texture);
+        .set_pipeline(*cube_.material)
+        .set_buffer(0, *cube_.vertexBuff)
+        .set_buffer(1, *cube_.instanceBuffer)
+        .set_uniformBuffer(0, *stateUbo_)
+        .set_texture(0, *cube_.texture);
     frame.renderCommand()
-        .set_indexBuffer(cube_.indexBuff)
+        .set_indexBuffer(*cube_.indexBuff)
         .set_count(sizeof(cube::indexData) / sizeof(uint16_t))
         .set_type(IndexFormat::Uint16)
         .set_instances(instances_);
@@ -220,15 +220,15 @@ namespace xe {
         .set_clearColor(false)
         .set_clearDepth(true);
     frame.setupPipelineCommand()
-        .set_pipeline(quad_.material)
-        .set_buffer(0, quad_.vertexBuff)
+        .set_pipeline(*quad_.material)
+        .set_buffer(0, *quad_.vertexBuff)
         .set_uniformBuffer(0, camera_->uniformBuffer())
         .set_uniform(0, {"u_model", &quad_.transform.worldTransform(), sizeof(mat4)})
         .set_uniform(1, {"u_tint", &tint, sizeof(Color)})
-        .set_texture(0, fb_.colorAttachment(0))
-        .set_texture(1, fb_.colorAttachment(1));
+        .set_texture(0, fb_->colorAttachment(0))
+        .set_texture(1, fb_->colorAttachment(1));
     frame.renderCommand()
-        .set_indexBuffer(quad_.indexBuff)
+        .set_indexBuffer(*quad_.indexBuff)
         .set_count(sizeof(quad::indexData) / sizeof(uint16_t))
         .set_type(IndexFormat::Uint16);
 

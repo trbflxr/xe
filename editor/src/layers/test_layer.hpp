@@ -36,23 +36,23 @@ namespace xe {
       mat4 cubeView;
       mat4 cubeProj;
     } uniforms_;
-    gpu::Buffer stateUbo_;
+    std::shared_ptr<gpu::Buffer> stateUbo_;
 
-    gpu::Framebuffer fb_;
+    std::shared_ptr<gpu::Framebuffer> fb_;
 
     struct {
       vec4 instancePositions[INSTANCES];
-      gpu::Pipeline material;
-      gpu::Buffer vertexBuff;
-      gpu::Buffer indexBuff;
-      gpu::Buffer instanceBuffer;
-      gpu::Texture texture;
+      std::shared_ptr<gpu::Pipeline> material;
+      std::shared_ptr<gpu::Buffer> vertexBuff;
+      std::shared_ptr<gpu::Buffer> indexBuff;
+      std::shared_ptr<gpu::Buffer> instanceBuffer;
+      std::shared_ptr<gpu::Texture> texture;
     } cube_;
 
     struct {
-      gpu::Pipeline material;
-      gpu::Buffer vertexBuff;
-      gpu::Buffer indexBuff;
+      std::shared_ptr<gpu::Pipeline> material;
+      std::shared_ptr<gpu::Buffer> vertexBuff;
+      std::shared_ptr<gpu::Buffer> indexBuff;
       Transform transform;
     } quad_;
 

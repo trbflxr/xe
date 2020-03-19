@@ -58,11 +58,11 @@ namespace xe {
 
     DisplayList frame;
     frame.fillBufferCommand()
-        .set_buffer(quad_.vertexBuffer)
+        .set_buffer(*quad_.vertexBuffer)
         .set_data(composerVertexData)
         .set_size(sizeof(composerVertexData));
     frame.fillBufferCommand()
-        .set_buffer(quad_.indexBuffer)
+        .set_buffer(*quad_.indexBuffer)
         .set_data(composerIndexData)
         .set_size(sizeof(composerIndexData));
     Engine::ref().executeOnGpu(std::move(frame));
@@ -78,11 +78,11 @@ namespace xe {
         .set_clearColor(true)
         .set_clearDepth(true);
     frame.setupPipelineCommand()
-        .set_pipeline(quad_.material)
-        .set_buffer(0, quad_.vertexBuffer)
+        .set_pipeline(*quad_.material)
+        .set_buffer(0, *quad_.vertexBuffer)
         .set_texture(0, targetTexture());
     frame.renderCommand()
-        .set_indexBuffer(quad_.indexBuffer)
+        .set_indexBuffer(*quad_.indexBuffer)
         .set_count(sizeof(composerIndexData) / sizeof(uint16_t))
         .set_type(IndexFormat::Uint16);
 

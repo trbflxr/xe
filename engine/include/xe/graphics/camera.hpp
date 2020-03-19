@@ -58,7 +58,7 @@ namespace xe {
     const mat4 &view() const { return view_; }
     Transform &transform() { return transform_; }
 
-    const gpu::Buffer &uniformBuffer() const { return uniforms_; }
+    const gpu::Buffer &uniformBuffer() const { return *uniforms_; }
 
     void markForUpdate() { dirty_ = true; }
     bool hasChanged() const { return dirty_; }
@@ -84,7 +84,7 @@ namespace xe {
     Transform transform_;
 
     CommonData data_;
-    gpu::Buffer uniforms_;
+    std::shared_ptr<gpu::Buffer> uniforms_;
   };
 
   class XE_API OrthographicCamera : public Camera {

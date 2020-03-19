@@ -54,8 +54,8 @@ namespace xe::gpu {
 
   struct FramebufferInstance : public InstanceBase {
     Framebuffer::Info info;
-    Texture colorAttachments[cMaxFramebufferColorAttachments];
-    Texture depthAttachment;
+    std::shared_ptr<Texture> colorAttachments[cMaxFramebufferColorAttachments];
+    std::shared_ptr<Texture> depthAttachment;
   };
 
 }

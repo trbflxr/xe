@@ -75,10 +75,10 @@ namespace xe {
 
     CameraData cameraData_;
 
-    gpu::Pipeline pipeline_;
-    gpu::Buffer vertexBuffer_;
-    gpu::Buffer indexBuffer_;
-    gpu::Buffer uniformBuffer_;
+    std::shared_ptr<gpu::Pipeline> pipeline_;
+    std::shared_ptr<gpu::Buffer> vertexBuffer_;
+    std::shared_ptr<gpu::Buffer> indexBuffer_;
+    std::shared_ptr<gpu::Buffer> uniformBuffer_;
   };
 
 }

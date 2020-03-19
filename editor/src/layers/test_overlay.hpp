@@ -12,10 +12,10 @@
 namespace xe {
 
   struct Quad {
-    gpu::Pipeline material;
-    gpu::Buffer vertexBuff;
-    gpu::Buffer indexBuff;
-    gpu::Texture texture;
+    std::shared_ptr<gpu::Pipeline> material;
+    std::shared_ptr<gpu::Buffer> vertexBuff;
+    std::shared_ptr<gpu::Buffer> indexBuff;
+    std::shared_ptr<gpu::Texture> texture;
   };
 
   struct Renderer {

@@ -114,7 +114,9 @@ namespace xe {
     XE_TRACE_END("XE", "Frame");
     XE_TRACE_END("XE", "Waiting (render)");
 
-    while (!threadSync_.exit) { }
+    while (!threadSync_.exit) {
+      //wait
+    }
 
     XE_TRACE_BEGIN("XE", "GPU resources cleaning");
     for (auto &&cmd : logicFrame_->commands_) {
@@ -158,18 +160,24 @@ namespace xe {
     XE_CORE_INFO("[GPU] Joined rendering thread");
   }
 
-  gpu::Buffer GPU::createBuffer(const gpu::Buffer::Info &info) const {
+  std::shared_ptr<gpu::Buffer> GPU::createBuffer(const gpu::Buffer::Info &info) const {
     const uint32_t id = detail::acquireResource(&ctx_->buffers_);
+    if (!id) {
+      XE_CORE_CRITICAL("[GPU] Could not create buffer id: '{}'", id);
+      return nullptr;
+    }
+
     const uint32_t loc = RenderContext::index(id);
     gpu::BufferInstance &inst = ctx_->buffers_[loc];
     inst.info = info;
 
     ++usedBuffers_;
 
-    return gpu::Buffer(ctx_, id);
+    XE_CORE_INFO("[GPU] Created buffer id: {}", id);
+    return std::make_shared<gpu::Buffer>(ctx_, id);
   }
 
-  gpu::Texture GPU::createTexture(const gpu::Texture::Info &info) const {
+  std::shared_ptr<gpu::Texture> GPU::createTexture(const gpu::Texture::Info &info) const {
     auto &&tex = const_cast<gpu::Texture::Info &>(info);
 
     if (info.format == TexelsFormat::None) {
@@ -178,6 +186,11 @@ namespace xe {
     }
 
     const uint32_t id = detail::acquireResource(&ctx_->textures_);
+    if (!id) {
+      XE_CORE_CRITICAL("[GPU] Could not create texture id: '{}'", id);
+      return nullptr;
+    }
+
     const uint32_t loc = RenderContext::index(id);
     gpu::TextureInstance &inst = ctx_->textures_[loc];
     inst.info = tex;
@@ -200,11 +213,17 @@ namespace xe {
 
     ++usedTextures_;
 
-    return gpu::Texture{ctx_, id};
+    XE_CORE_INFO("[GPU] Created texture id: {}", id);
+    return std::make_shared<gpu::Texture>(ctx_, id);
   }
 
-  gpu::Pipeline GPU::createPipeline(const gpu::Pipeline::Info &info) const {
+  std::shared_ptr<gpu::Pipeline> GPU::createPipeline(const gpu::Pipeline::Info &info) const {
     const uint32_t id = detail::acquireResource(&ctx_->pipelines_);
+    if (!id) {
+      XE_CORE_CRITICAL("[GPU] Could not create pipeline id: '{}'", id);
+      return nullptr;
+    }
+
     const uint32_t loc = RenderContext::index(id);
     gpu::PipelineInstance &inst = ctx_->pipelines_[loc];
     inst.info = info;
@@ -242,22 +261,43 @@ namespace xe {
 
     ++usedPipelines_;
 
-    return gpu::Pipeline{ctx_, id};
+    XE_CORE_INFO("[GPU] Created pipeline id: {}", id);
+    return std::make_shared<gpu::Pipeline>(ctx_, id);
   }
 
-  gpu::Framebuffer GPU::createFramebuffer(const gpu::Framebuffer::Info &info) const {
+  std::shared_ptr<gpu::Framebuffer> GPU::createFramebuffer(const gpu::Framebuffer::Info &info) const {
     const uint32_t id = detail::acquireResource(&ctx_->framebuffers_);
+    if (!id) {
+      XE_CORE_CRITICAL("[GPU] Could not create framebuffer id: '{}'", id);
+      return nullptr;
+    }
+
     const uint32_t pos = RenderContext::index(id);
     gpu::FramebufferInstance &inst = ctx_->framebuffers_[pos];
     inst.info = info;
     for (uint32_t i = 0; i < info.colorAttachmentsSize; ++i) {
       inst.colorAttachments[i] = createTexture(info.colorAttachmentInfo[i]);
+
+      //clear color textures if creation failed
+      if (!inst.colorAttachments[i]) {
+        XE_CORE_CRITICAL("[GPU] Could not create framebuffer id: '{}'. Color texture {} creation failed", id, i);
+        for (uint32_t j = i - 1; j >= 0; --j) {
+          destroyResource(*inst.colorAttachments[i]);
+        }
+        return nullptr;
+      }
     }
+
     inst.depthAttachment = createTexture(info.depthStencilAttachmentInfo);
+    if (!inst.depthAttachment) {
+      XE_CORE_CRITICAL("[GPU] Could not create framebuffer id: '{}'. Depth texture creation failed", id);
+      return nullptr;
+    }
 
     ++usedFramebuffers_;
 
-    return gpu::Framebuffer{ctx_, id};
+    XE_CORE_INFO("[GPU] Created framebuffer id: {}", id);
+    return std::make_shared<gpu::Framebuffer>(ctx_, id);
   }
 
   void GPU::destroyResource(const gpu::Resource &resource) const {

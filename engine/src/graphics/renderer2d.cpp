@@ -65,15 +65,15 @@ namespace xe {
 
     DisplayList commands;
     commands.fillBufferCommand()
-        .set_buffer(vertexBuffer_)
+        .set_buffer(*vertexBuffer_)
         .set_data(&bufferData_[0])
         .set_size(verticesBufferSize_);
     commands.fillBufferCommand()
-        .set_buffer(indexBuffer_)
+        .set_buffer(*indexBuffer_)
         .set_data(&indices_[0])
         .set_size(instancesBufferSize_);
     commands.fillBufferCommand()
-        .set_buffer(uniformBuffer_)
+        .set_buffer(*uniformBuffer_)
         .set_data(&cameraData_)
         .set_size(sizeof(cameraData_));
     Engine::ref().executeOnGpu(std::move(commands));
@@ -135,7 +135,7 @@ namespace xe {
         .set_clearColor(false)
         .set_clearDepth(true);
     commands.fillBufferCommand()
-        .set_buffer(uniformBuffer_)
+        .set_buffer(*uniformBuffer_)
         .set_data(&cameraData_)
         .set_size(sizeof(cameraData_));
     Engine::ref().executeOnGpu(std::move(commands));
@@ -148,20 +148,20 @@ namespace xe {
   void Renderer2d::flush() {
     DisplayList commands;
     commands.fillBufferCommand()
-        .set_buffer(vertexBuffer_)
+        .set_buffer(*vertexBuffer_)
         .set_data(&bufferData_[0])
         .set_size(sizeof(VertexData) * verticesCount_);
 
     auto &cmd = commands.setupPipelineCommand()
-        .set_pipeline(pipeline_)
-        .set_buffer(0, vertexBuffer_)
-        .set_uniformBuffer(0, uniformBuffer_);
+        .set_pipeline(*pipeline_)
+        .set_buffer(0, *vertexBuffer_)
+        .set_uniformBuffer(0, *uniformBuffer_);
     if (activeTexture_) {
       cmd.set_texture(0, activeTexture_->raw());
     }
 
     commands.renderCommand()
-        .set_indexBuffer(indexBuffer_)
+        .set_indexBuffer(*indexBuffer_)
         .set_count(indicesCount_)
         .set_type(IndexFormat::Uint32);
     Engine::ref().executeOnGpu(std::move(commands));

@@ -8,6 +8,7 @@
 #include <xe/math/transform.hpp>
 #include <xe/graphics/gpu_resources.hpp>
 #include <xe/ui/imgui/imgui.h>
+#include <xe/assert.hpp>
 
 namespace xe {
 
@@ -67,9 +68,6 @@ namespace xe {
     quad.indexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(quad_indexData)});
 
-    auto buff = Engine::ref().gpu().createBuffer({BufferType::Vertex, Usage::Static, 20});
-    Engine::ref().gpu().destroyResource(buff);
-
     gpu::Pipeline::Info::Shader quadShader;
     quadShader.vert = quad_ecs_vert;
     quadShader.frag = quad_ecs_frag;
@@ -94,15 +92,15 @@ namespace xe {
 
     DisplayList frame;
     frame.fillBufferCommand()
-        .set_buffer(quad.vertexBuff)
+        .set_buffer(*quad.vertexBuff)
         .set_data(quad_vertexData)
         .set_size(sizeof(quad_vertexData));
     frame.fillBufferCommand()
-        .set_buffer(quad.indexBuff)
+        .set_buffer(*quad.indexBuff)
         .set_data(quad_indexData)
         .set_size(sizeof(quad_indexData));
     frame.fillTextureCommand()
-        .set_texture(quad.texture)
+        .set_texture(*quad.texture)
         .set_data0(texData_)
         .set_buildMipmap(true);
     Engine::ref().executeOnGpu(std::move(frame));
@@ -115,10 +113,10 @@ namespace xe {
 
   void TestOverlay::onStop() {
     Engine::ref().registry().view<Quad>().each([](auto &quad) {
-      Engine::ref().gpu().destroyResource(quad.texture);
-      Engine::ref().gpu().destroyResource(quad.material);
-      Engine::ref().gpu().destroyResource(quad.indexBuff);
-      Engine::ref().gpu().destroyResource(quad.vertexBuff);
+      Engine::ref().gpu().destroyResource(*quad.texture);
+      Engine::ref().gpu().destroyResource(*quad.material);
+      Engine::ref().gpu().destroyResource(*quad.indexBuff);
+      Engine::ref().gpu().destroyResource(*quad.vertexBuff);
     });
   }
 
@@ -137,14 +135,14 @@ namespace xe {
           .set_clearColor(false)
           .set_clearDepth(true);
       frame.setupPipelineCommand()
-          .set_pipeline(quad.material)
-          .set_buffer(0, quad.vertexBuff)
+          .set_pipeline(*quad.material)
+          .set_buffer(0, *quad.vertexBuff)
           .set_uniform(0, {"u_proj", &camera_->projection(), sizeof(mat4)})
           .set_uniform(1, {"u_view", &camera_->view(), sizeof(mat4)})
           .set_uniform(2, {"u_model", &transform.worldTransform(), sizeof(mat4)})
-          .set_texture(0, quad.texture);
+          .set_texture(0, *quad.texture);
       frame.renderCommand()
-          .set_indexBuffer(quad.indexBuff)
+          .set_indexBuffer(*quad.indexBuff)
           .set_count(sizeof(quad_indexData) / sizeof(uint16_t))
           .set_type(IndexFormat::Uint16);
     });
@@ -166,6 +164,30 @@ namespace xe {
   bool TestOverlay::onKeyPressed(Event::Key e) {
     if (e.code == Keyboard::Escape) {
       Engine::ref().requestClose();
+    }
+    static std::queue<std::pair<void *, std::shared_ptr<gpu::Texture>>> textures;
+
+    if (e.code == Keyboard::T) {
+      gpu::Texture::Info texInfo;
+      auto t = gpu::Texture::loadFromFile("textures/test.png", texInfo);
+      texInfo.magFilter = TextureMagFilter::Linear;
+      texInfo.minFilter = TextureMinFilter::Linear;
+      auto tex = Engine::ref().gpu().createTexture(texInfo);
+      if (tex) {
+        textures.emplace(std::make_pair(t, tex));
+      } else {
+        delete reinterpret_cast<uint8_t *>(t);
+        XE_ERROR("[TestOverlay] Empty texture");
+      }
+    }
+    if (e.code == Keyboard::R) {
+      if (!textures.empty()) {
+        auto t = textures.front();
+        textures.pop();
+
+        Engine::ref().gpu().destroyResource(*t.second);
+        delete reinterpret_cast<uint8_t *>(t.first);
+      }
     }
 //  XE_INFO("[TestOverlay] key pressed ({})", e.code);
     return false;

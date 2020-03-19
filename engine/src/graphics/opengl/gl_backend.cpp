@@ -9,6 +9,7 @@
 #include "embedded/embedded.hpp"
 #include "external/glad/glad.h"
 #include <xe/core/gpu.hpp>
+#include <xe/core/engine.hpp>
 #include <xe/graphics/render_context.hpp>
 
 namespace xe::gpu {
@@ -480,9 +481,9 @@ namespace xe::gpu {
 
       if (d.cubemapTarget != CubemapTarget::Invalid) {
         for (uint32_t i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
-          auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
-                                                &fb.first->colorAttachments[i].ctx->textures_,
-                                                &fb.first->colorAttachments[i].ctx->backend_->textures);
+          auto tex = RenderContext::getResource(fb.first->colorAttachments[i]->id,
+                                                &fb.first->colorAttachments[i]->ctx->textures_,
+                                                &fb.first->colorAttachments[i]->ctx->backend_->textures);
           initTexture(tex);
           if (tex.second->target == GL_TEXTURE_CUBE_MAP) {
             GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, toGL(d.cubemapTarget),
@@ -491,17 +492,17 @@ namespace xe::gpu {
         }
       } else {
         for (uint16_t i = 0; i < fb.first->info.colorAttachmentsSize; ++i) {
-          auto tex = RenderContext::getResource(fb.first->colorAttachments[i].id,
-                                                &fb.first->colorAttachments[i].ctx->textures_,
-                                                &fb.first->colorAttachments[i].ctx->backend_->textures);
+          auto tex = RenderContext::getResource(fb.first->colorAttachments[i]->id,
+                                                &fb.first->colorAttachments[i]->ctx->textures_,
+                                                &fb.first->colorAttachments[i]->ctx->backend_->textures);
           initTexture(tex);
           setupFramebufferTexture(tex, d.mipLevel, i);
         }
 
-        if (RenderContext::checkValidResource(fb.first->depthAttachment.id, &d.framebuffer.ctx->textures_)) {
-          auto tex = RenderContext::getResource(fb.first->depthAttachment.id,
-                                                &fb.first->depthAttachment.ctx->textures_,
-                                                &fb.first->depthAttachment.ctx->backend_->textures);
+        if (RenderContext::checkValidResource(fb.first->depthAttachment->id, &d.framebuffer.ctx->textures_)) {
+          auto tex = RenderContext::getResource(fb.first->depthAttachment->id,
+                                                &fb.first->depthAttachment->ctx->textures_,
+                                                &fb.first->depthAttachment->ctx->backend_->textures);
           initTexture(tex);
           setupFramebufferDepth(tex, d.mipLevel);
         }
@@ -955,7 +956,7 @@ namespace xe::gpu {
     }
 
     const int32_t pos = RenderContext::index(d.resource.id);
-    XE_CORE_INFO("[GL Backend] Destroy resource '{}' [{} -> {})]", d.resource.type, d.resource.id, pos);
+    XE_CORE_INFO("[GL Backend] Destroy resource '{}' ({} -> {})", d.resource.type, d.resource.id, pos);
     destroyResource(d.resource.ctx, d.resource.type, pos);
     switch (d.resource.type) {
       case Resource::ResourceType::Buffer: {
@@ -974,12 +975,12 @@ namespace xe::gpu {
         FramebufferInstance *fb = &d.resource.ctx->framebuffers_[pos];
 
         for (auto &colorAttachment : fb->colorAttachments) {
-          const uint32_t texPos = RenderContext::index(colorAttachment.id);
+          const uint32_t texPos = RenderContext::index(colorAttachment->id);
           destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
           d.resource.ctx->textures_[texPos].state = 0;
         }
-        if (RenderContext::checkValidResource(fb->depthAttachment.id, &d.resource.ctx->textures_)) {
-          const uint32_t texPos = RenderContext::index(fb->depthAttachment.id);
+        if (RenderContext::checkValidResource(fb->depthAttachment->id, &d.resource.ctx->textures_)) {
+          const uint32_t texPos = RenderContext::index(fb->depthAttachment->id);
           destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
           d.resource.ctx->textures_[texPos].state = 0;
         }
@@ -1010,6 +1011,7 @@ namespace xe::gpu {
       case Resource::ResourceType::Texture: {
         GLCHECK(glDeleteTextures(1, &b->textures[pos].texture));
         b->textures[pos].texture = 0;
+        Engine::ref().gpu().usedTextures_--;
         break;
       }
       case Resource::ResourceType::Framebuffer: {

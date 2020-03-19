@@ -114,7 +114,7 @@ namespace xe::gpu {
     }
     RenderContext::checkValidResource(id, &ctx->framebuffers_);
     const uint32_t loc = RenderContext::index(id);
-    return ctx->framebuffers_[loc].colorAttachments[index];
+    return *ctx->framebuffers_[loc].colorAttachments[index];
   }
 
   Texture Framebuffer::depthStencilAttachment() const {
@@ -123,10 +123,10 @@ namespace xe::gpu {
     }
     RenderContext::checkValidResource(id, &ctx->framebuffers_);
     const uint32_t loc = RenderContext::index(id);
-    return ctx->framebuffers_[loc].depthAttachment;
+    return *ctx->framebuffers_[loc].depthAttachment;
   }
 
-  void Framebuffer::setColorAttachment(Texture t, uint32_t index) {
+  void Framebuffer::setColorAttachment(std::shared_ptr<Texture> &&t, uint32_t index) {
     if (!ctx) {
       return;
     }
@@ -135,7 +135,7 @@ namespace xe::gpu {
     ctx->framebuffers_[loc].colorAttachments[index] = t;
   }
 
-  void Framebuffer::setDepthStencilAttachment(Texture t) {
+  void Framebuffer::setDepthStencilAttachment(std::shared_ptr<Texture> &&t) {
     if (!ctx) {
       return;
     }

@@ -115,8 +115,8 @@ namespace xe {
       Texture colorAttachment(uint32_t index = 0) const;
       Texture depthStencilAttachment() const;
 
-      void setColorAttachment(Texture t, uint32_t index = 0);
-      void setDepthStencilAttachment(Texture t);
+      void setColorAttachment(std::shared_ptr<Texture> &&t, uint32_t index = 0);
+      void setDepthStencilAttachment(std::shared_ptr<Texture> &&t);
     };
 
   }

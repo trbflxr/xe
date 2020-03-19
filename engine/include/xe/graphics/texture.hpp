@@ -46,7 +46,7 @@ namespace xe {
     void *data(uint32_t index = 0) const;
     bool hdr() const { return hdr_; }
 
-    const gpu::Texture &raw() const { return gpu_.tex; }
+    const gpu::Texture &raw() const { return *gpu_.tex; }
 
     uint32_t textureId();
     std::string_view file() const { return file_; }
@@ -61,7 +61,7 @@ namespace xe {
     uint32_t internalId_ = 0;
 
     struct {
-      gpu::Texture tex{ };
+      std::shared_ptr<gpu::Texture> tex;
       gpu::Texture::Info info{ };
       uint32_t offset[3] = {0};
       bool buildMipmap = false;

@@ -63,11 +63,11 @@ namespace xe {
 
     XE_TRACE_BEGIN("XE", "Texture Setup");
     DisplayList commands;
-    if (!gpu_.tex.id) {
+    if (!gpu_.tex || !gpu_.tex->id) {
       gpu_.tex = Engine::ref().gpu().createTexture(gpu_.info);
     }
     commands.fillTextureCommand()
-        .set_texture(gpu_.tex)
+        .set_texture(*gpu_.tex)
         .set_data0(data_[0])
         .set_data1(data_[1])
         .set_data2(data_[2])
@@ -198,10 +198,10 @@ namespace xe {
 
   uint32_t Texture::textureId() {
     if (!internalId_) {
-      if (!gpu_.tex.ctx) {
+      if (!gpu_.tex->ctx) {
         return 0;
       }
-      auto b = RenderContext::getResource(gpu_.tex.id, &gpu_.tex.ctx->textures_, &gpu_.tex.ctx->backend_->textures);
+      auto b = RenderContext::getResource(gpu_.tex->id, &gpu_.tex->ctx->textures_, &gpu_.tex->ctx->backend_->textures);
       internalId_ = b.first->id;
     }
     return internalId_;

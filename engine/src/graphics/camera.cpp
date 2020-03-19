@@ -11,10 +11,13 @@ namespace xe {
 
   void Camera::init() {
     uniforms_ = Engine::ref().gpu().createBuffer({BufferType::Uniform, Usage::Dynamic, sizeof(data_), "CameraUniform", cCameraUboBinding});
+    if (!uniforms_) {
+      XE_CORE_CRITICAL("[Camera] Unable to create uniform buffer. Max buffers reached.");
+    }
 
     DisplayList frame;
     frame.fillBufferCommand()
-        .set_buffer(uniforms_)
+        .set_buffer(*uniforms_)
         .set_data(&data_)
         .set_size(sizeof(data_));
     Engine::ref().executeOnGpu(std::move(frame));
@@ -23,7 +26,7 @@ namespace xe {
   void Camera::updateUniforms() {
     DisplayList frame;
     frame.fillBufferCommand()
-        .set_buffer(uniforms_)
+        .set_buffer(*uniforms_)
         .set_data(&data_)
         .set_size(sizeof(data_));
     Engine::ref().executeOnGpu(std::move(frame));
@@ -75,7 +78,7 @@ namespace xe {
     markForUpdate();
   }
 
-  void OrthographicCamera::setBottom(float bottom)  {
+  void OrthographicCamera::setBottom(float bottom) {
     bottom_ = bottom;
     markForUpdate();
   }
@@ -85,12 +88,12 @@ namespace xe {
     markForUpdate();
   }
 
-  void OrthographicCamera::setNearPlane(float nearPlane)  {
+  void OrthographicCamera::setNearPlane(float nearPlane) {
     nearPlane_ = nearPlane;
     markForUpdate();
   }
 
-  void OrthographicCamera::setFarPlane(float farPlane){
+  void OrthographicCamera::setFarPlane(float farPlane) {
     farPlane_ = farPlane;
     markForUpdate();
   }
@@ -134,7 +137,7 @@ namespace xe {
     markForUpdate();
   }
 
-  void PerspectiveCamera::setNearPlane(float nearPlane)  {
+  void PerspectiveCamera::setNearPlane(float nearPlane) {
     nearPlane_ = nearPlane;
     markForUpdate();
   }

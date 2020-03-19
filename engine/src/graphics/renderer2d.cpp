@@ -9,8 +9,9 @@
 
 namespace xe {
 
-  Renderer2d::Renderer2d(Camera &camera) :
-      camera_(camera) {
+  Renderer2d::Renderer2d(Camera &camera, uint32_t maxInstances) :
+      camera_(camera),
+      maxInstances_(maxInstances) {
     init();
   }
 
@@ -23,23 +24,24 @@ namespace xe {
 
   void Renderer2d::init() {
     verticesSize_ = maxInstances_ * 4;
-    instancesSize_ = maxInstances_ * 6;
+    indicesSize_ = maxInstances_ * 6;
     verticesBufferSize_ = verticesSize_ * sizeof(VertexData);
-    instancesBufferSize_ = instancesSize_ * sizeof(uint32_t);
+    indicesBufferSize_ = indicesSize_ * sizeof(uint32_t);
 
     initArrays();
     initPipeline();
     initBuffers();
+    initUniforms();
   }
 
   void Renderer2d::initArrays() {
     bufferData_ = std::make_unique<VertexData[]>(verticesSize_);
-    indices_ = std::make_unique<uint32_t[]>(instancesSize_);
+    indices_ = std::make_unique<uint32_t[]>(indicesSize_);
 
     buffer_ = &bufferData_[0];
 
     uint32_t offset = 0;
-    for (uint32_t i = 0; i < maxInstances_; i += 6) {
+    for (uint32_t i = 0; i < indicesSize_; i += 6) {
       indices_[i + 0] = offset + 0;
       indices_[i + 1] = offset + 2;
       indices_[i + 2] = offset + 1;
@@ -74,16 +76,10 @@ namespace xe {
       XE_CORE_CRITICAL("[Renderer2d] Failed to create vertex buffer");
     }
 
-    indexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Index, Usage::Static, instancesBufferSize_});
+    indexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Index, Usage::Static, indicesBufferSize_});
     if (!indexBuffer_) {
       XE_CORE_CRITICAL("[Renderer2d] Failed to create index buffer");
     }
-
-    uniformBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Uniform, Usage::Dynamic, sizeof(cameraData_), "Camera2DUniform", 0});
-    if (!uniformBuffer_) {
-      XE_CORE_CRITICAL("[Renderer2d] Failed to create uniform buffer");
-    }
-
 
     DisplayList commands;
     commands.fillBufferCommand()
@@ -93,7 +89,17 @@ namespace xe {
     commands.fillBufferCommand()
         .set_buffer(*indexBuffer_)
         .set_data(&indices_[0])
-        .set_size(instancesBufferSize_);
+        .set_size(indicesBufferSize_);
+    Engine::ref().executeOnGpu(std::move(commands));
+  }
+
+  void Renderer2d::initUniforms() {
+    uniformBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Uniform, Usage::Dynamic, sizeof(cameraData_), "Camera2DUniform", 0});
+    if (!uniformBuffer_) {
+      XE_CORE_CRITICAL("[Renderer2d] Failed to create uniform buffer");
+    }
+
+    DisplayList commands;
     commands.fillBufferCommand()
         .set_buffer(*uniformBuffer_)
         .set_data(&cameraData_)
@@ -137,13 +143,6 @@ namespace xe {
   }
 
   void Renderer2d::begin() {
-//    if (dirty_) {
-//      bufferData_.reset(nullptr);
-//      indices_.reset(nullptr);
-//      init();
-//      dirty_ = false;
-//    }
-
     cameraData_.view = camera_.view();
     cameraData_.proj = camera_.projection();
 
@@ -191,12 +190,6 @@ namespace xe {
     indicesCount_ = 0;
     verticesCount_ = 0;
     buffer_ = &bufferData_[0];
-  }
-
-  void Renderer2d::setMaxInstances(uint32_t instances) {
-    XE_ASSERT(false, "Unsupported");
-//    maxInstances_ = instances;
-//    dirty_ = true;
   }
 
 }

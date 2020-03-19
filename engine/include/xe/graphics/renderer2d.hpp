@@ -5,7 +5,6 @@
 #ifndef XE_RENDERER2D_HPP
 #define XE_RENDERER2D_HPP
 
-#include <atomic>
 #include <xe/core/object.hpp>
 #include <xe/graphics/camera.hpp>
 #include <xe/graphics/texture.hpp>
@@ -28,7 +27,7 @@ namespace xe {
     };
 
   public:
-    explicit Renderer2d(Camera &camera);
+    explicit Renderer2d(Camera &camera, uint32_t maxInstances = 50'000);
 
     void destroy();
 
@@ -47,30 +46,29 @@ namespace xe {
     Transform &transform() { return transform_; }
 
     uint32_t maxInstances() const { return maxInstances_; }
-    void setMaxInstances(uint32_t instances);
 
   private:
     void init();
     void initArrays();
     void initPipeline();
     void initBuffers();
+    void initUniforms();
 
   private:
     Camera &camera_;
     Transform transform_;
 
-    std::atomic<uint32_t> maxInstances_ = 50'000;
-    std::atomic<bool> dirty_ = false;
+    uint32_t maxInstances_ = 1;
 
     uint32_t verticesCount_ = 0;
     uint32_t indicesCount_ = 0;
 
     uint32_t verticesSize_ = 0;
-    uint32_t instancesSize_ = 0;
+    uint32_t indicesSize_ = 0;
     uint32_t verticesBufferSize_ = 0;
-    uint32_t instancesBufferSize_ = 0;
+    uint32_t indicesBufferSize_ = 0;
 
-    VertexData *buffer_;
+    VertexData *buffer_ = nullptr;
     std::unique_ptr<VertexData[]> bufferData_;
     std::unique_ptr<uint32_t[]> indices_;
 

@@ -163,6 +163,12 @@ namespace xe {
     return false;
   }
 
+  void Window::requestClose() {
+    Event e{ };
+    e.type = Event::Closed;
+    data_->pushEvent(e);
+  }
+
   void Window::forceExit() {
     WindowBackend::forceExit(data_);
   }

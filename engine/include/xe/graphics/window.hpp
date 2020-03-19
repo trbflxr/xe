@@ -67,6 +67,7 @@ namespace xe {
 
     bool pollEvent(Event &event);
 
+    void requestClose();
     void forceExit();
 
     bool isKeyPressed(Keyboard::Key key);

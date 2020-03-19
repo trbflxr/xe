@@ -193,8 +193,17 @@ namespace xe {
 
     dirty_ = true;
     hdr_ = false;
+
+    gpu_.info.width = 1;
+    gpu_.info.height = 1;
+    gpu_.info.minFilter = TextureMinFilter::Nearest;
+    gpu_.info.magFilter = TextureMagFilter::Nearest;
+    gpu_.info.wrapS = TextureWrap::Repeat;
+    gpu_.info.wrapT = TextureWrap::Repeat;
+    gpu_.info.wrapR = TextureWrap::Repeat;
+    gpu_.info.type = TextureType::T2D;
     gpu_.info.format = TexelsFormat::Rgb8;
-    data_[index] = reinterpret_cast<void *>(backgroundColor);
+    std::memcpy(data_[index], backgroundColor, 3);
   }
 
   void Texture::setHdr(bool hdr) {

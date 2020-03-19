@@ -40,12 +40,25 @@ namespace xe {
     fbInfo.colorAttachmentsSize = 1;
 
     framebuffer_ = Engine::ref().gpu().createFramebuffer(fbInfo);
+    if (!framebuffer_) {
+      XE_CORE_CRITICAL("[Composer] Failed to create framebuffer");
+      return;
+    }
 
     //dummy quad
     quad_.vertexBuffer = Engine::ref().gpu().createBuffer(
         {BufferType::Vertex, Usage::Static, sizeof(composerVertexData)});
+    if (!quad_.vertexBuffer) {
+      XE_CORE_CRITICAL("[Composer] Failed to create vertex buffer");
+      return;
+    }
+
     quad_.indexBuffer = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(composerIndexData)});
+    if (!quad_.indexBuffer) {
+      XE_CORE_CRITICAL("[Composer] Failed to create index buffer");
+      return;
+    }
 
     gpu::Pipeline::Info matInfo;
     matInfo.shader = *Engine::ref().assetManager().getShader("final");
@@ -54,7 +67,11 @@ namespace xe {
 
     matInfo.textures[0] = TextureType::T2D;
     matInfo.cull = Cull::Disabled;
-    quad_.material = Engine::ref().gpu().createPipeline(matInfo);
+    quad_.pipeline = Engine::ref().gpu().createPipeline(matInfo);
+    if (!quad_.pipeline) {
+      XE_CORE_CRITICAL("[Composer] Failed to create pipeline");
+      return;
+    }
 
     DisplayList frame;
     frame.fillBufferCommand()
@@ -68,6 +85,13 @@ namespace xe {
     Engine::ref().executeOnGpu(std::move(frame));
   }
 
+  void Composer::destroy() {
+    Engine::ref().gpu().destroyResource(*framebuffer_);
+    Engine::ref().gpu().destroyResource(*quad_.pipeline);
+    Engine::ref().gpu().destroyResource(*quad_.vertexBuffer);
+    Engine::ref().gpu().destroyResource(*quad_.indexBuffer);
+  }
+
   void Composer::present() const {
     DisplayList frame;
 
@@ -78,7 +102,7 @@ namespace xe {
         .set_clearColor(true)
         .set_clearDepth(true);
     frame.setupPipelineCommand()
-        .set_pipeline(*quad_.material)
+        .set_pipeline(*quad_.pipeline)
         .set_buffer(0, *quad_.vertexBuffer)
         .set_texture(0, targetTexture());
     frame.renderCommand()

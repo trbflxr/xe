@@ -5,6 +5,7 @@
 #ifndef XE_RENDERER2D_HPP
 #define XE_RENDERER2D_HPP
 
+#include <atomic>
 #include <xe/core/object.hpp>
 #include <xe/graphics/camera.hpp>
 #include <xe/graphics/texture.hpp>
@@ -28,6 +29,8 @@ namespace xe {
 
   public:
     explicit Renderer2d(Camera &camera);
+
+    void destroy();
 
     void submit(const vec2 &pos, const vec2 &size, Color color,
                 const std::shared_ptr<Texture> &texture,

@@ -17,6 +17,8 @@ namespace xe {
 
     void init(const vec2u &size, TexelsFormat format = TexelsFormat::Rgba16f);
 
+    void destroy();
+
     void present() const;
 
     const vec2u &viewport() const { return size_; }
@@ -32,7 +34,7 @@ namespace xe {
     std::shared_ptr<gpu::Framebuffer> framebuffer_;
 
     struct {
-      std::shared_ptr<xe::gpu::Pipeline> material;
+      std::shared_ptr<xe::gpu::Pipeline> pipeline;
       std::shared_ptr<xe::gpu::Buffer> vertexBuffer;
       std::shared_ptr<xe::gpu::Buffer> indexBuffer;
     } quad_;

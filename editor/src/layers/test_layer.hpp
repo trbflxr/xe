@@ -16,6 +16,7 @@ namespace xe {
     explicit TestLayer();
 
     void onStart() override;
+    void onStop() override;
 
     void onRender() override;
     void onUpdate() override;

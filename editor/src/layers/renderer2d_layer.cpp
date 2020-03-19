@@ -2,10 +2,11 @@
 // Created by trbflxr on 3/18/2020.
 //
 
+#include "renderer2d_layer.hpp"
+
 #include <xe/core/engine.hpp>
 #include <xe/ui/imgui/imgui.h>
-
-#include "renderer2d_layer.hpp"
+#include <xe/utils/logger.hpp>
 
 namespace xe {
 
@@ -24,6 +25,12 @@ namespace xe {
     texture_->setInfo(info);
     texture_->loadFromFile("textures/test.png");
     texture_->setup();
+  }
+
+  void Renderer2dLayer::onStop() {
+    camera_->destroy();
+    texture_->destroy();
+    renderer_->destroy();
   }
 
   void Renderer2dLayer::onUpdate() {

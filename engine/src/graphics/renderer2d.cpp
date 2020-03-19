@@ -14,6 +14,13 @@ namespace xe {
     init();
   }
 
+  void Renderer2d::destroy() {
+    Engine::ref().gpu().destroyResource(*pipeline_);
+    Engine::ref().gpu().destroyResource(*vertexBuffer_);
+    Engine::ref().gpu().destroyResource(*indexBuffer_);
+    Engine::ref().gpu().destroyResource(*uniformBuffer_);
+  }
+
   void Renderer2d::init() {
     verticesSize_ = maxInstances_ * 4;
     instancesSize_ = maxInstances_ * 6;
@@ -56,12 +63,27 @@ namespace xe {
     pipelineInfo.cull = Cull::Disabled;
 
     pipeline_ = Engine::ref().gpu().createPipeline(pipelineInfo);
+    if (!pipeline_) {
+      XE_CORE_CRITICAL("[Renderer2d] Failed to create pipeline");
+    }
   }
 
   void Renderer2d::initBuffers() {
     vertexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Vertex, Usage::Dynamic, verticesBufferSize_});
+    if (!vertexBuffer_) {
+      XE_CORE_CRITICAL("[Renderer2d] Failed to create vertex buffer");
+    }
+
     indexBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Index, Usage::Static, instancesBufferSize_});
+    if (!indexBuffer_) {
+      XE_CORE_CRITICAL("[Renderer2d] Failed to create index buffer");
+    }
+
     uniformBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Uniform, Usage::Dynamic, sizeof(cameraData_), "Camera2DUniform", 0});
+    if (!uniformBuffer_) {
+      XE_CORE_CRITICAL("[Renderer2d] Failed to create uniform buffer");
+    }
+
 
     DisplayList commands;
     commands.fillBufferCommand()

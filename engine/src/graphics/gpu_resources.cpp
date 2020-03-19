@@ -22,7 +22,7 @@ namespace xe::gpu {
     static const std::string name("Texture load");
 #endif
     XE_TRACE_BEGIN("XE", name.c_str());
-    XE_CORE_TRACE("Loading: ", file);
+    XE_CORE_TRACE("[Texture / Loader] Loading: '{}'", file);
 
     auto memory = VFS::readBytes(file);
     if (memory.empty()) {

@@ -975,14 +975,20 @@ namespace xe::gpu {
         FramebufferInstance *fb = &d.resource.ctx->framebuffers_[pos];
 
         for (auto &colorAttachment : fb->colorAttachments) {
-          const uint32_t texPos = RenderContext::index(colorAttachment->id);
-          destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
-          d.resource.ctx->textures_[texPos].state = 0;
+          if (colorAttachment) {
+            const uint32_t texPos = RenderContext::index(colorAttachment->id);
+            XE_CORE_INFO("[GL Backend] Destroy framebuffer color texture ({} -> {})", colorAttachment->id, texPos);
+            destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
+            d.resource.ctx->textures_[texPos].state = 0;
+          }
         }
         if (RenderContext::checkValidResource(fb->depthAttachment->id, &d.resource.ctx->textures_)) {
-          const uint32_t texPos = RenderContext::index(fb->depthAttachment->id);
-          destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
-          d.resource.ctx->textures_[texPos].state = 0;
+          if (fb->depthAttachment) {
+            const uint32_t texPos = RenderContext::index(fb->depthAttachment->id);
+            XE_CORE_INFO("[GL Backend] Destroy framebuffer depth texture ({} -> {})", fb->depthAttachment->id, texPos);
+            destroyResource(d.resource.ctx, Resource::ResourceType::Texture, texPos);
+            d.resource.ctx->textures_[texPos].state = 0;
+          }
         }
         fb->state = 0;
         break;
@@ -1001,11 +1007,13 @@ namespace xe::gpu {
       case Resource::ResourceType::Buffer: {
         GLCHECK(glDeleteBuffers(1, &b->buffers[pos].buffer));
         b->buffers[pos].buffer = 0;
+        Engine::ref().gpu().usedBuffers_--;
         break;
       }
       case Resource::ResourceType::Pipeline: {
         GLCHECK(glDeleteProgram(b->pipelines[pos].program));
         b->pipelines[pos].program = 0;
+        Engine::ref().gpu().usedPipelines_--;
         break;
       }
       case Resource::ResourceType::Texture: {
@@ -1017,6 +1025,7 @@ namespace xe::gpu {
       case Resource::ResourceType::Framebuffer: {
         GLCHECK(glDeleteFramebuffers(1, &b->framebuffers[pos].framebuffer));
         b->framebuffers[pos].framebuffer = 0;
+        Engine::ref().gpu().usedFramebuffers_--;
         break;
       }
       default:

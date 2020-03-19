@@ -65,6 +65,10 @@ namespace xe {
     DisplayList commands;
     if (!gpu_.tex || !gpu_.tex->id) {
       gpu_.tex = Engine::ref().gpu().createTexture(gpu_.info);
+      if (!gpu_.tex) {
+        XE_CORE_CRITICAL("[Texture] Failed to create texture");
+        return false;
+      }
     }
     commands.fillTextureCommand()
         .set_texture(*gpu_.tex)
@@ -86,6 +90,12 @@ namespace xe {
 
     XE_TRACE_END("XE", "Texture Setup");
     return true;
+  }
+
+  void Texture::destroy() {
+    if (gpu_.tex) {
+      Engine::ref().gpu().destroyResource(*gpu_.tex);
+    }
   }
 
   bool Texture::loadFromFile(std::string_view file) {

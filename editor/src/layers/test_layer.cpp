@@ -174,6 +174,25 @@ namespace xe {
     }
   }
 
+  void TestLayer::onStop() {
+    camera_->destroy();
+
+    Engine::ref().gpu().destroyResource(*stateUbo_);
+    Engine::ref().gpu().destroyResource(*fb_);
+
+    Engine::ref().gpu().destroyResource(*cube_.material);
+    Engine::ref().gpu().destroyResource(*cube_.vertexBuff);
+    Engine::ref().gpu().destroyResource(*cube_.indexBuff);
+    Engine::ref().gpu().destroyResource(*cube_.instanceBuffer);
+    Engine::ref().gpu().destroyResource(*cube_.texture);
+
+    Engine::ref().gpu().destroyResource(*quad_.material);
+    Engine::ref().gpu().destroyResource(*quad_.vertexBuff);
+    Engine::ref().gpu().destroyResource(*quad_.indexBuff);
+
+    delete reinterpret_cast<uint8_t *>(texData_);
+  }
+
   void TestLayer::onRender() {
     camera_->updateUniforms();
 

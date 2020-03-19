@@ -20,6 +20,7 @@ namespace xe {
     ~Texture() override;
 
     bool setup();
+    void destroy();
 
     bool loadFromFile(std::string_view file);
 

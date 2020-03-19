@@ -15,6 +15,7 @@ namespace xe {
   class Renderer2dLayer : public LayerBase {
   public:
     void onStart() override;
+    void onStop() override;
 
     void onUpdate() override;
 

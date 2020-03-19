@@ -23,6 +23,12 @@ namespace xe {
     Engine::ref().executeOnGpu(std::move(frame));
   }
 
+  void Camera::destroy() {
+    if (uniforms_) {
+      Engine::ref().gpu().destroyResource(*uniforms_);
+    }
+  }
+
   void Camera::updateUniforms() {
     DisplayList frame;
     frame.fillBufferCommand()

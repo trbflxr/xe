@@ -256,6 +256,8 @@ namespace xe {
       app_->onStop();
     }
     stopSystems();
+
+    composer_->destroy();
   }
 
   void Engine::processEvents() {

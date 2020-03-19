@@ -112,6 +112,8 @@ namespace xe {
   }
 
   void TestOverlay::onStop() {
+    camera_->destroy();
+
     Engine::ref().registry().view<Quad>().each([](auto &quad) {
       Engine::ref().gpu().destroyResource(*quad.texture);
       Engine::ref().gpu().destroyResource(*quad.material);

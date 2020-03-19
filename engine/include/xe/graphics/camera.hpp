@@ -31,6 +31,8 @@ namespace xe {
     };
 
   public:
+    void destroy();
+
     void updateUniforms();
 
     Color getBackgroundColor() const { return backgroundColor_; }

@@ -23,7 +23,7 @@ namespace xe {
   XE_OBJECT(Engine, Object);
   public:
     explicit Engine(int32_t argc, char **argv);
-    ~Engine() override = default;
+    ~Engine() override;
 
     static Engine &ref() { return *instance_; }
 
@@ -34,7 +34,7 @@ namespace xe {
 
     void setApp(std::shared_ptr<Application> &&app);
 
-    bool shouldStop() const;
+    bool running() const;
 
     void executeOnGpu(DisplayList &&dl);
 
@@ -68,8 +68,6 @@ namespace xe {
     static void setMousePosition(const vec2 &position);
 
   private:
-    void close();
-
     bool init();
     void start();
     void preUpdate();
@@ -87,6 +85,8 @@ namespace xe {
 
   private:
     static Engine *instance_;
+
+    bool running_ = false;
 
     std::unique_ptr<entt::registry> registry_;
 

@@ -32,6 +32,11 @@ namespace xe {
     XE_TRACE_END("XE", "Creating modules");
   }
 
+  Engine::~Engine() {
+    gpu_->shouldStop_ = true;
+    gpu_->stop();
+  }
+
   void Engine::init(const Params &params) {
     auto &config = GlobalConfig::ref();
 
@@ -45,6 +50,8 @@ namespace xe {
   }
 
   int32_t Engine::run() {
+    running_ = true;
+
     XE_TRACE_INIT("xetrace.json");
     XE_TRACE_META_THREAD_NAME("Update thread");
 
@@ -69,7 +76,7 @@ namespace xe {
     uint32_t updates = 0;
     uint32_t frames = 0;
 
-    while (!shouldStop()) {
+    while (running()) {
       XE_TRACE_BEGIN("XE", "Frame");
 
       Timestep now = Engine::ref().window().uptime();
@@ -129,12 +136,8 @@ namespace xe {
   }
 
   void Engine::requestClose() {
-    gpu_->window_->requestClose();
-  }
-
-  void Engine::close() {
+    running_ = false;
     gpu_->window_->forceExit();
-    gpu_->shouldStop_ = true;
   }
 
   void Engine::setApp(std::shared_ptr<Application> &&app) {
@@ -152,8 +155,8 @@ namespace xe {
     XE_TRACE_END("XE", "Set application");
   }
 
-  bool Engine::shouldStop() const {
-    return gpu_->shouldStop();
+  bool Engine::running() const {
+    return running_;
   }
 
   void Engine::executeOnGpu(DisplayList &&dl) {
@@ -252,8 +255,6 @@ namespace xe {
     if (app_) {
       app_->onStop();
     }
-
-    gpu_->stop();
     stopSystems();
   }
 
@@ -268,7 +269,7 @@ namespace xe {
       }
 
       if (e.type == Event::Closed) {
-        close();
+        requestClose();
         break;
       }
     }

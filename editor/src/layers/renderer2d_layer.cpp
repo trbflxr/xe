@@ -60,13 +60,13 @@ namespace xe {
   void Renderer2dLayer::onRender() {
     renderer_->begin();
 
-    static const float size = 0.2f;
-    static const float offset = size + 0.05f;
+    static const float size = 0.1f;
+    static const float offset = size + 0.02f;
 
     float x = 0.0f;
     float y = 0.0f;
     for (uint32_t i = 0; i < quadCount_; ++i) {
-      if (i % 100 == 0) {
+      if (i % 200 == 0) {
         x = 0.0f;
         y += offset;
       }
@@ -82,9 +82,7 @@ namespace xe {
 
   bool Renderer2dLayer::onUi() {
     ImGui::Text("Renderer2dLayer:");
-    if (ImGui::SliderInt("Max quads", reinterpret_cast<int32_t *>(&quadCount_), 1, renderer_->maxInstances())) {
-//      renderer_->setMaxInstances(quadCount_);
-    }
+    ImGui::SliderInt("Quad count", reinterpret_cast<int32_t *>(&quadCount_), 1, renderer_->maxInstances());
     return false;
   }
 

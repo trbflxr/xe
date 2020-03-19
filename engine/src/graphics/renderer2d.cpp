@@ -108,6 +108,11 @@ namespace xe {
   }
 
   void Renderer2d::submit(const vec2 &pos, const vec2 &size, Color color, const std::shared_ptr<Texture> &texture, const rect &textureArea01) {
+    if (verticesCount_ >= verticesSize_ || indicesCount_ >= indicesSize_) {
+      XE_CORE_ERROR("[Renderer2d] Maximum sprites reached ({})", maxInstances_);
+      return;
+    }
+
     if (texture) {
       if (activeTexture_) {
         if (activeTexture_->textureId() != texture->textureId()) {

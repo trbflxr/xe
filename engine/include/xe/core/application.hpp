@@ -52,10 +52,6 @@ namespace xe {
   private:
     void onEvent(const Event &e) {
       switch (e.type) {
-        case Event::Closed: {
-          onStop();
-          break;
-        }
         case Event::Resized: {
           onResize(e.size);
           break;

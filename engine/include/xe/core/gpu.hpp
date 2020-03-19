@@ -52,10 +52,10 @@ namespace xe {
 
     void submitCommands(DisplayList &&dl);
 
-    bool isExisting() const { return shouldClose_; }
+    bool shouldStop() const { return shouldStop_; }
 
-  protected:
-    bool shouldClose_ = false;
+  private:
+    bool shouldStop_ = false;
     Params::GPU params_{ };
 
     std::shared_ptr<Window> window_;

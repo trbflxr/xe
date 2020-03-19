@@ -34,7 +34,7 @@ namespace xe {
 
     void setApp(std::shared_ptr<Application> &&app);
 
-    bool isRunning() const;
+    bool shouldStop() const;
 
     void executeOnGpu(DisplayList &&dl);
 
@@ -68,6 +68,8 @@ namespace xe {
     static void setMousePosition(const vec2 &position);
 
   private:
+    void close();
+
     bool init();
     void start();
     void preUpdate();

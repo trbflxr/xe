@@ -69,9 +69,8 @@ namespace xe {
     uint32_t updates = 0;
     uint32_t frames = 0;
 
-    while (!isRunning()) {
+    while (!shouldStop()) {
       XE_TRACE_BEGIN("XE", "Frame");
-      XE_CORE_TRACE("[Engine] New render frame (FPS: {}) (UPS: {})", framerate_.fps, updates);
 
       Timestep now = Engine::ref().window().uptime();
       Timestep deltaTime = now - lastTime;
@@ -130,7 +129,12 @@ namespace xe {
   }
 
   void Engine::requestClose() {
+    gpu_->window_->requestClose();
+  }
+
+  void Engine::close() {
     gpu_->window_->forceExit();
+    gpu_->shouldStop_ = true;
   }
 
   void Engine::setApp(std::shared_ptr<Application> &&app) {
@@ -148,8 +152,8 @@ namespace xe {
     XE_TRACE_END("XE", "Set application");
   }
 
-  bool Engine::isRunning() const {
-    return gpu_->isExisting();
+  bool Engine::shouldStop() const {
+    return gpu_->shouldStop();
   }
 
   void Engine::executeOnGpu(DisplayList &&dl) {
@@ -186,9 +190,8 @@ namespace xe {
   }
 
   void Engine::preUpdate() {
-    app_->onPreUpdate();
-
     if (!app_) return;
+    app_->onPreUpdate();
 
     XE_TRACE_BEGIN("XE", "Engine systems pre update");
 
@@ -215,9 +218,9 @@ namespace xe {
 
   void Engine::renderPreUpdate() {
     gpu_->prepareRender();
-    app_->onPreRender();
 
     if (!app_) return;
+    app_->onPreRender();
 
     XE_TRACE_BEGIN("XE", "Engine systems pre render");
 
@@ -265,7 +268,7 @@ namespace xe {
       }
 
       if (e.type == Event::Closed) {
-        requestClose();
+        close();
         break;
       }
     }

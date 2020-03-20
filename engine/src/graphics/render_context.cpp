@@ -61,6 +61,8 @@ namespace xe {
 
       case VertexFormat::Int32:
       case VertexFormat::Uint32:
+      case VertexFormat::Int1:
+      case VertexFormat::Float1:
       case VertexFormat::Float: return 4;
 
       case VertexFormat::Float2: return 8;

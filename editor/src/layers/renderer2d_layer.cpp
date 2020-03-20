@@ -81,6 +81,18 @@ namespace xe {
   }
 
   bool Renderer2dLayer::onUi() {
+    std::string vendor;
+    if (Engine::ref().gpu().vendor() == GPU::Vendor::AMD) {
+      vendor = "AMD";
+    } else if (Engine::ref().gpu().vendor() == GPU::Vendor::Nvidia) {
+      vendor = "Nvidia";
+    } else if (Engine::ref().gpu().vendor() == GPU::Vendor::Intel) {
+      vendor = "Intel";
+    } else {
+      vendor = "Invalid";
+    }
+
+    ImGui::Text("GPU vendor: %s", vendor.c_str());
     ImGui::Text("Renderer2dLayer:");
     ImGui::SliderInt("Quad count", reinterpret_cast<int32_t *>(&quadCount_), 1, renderer_->maxInstances());
     return false;

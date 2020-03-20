@@ -24,7 +24,16 @@ namespace xe {
   class XE_API GPU : public Object {
   XE_OBJECT(GPU, Object);
     friend class Engine;
+    friend struct WindowBackend;
     friend class gpu::Backend;
+  public:
+    enum class Vendor {
+      AMD,
+      Nvidia,
+      Intel,
+      Invalid
+    };
+
   public:
     ~GPU() override;
 
@@ -45,6 +54,8 @@ namespace xe {
     uint32_t usedPipelines() const { return usedPipelines_; }
     uint32_t usedFramebuffers() const { return usedFramebuffers_; }
 
+    Vendor vendor() const { return vendor_; }
+
     static uint32_t drawCalls();
     static uint32_t gpuCommands();
 
@@ -64,6 +75,7 @@ namespace xe {
   private:
     bool shouldStop_ = false;
     Params::GPU params_{ };
+    Vendor vendor_ = Vendor::Invalid;
 
     std::shared_ptr<Window> window_;
 
@@ -81,7 +93,6 @@ namespace xe {
       bool exit;
     } threadSync_;
 
-  private:
     RenderContext *ctx_ = nullptr;
 
     mutable uint32_t usedBuffers_ = 0;

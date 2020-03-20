@@ -6,6 +6,7 @@
 #include "gl_window.hpp"
 
 #include <xe/utils/logger.hpp>
+#include <xe/core/engine.hpp>
 
 namespace xe {
 
@@ -291,6 +292,24 @@ namespace xe {
                  "\t- glRenderer \t\t({})\n"
                  "\t- glSrgb \t\t({})",
                  version, vendor, renderer, srgb);
+
+
+    size_t size = strlen(reinterpret_cast<const char *>(vendor));
+    char *vendorStr = new char[size + 1];
+    vendorStr[size] = '\0';
+    for (int i = 0; vendor[i]; i++) {
+      vendorStr[i] = static_cast<char>(tolower(vendor[i]));
+    }
+
+    if (strstr(vendorStr, "ati technologies")) {
+      Engine::ref().gpu().vendor_ = GPU::Vendor::AMD;
+    } else if (strstr(vendorStr, "nvidia")) {
+      Engine::ref().gpu().vendor_ = GPU::Vendor::Nvidia;
+    } else if (strstr(vendorStr, "intel")) {
+      Engine::ref().gpu().vendor_ = GPU::Vendor::Intel;
+    }
+
+    delete[] vendorStr;
   }
 
   void WindowBackend::swap(Window::Data *data) {

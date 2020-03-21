@@ -28,6 +28,8 @@ namespace xe {
   XE_OBJECT(DisplayList, Object);
     friend class GPU;
   public:
+    struct Command;
+
     explicit DisplayList();
 
     void update();
@@ -123,33 +125,6 @@ namespace xe {
 #undef PROP_PTR
 #undef PROP_ARRAY
 
-    struct Command {
-      enum Type {
-        View,
-        Clear,
-        Buffer,
-        Texture,
-        Pipeline,
-        Render,
-        Destroy,
-        Invalid
-      };
-
-      Command(Type type) : type_(type) { }
-
-      void execute();
-
-      Type type_ = Type::Invalid;
-
-      ViewData viewData_;
-      ClearData clearData_;
-      FillBufferData fillBufferData_;
-      FillTextureData fillTextureData_;
-      SetupPipelineData setupPipelineData_;
-      RenderData renderData_;
-      DestroyData destroyData_;
-    };
-
   public:
     ViewData &setupViewCommand();
     ClearData &clearCommand();
@@ -159,7 +134,7 @@ namespace xe {
     RenderData &renderCommand();
 
   private:
-    std::vector<Command> commands_;
+    std::vector<std::shared_ptr<Command>> commands_;
   };
 
 }

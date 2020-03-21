@@ -12,7 +12,6 @@
 #endif
 
 #include "embedded/embedded.hpp"
-#include "graphics/display_list_command.hpp"
 #include <xe/core/engine.hpp>
 #include <xe/graphics/window.hpp>
 #include <xe/graphics/render_context.hpp>
@@ -120,7 +119,7 @@ namespace xe {
 
     XE_TRACE_BEGIN("XE", "GPU resources cleaning");
     for (auto &&cmd : logicFrame_->commands_) {
-      cmd->execute();
+      cmd.execute();
     }
     XE_TRACE_END("XE", "GPU resources cleaning");
 
@@ -301,14 +300,13 @@ namespace xe {
   }
 
   void GPU::destroyResource(const gpu::Resource &resource) const {
-    auto cmd = std::make_shared<DestroyCommand>();
-    cmd->data_.resource = resource;
-
     if (logicFrame_->commands_.empty()) {
-      logicFrame_->commands_.emplace_back(std::move(cmd));
+      logicFrame_->commands_.emplace_back(DisplayList::Command::Type::Destroy);
+      logicFrame_->commands_.back().destroyData_.resource = resource;
     } else {
       logicFrame_->commands_.reserve(logicFrame_->commands_.size() + 1);
-      logicFrame_->commands_.emplace_back(std::move(cmd));
+      logicFrame_->commands_.emplace_back(DisplayList::Command::Type::Destroy);
+      logicFrame_->commands_.back().destroyData_.resource = resource;
     }
   }
 

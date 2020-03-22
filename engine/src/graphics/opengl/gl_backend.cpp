@@ -548,10 +548,11 @@ namespace xe::gpu {
 
     GLCHECK(glBindBuffer(target, id));
 
-    if (b.first->info.size != d.size) {
-      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage)));
-      b.first->info.size = d.size;
-    }
+    //todo: buffer resize
+//    if (b.first->info.size != d.size) {
+//      GLCHECK(glBufferData(target, d.size, nullptr, toGL(b.first->info.usage)));
+//      b.first->info.size = d.size;
+//    }
 
     GLCHECK(glBufferSubData(target, d.offset, d.size, d.data));
 

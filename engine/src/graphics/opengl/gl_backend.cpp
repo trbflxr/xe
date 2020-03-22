@@ -420,8 +420,13 @@ namespace xe::gpu {
         GLCHECK(glUniform4f(loc, v[0], v[1], v[2], v[3]));
         break;
       }
+      case VertexFormat::Uint32_2: {
+        const uint32_t *v = reinterpret_cast<const uint32_t *>(data);
+        GLCHECK(glUniform2ui(loc, v[0], v[1]));
+        break;
+      }
       case VertexFormat::Int32: {
-        glUniform1i(loc, *reinterpret_cast<const int32_t *>(data));
+        GLCHECK(glUniform1i(loc, *reinterpret_cast<const int32_t *>(data)));
         break;
       }
       case VertexFormat::Mat4: {

@@ -13,6 +13,7 @@ namespace xe::gpu {
     if (type == "vec2") return VertexFormat::Float2;
     if (type == "vec3") return VertexFormat::Float3;
     if (type == "vec4") return VertexFormat::Float4;
+    if (type == "uvec2") return VertexFormat::Uint32_2;
     if (type == "mat4") return VertexFormat::Mat4;
     if (type == "int") return VertexFormat::Int32;
     return VertexFormat::Undefined;

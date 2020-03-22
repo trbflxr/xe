@@ -151,7 +151,8 @@ namespace xe {
 
       Normalized = 0x100,
 
-      Int1 = Int32 | NumComponents1,
+      Int32_1 = Int32 | NumComponents1,
+      Uint32_2 = Uint32 | NumComponents2,
       Float1 = Float | NumComponents1,
       Float2 = Float | NumComponents2,
       Float3 = Float | NumComponents3,

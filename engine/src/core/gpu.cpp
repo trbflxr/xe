@@ -179,10 +179,12 @@ namespace xe {
 
   std::shared_ptr<gpu::Texture> GPU::createTexture(const gpu::Texture::Info &info) const {
     auto &&tex = const_cast<gpu::Texture::Info &>(info);
+    bool bindless = tex.bindless;
 
     if (info.format == TexelsFormat::None) {
       XE_CORE_ERROR("[GPU] Could not create texture: texels format not found. Load default!");
       tex = Embedded::defaultTextureInfo();
+      tex.bindless = bindless;
     }
 
     const uint32_t id = detail::acquireResource(&ctx_->textures_);

@@ -83,15 +83,13 @@ namespace xe {
         renderer_->submit({x, y}, {size, size}, Color::Olive, (texSwitch % 2 == 0) ? texture_ : texture1_);
         ++texSwitch;
       } else {
-        renderer_->submit({x, y}, {size, size}, Color::Olive, texture1_);
+        renderer_->submit({x, y}, {size, size}, Color::Red, (i % 2 == 0) ? texture1_ : nullptr);
       }
 
       x += offset;
     }
 
     renderer_->end();
-
-    rendererTextureSwitched_ = renderer_->textureSwitching();
   }
 
   bool Renderer2dLayer::onUi() {
@@ -108,8 +106,7 @@ namespace xe {
 
     ImGui::Text("Renderer2dLayer:");
     ImGui::Text("GPU vendor: %s", vendor.c_str());
-    ImGui::Text("Texture switching: %u", rendererTextureSwitched_);
-    ImGui::SliderInt("Switch textures", reinterpret_cast<int32_t *>(&switchTextures_), 1, 2000);
+    ImGui::SliderInt("Switch textures", reinterpret_cast<int32_t *>(&switchTextures_), 1, 10000);
     ImGui::SliderInt("Quad count", reinterpret_cast<int32_t *>(&quadCount_), 1, renderer_->maxInstances());
     return false;
   }

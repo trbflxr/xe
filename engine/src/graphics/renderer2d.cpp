@@ -60,6 +60,7 @@ namespace xe {
     pipelineInfo.attribs[1] = {"a_texCoords", VertexFormat::Float2};
     pipelineInfo.attribs[2] = {"a_color", VertexFormat::Float4};
     pipelineInfo.attribs[3] = {"a_texHandle", VertexFormat::Uint32_2};
+    pipelineInfo.attribs[4] = {"a_useTexture", VertexFormat::Int32_1};
 
     pipelineInfo.blend.enabled = true;
     pipelineInfo.cull = Cull::Disabled;
@@ -113,41 +114,39 @@ namespace xe {
       return;
     }
 
-    if (!activeTexture_ && texture) {
-      activeTexture_ = texture;
+    uint64_t handle = 0;
+    int32_t useTexture = 0;
+    if (texture) {
+      useTexture = 1;
+      handle = texture->handle();
     }
-
-    if (activeTexture_ && texture) {
-      if (activeTexture_->handle() != texture->handle()) {
-        ++textureSwitching_;
-        activeTexture_ = texture;
-      }
-    }
-
-    const uint64_t handle = activeTexture_->handle();
 
     buffer_->position = pos;
     buffer_->texCoords = {textureArea01.x, textureArea01.y};
     buffer_->color = color;
     buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+    buffer_->useTexture = useTexture;
     buffer_++;
 
     buffer_->position = {pos.x + size.x, pos.y};
     buffer_->texCoords = {textureArea01.width, textureArea01.y};
     buffer_->color = color;
     buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+    buffer_->useTexture = useTexture;
     buffer_++;
 
     buffer_->position = pos + size;
     buffer_->texCoords = {textureArea01.width, textureArea01.height};
     buffer_->color = color;
     buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+    buffer_->useTexture = useTexture;
     buffer_++;
 
     buffer_->position = {pos.x, pos.y + size.y};
     buffer_->texCoords = {textureArea01.x, textureArea01.height};
     buffer_->color = color;
     buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+    buffer_->useTexture = useTexture;
     buffer_++;
 
     verticesCount_ += 4;
@@ -157,6 +156,16 @@ namespace xe {
   void Renderer2d::begin() {
     cameraData_.view = camera_.view();
     cameraData_.proj = camera_.projection();
+
+    indicesCount_ = 0;
+    verticesCount_ = 0;
+    buffer_ = &bufferData_[0];
+  }
+
+  void Renderer2d::end() {
+    if (!verticesCount_) {
+      return;
+    }
 
     DisplayList commands;
     commands.setupViewCommand()
@@ -171,27 +180,11 @@ namespace xe {
         .set_buffer(*uniformBuffer_)
         .set_data(&cameraData_)
         .set_size(sizeof(cameraData_));
-    Engine::ref().executeOnGpu(std::move(commands));
 
-    textureSwitching_ = 0;
-
-    verticesOffset_ = 0;
-
-    indicesCount_ = 0;
-    verticesCount_ = 0;
-    buffer_ = &bufferData_[0];
-  }
-
-  void Renderer2d::end() {
-    if (!verticesCount_) {
-      return;
-    }
-
-    DisplayList commands;
+    //render
     commands.fillBufferCommand()
         .set_buffer(*vertexBuffer_)
-        .set_offset(verticesOffset_ * sizeof(VertexData))
-        .set_data(&bufferData_[verticesOffset_])
+        .set_data(&bufferData_[0])
         .set_size(verticesCount_ * sizeof(VertexData));
 
     commands.setupPipelineCommand()
@@ -204,9 +197,6 @@ namespace xe {
         .set_count(indicesCount_)
         .set_type(IndexFormat::Uint32);
     Engine::ref().executeOnGpu(std::move(commands));
-
-    verticesOffset_ += verticesCount_;
-    verticesCount_ = 0;
   }
 
 }

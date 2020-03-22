@@ -64,6 +64,7 @@ namespace xe {
         TexelsFormat format = TexelsFormat::None;
         Usage usage = Usage::Static;
         TextureType type = TextureType::T2D;
+        bool bindless = false;
       };
 
       static void *loadFromFile(std::string_view file, Texture::Info &tex, bool flip = true);

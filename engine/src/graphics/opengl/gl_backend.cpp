@@ -616,6 +616,13 @@ namespace xe::gpu {
     if (d.buildMipmap) {
       GLCHECK(glGenerateMipmap(backEnd.target));
     }
+
+    if (t.first->info.bindless) {
+      GLCHECK(t.second->handle = glGetTextureHandleARB(t.second->texture));
+      GLCHECK(glMakeTextureHandleResidentARB(t.second->handle));
+      backEnd.handle = t.second->handle;
+      t.first->handle = t.second->handle;
+    }
   }
 
   void Backend::setupPipeline(DisplayList::SetupPipelineData &d) {

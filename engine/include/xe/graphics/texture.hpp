@@ -49,7 +49,7 @@ namespace xe {
 
     const gpu::Texture &raw() const { return *gpu_.tex; }
 
-    uint32_t textureId();
+    uint64_t handle();
     std::string_view file() const { return file_; }
 
   private:
@@ -59,7 +59,7 @@ namespace xe {
     bool loading_ = false;
     void *data_[6] = {nullptr};
 
-    uint32_t internalId_ = 0;
+    uint64_t handle_ = 0;
 
     struct {
       std::shared_ptr<gpu::Texture> tex;

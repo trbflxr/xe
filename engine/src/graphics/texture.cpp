@@ -62,6 +62,7 @@ namespace xe {
     }
 
     XE_TRACE_BEGIN("XE", "Texture Setup");
+    gpu_.info.bindless = true;
     DisplayList commands;
     if (!gpu_.tex || !gpu_.tex->id) {
       gpu_.tex = Engine::ref().gpu().createTexture(gpu_.info);
@@ -215,15 +216,15 @@ namespace xe {
     return data_[index];
   }
 
-  uint32_t Texture::textureId() {
-    if (!internalId_) {
+  uint64_t Texture::handle() {
+    if (!handle_) {
       if (!gpu_.tex->ctx) {
         return 0;
       }
       auto b = RenderContext::getResource(gpu_.tex->id, &gpu_.tex->ctx->textures_, &gpu_.tex->ctx->backend_->textures);
-      internalId_ = b.first->id;
+      handle_ = b.first->handle;
     }
-    return internalId_;
+    return handle_;
   }
 
 }

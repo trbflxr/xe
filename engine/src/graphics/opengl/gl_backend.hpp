@@ -33,6 +33,7 @@ namespace xe::gpu {
       uint32_t internalFormat = 0;
       uint32_t type = 0;
       uint32_t target = 0;
+      uint64_t handle = 0;
     };
 
     struct Pipeline {

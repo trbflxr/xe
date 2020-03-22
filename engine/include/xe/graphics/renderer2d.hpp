@@ -37,7 +37,6 @@ namespace xe {
 
     void begin();
     void end();
-    void flush();
 
     void setCamera(Camera &camera) { camera_ = camera; }
 
@@ -46,6 +45,7 @@ namespace xe {
     Transform &transform() { return transform_; }
 
     uint32_t maxInstances() const { return maxInstances_; }
+    uint32_t textureSwitching() const { return textureSwitching_; }
 
   private:
     void init();
@@ -63,6 +63,8 @@ namespace xe {
     uint32_t verticesCount_ = 0;
     uint32_t indicesCount_ = 0;
 
+    uint32_t verticesOffset_ = 0;
+
     uint32_t verticesSize_ = 0;
     uint32_t indicesSize_ = 0;
     uint32_t verticesBufferSize_ = 0;
@@ -72,6 +74,7 @@ namespace xe {
     std::unique_ptr<VertexData[]> bufferData_;
     std::unique_ptr<uint32_t[]> indices_;
 
+    uint32_t textureSwitching_ = 0;
     std::shared_ptr<Texture> activeTexture_;
 
     CameraData cameraData_;

@@ -113,12 +113,14 @@ namespace xe {
       return;
     }
 
-    if (texture) {
-      if (activeTexture_) {
-        if (activeTexture_->textureId() != texture->textureId()) {
-          activeTexture_ = texture;
-        }
-      } else {
+    if (!activeTexture_ && texture) {
+      activeTexture_ = texture;
+    }
+
+    if (activeTexture_ && texture) {
+      if (activeTexture_->textureId() != texture->textureId()) {
+        end();
+        ++textureSwitching_;
         activeTexture_ = texture;
       }
     }
@@ -165,18 +167,27 @@ namespace xe {
         .set_data(&cameraData_)
         .set_size(sizeof(cameraData_));
     Engine::ref().executeOnGpu(std::move(commands));
+
+    textureSwitching_ = 0;
+
+    verticesOffset_ = 0;
+
+    indicesCount_ = 0;
+    verticesCount_ = 0;
+    buffer_ = &bufferData_[0];
   }
 
   void Renderer2d::end() {
+    if (!verticesCount_) {
+      return;
+    }
 
-  }
-
-  void Renderer2d::flush() {
     DisplayList commands;
     commands.fillBufferCommand()
         .set_buffer(*vertexBuffer_)
-        .set_data(&bufferData_[0])
-        .set_size(sizeof(VertexData) * verticesCount_);
+        .set_offset(verticesOffset_ * sizeof(VertexData))
+        .set_data(&bufferData_[verticesOffset_])
+        .set_size(verticesCount_ * sizeof(VertexData));
 
     auto &cmd = commands.setupPipelineCommand()
         .set_pipeline(*pipeline_)
@@ -192,9 +203,8 @@ namespace xe {
         .set_type(IndexFormat::Uint32);
     Engine::ref().executeOnGpu(std::move(commands));
 
-    indicesCount_ = 0;
+    verticesOffset_ += verticesCount_;
     verticesCount_ = 0;
-    buffer_ = &bufferData_[0];
   }
 
 }

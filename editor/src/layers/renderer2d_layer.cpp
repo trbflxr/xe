@@ -15,7 +15,7 @@ namespace xe {
     camera_->setBackgroundColor(Color::Purple);
 
     renderer_ = std::make_unique<Renderer2d>(*camera_);
-    quadCount_ = renderer_->maxInstances();
+    quadCount_ = 50;
 
     gpu::Texture::Info info;
     info.minFilter = TextureMinFilter::Linear;
@@ -25,11 +25,17 @@ namespace xe {
     texture_->setInfo(info);
     texture_->loadFromFile("textures/test.png");
     texture_->setup();
+
+    texture1_ = std::make_shared<Texture>();
+    texture1_->setInfo(info);
+    texture1_->loadFromFile("textures/test1.png");
+    texture1_->setup();
   }
 
   void Renderer2dLayer::onStop() {
     camera_->destroy();
     texture_->destroy();
+    texture1_->destroy();
     renderer_->destroy();
   }
 
@@ -71,13 +77,16 @@ namespace xe {
         y += offset;
       }
 
-      renderer_->submit({x, y}, {size, size}, Color::Olive, texture_);
+      renderer_->submit({x, y}, {size, size}, Color::Olive, (i % 10 == 0) ? texture_ : texture1_);
+//      renderer_->submit({x, y}, {size, size}, Color::Olive, texture1_);
+//      renderer_->submit({x, y}, {size, size}, Color::Green, nullptr);
 
       x += offset;
     }
 
     renderer_->end();
-    renderer_->flush();
+
+    rendererTextureSwitched_ = renderer_->textureSwitching();
   }
 
   bool Renderer2dLayer::onUi() {
@@ -92,8 +101,9 @@ namespace xe {
       vendor = "Invalid";
     }
 
-    ImGui::Text("GPU vendor: %s", vendor.c_str());
     ImGui::Text("Renderer2dLayer:");
+    ImGui::Text("GPU vendor: %s", vendor.c_str());
+    ImGui::Text("Texture switching: %u", rendererTextureSwitched_);
     ImGui::SliderInt("Quad count", reinterpret_cast<int32_t *>(&quadCount_), 1, renderer_->maxInstances());
     return false;
   }

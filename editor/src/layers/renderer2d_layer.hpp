@@ -29,6 +29,7 @@ namespace xe {
     std::unique_ptr<Renderer2d> renderer_;
     uint32_t quadCount_ = 0;
     uint32_t rendererTextureSwitched_ = 0;
+    uint32_t switchTextures_ = 50;
 
     std::shared_ptr<Texture> texture_;
     std::shared_ptr<Texture> texture1_;

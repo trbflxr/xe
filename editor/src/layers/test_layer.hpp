@@ -59,6 +59,8 @@ namespace xe {
 
     void *texData_ = nullptr;
     int32_t instances_ = INSTANCES / 8;
+
+    bool quadRotation_ = true;
   };
 
 }

@@ -273,7 +273,10 @@ namespace xe {
     static float angle = 0.0f;
     angle += 45.0f * ts;
 
-    quad_.transform.rotateY(15.0f * ts);
+    if (quadRotation_) {
+      quad_.transform.rotateY(15.0f * ts);
+    }
+
     quad_.transform.setLocalPositionZ(-2.5f);
   }
 
@@ -285,6 +288,11 @@ namespace xe {
   bool TestLayer::onUi() {
     ImGui::Text("TestLayer:");
     ImGui::SliderInt("Instances", &instances_, 1, INSTANCES);
+    if (ImGui::Button("Reset rotation")) {
+      quad_.transform.setLocalRotation({0.0f, 0.0f, 0.0f});
+    }
+    ImGui::SameLine();
+    ImGui::Checkbox("Quad rotation", &quadRotation_);
     if (ImGui::SliderFloat3("Camera pos##TestLayer", reinterpret_cast<float *>(&cameraPos_), -5.0f, 5.0f)) {
       camera_->transform().setLocalPositionX(cameraPos_[0]);
       camera_->transform().setLocalPositionY(cameraPos_[1]);

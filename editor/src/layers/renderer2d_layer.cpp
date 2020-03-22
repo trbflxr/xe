@@ -20,6 +20,7 @@ namespace xe {
     gpu::Texture::Info info;
     info.minFilter = TextureMinFilter::Linear;
     info.magFilter = TextureMagFilter::Linear;
+    info.bindless = true;
 
     texture_ = std::make_shared<Texture>();
     texture_->setInfo(info);

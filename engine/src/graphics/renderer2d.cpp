@@ -59,8 +59,8 @@ namespace xe {
     pipelineInfo.attribs[0] = {"a_position", VertexFormat::Float2};
     pipelineInfo.attribs[1] = {"a_texCoords", VertexFormat::Float2};
     pipelineInfo.attribs[2] = {"a_color", VertexFormat::Float4};
+    pipelineInfo.attribs[3] = {"a_texHandle", VertexFormat::Uint32_2};
 
-    pipelineInfo.textures[0] = TextureType::T2D;
     pipelineInfo.blend.enabled = true;
     pipelineInfo.cull = Cull::Disabled;
 
@@ -118,31 +118,36 @@ namespace xe {
     }
 
     if (activeTexture_ && texture) {
-      if (activeTexture_->textureId() != texture->textureId()) {
-        end();
+      if (activeTexture_->handle() != texture->handle()) {
         ++textureSwitching_;
         activeTexture_ = texture;
       }
     }
 
+    const uint64_t handle = activeTexture_->handle();
+
     buffer_->position = pos;
     buffer_->texCoords = {textureArea01.x, textureArea01.y};
     buffer_->color = color;
+    buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
     buffer_++;
 
     buffer_->position = {pos.x + size.x, pos.y};
     buffer_->texCoords = {textureArea01.width, textureArea01.y};
     buffer_->color = color;
+    buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
     buffer_++;
 
     buffer_->position = pos + size;
     buffer_->texCoords = {textureArea01.width, textureArea01.height};
     buffer_->color = color;
+    buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
     buffer_++;
 
     buffer_->position = {pos.x, pos.y + size.y};
     buffer_->texCoords = {textureArea01.x, textureArea01.height};
     buffer_->color = color;
+    buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
     buffer_++;
 
     verticesCount_ += 4;
@@ -189,13 +194,10 @@ namespace xe {
         .set_data(&bufferData_[verticesOffset_])
         .set_size(verticesCount_ * sizeof(VertexData));
 
-    auto &cmd = commands.setupPipelineCommand()
+    commands.setupPipelineCommand()
         .set_pipeline(*pipeline_)
         .set_buffer(0, *vertexBuffer_)
         .set_uniformBuffer(0, *uniformBuffer_);
-    if (activeTexture_) {
-      cmd.set_texture(0, activeTexture_->raw());
-    }
 
     commands.renderCommand()
         .set_indexBuffer(*indexBuffer_)

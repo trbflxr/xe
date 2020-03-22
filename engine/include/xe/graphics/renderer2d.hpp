@@ -19,6 +19,7 @@ namespace xe {
       vec2 position;
       vec2 texCoords;
       Color color;
+      vec2u texHandle;
     };
 
     struct CameraData {

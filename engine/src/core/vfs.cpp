@@ -86,6 +86,8 @@ namespace xe {
                     PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
       return;
     }
+    XE_CORE_INFO("[VFS] Directory '{}' mounted", dir);
+
     mountPoints_.emplace_back(dir);
   }
 
@@ -102,6 +104,8 @@ namespace xe {
                     PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
       return;
     }
+    XE_CORE_INFO("[VFS] Directory '{}' unmounted", dir);
+
     mountPoints_.erase(it);
   }
 
@@ -112,12 +116,14 @@ namespace xe {
                       PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
       }
     }
+    XE_CORE_INFO("[VFS] All directories unmounted");
+
     mountPoints_.clear();
   }
 
   bool VFS::mounted(std::string_view dir) {
     if (!PHYSFS_isInit()) {
-      XE_CORE_WARN("[VFS] VFS is not initialized");
+      XE_CORE_ERROR("[VFS] VFS is not initialized");
       return false;
     }
 
@@ -131,7 +137,7 @@ namespace xe {
 
   bool VFS::exists(std::string_view file) {
     if (!PHYSFS_isInit()) {
-      XE_CORE_WARN("[VFS] VFS is not initialized");
+      XE_CORE_ERROR("[VFS] VFS is not initialized");
       return false;
     }
     return PHYSFS_exists(file.data());
@@ -187,6 +193,8 @@ namespace xe {
 
     detail::closeFileHandle(fsFile, file);
 
+    XE_CORE_INFO("[VFS] File '{}' successfully read", file);
+
     XE_TRACE_END("XE", (std::string("VFS Read file ") + file.data()).c_str());
     return data;
   }
@@ -236,6 +244,9 @@ namespace xe {
     }
 
     detail::closeFileHandle(fsFile, file);
+
+    XE_CORE_INFO("[VFS] File '{}' successfully write", file);
+
     XE_TRACE_END("XE", name.c_str());
     return true;
   }
@@ -248,6 +259,9 @@ namespace xe {
                     PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
       return false;
     }
+
+    XE_CORE_INFO("[VFS] Directory '{}' successfully created", dir);
+
     return true;
   }
 

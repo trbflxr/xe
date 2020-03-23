@@ -40,7 +40,7 @@ namespace xe::gpu {
     Texture::Info info;
     size_t bpp;
     uint32_t id;
-    uint32_t handle;
+    uint64_t handle;
   };
 
   struct PipelineInstance : public InstanceBase {

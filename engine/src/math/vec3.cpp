@@ -2,7 +2,9 @@
 // Created by FLXR on 6/14/2019.
 //
 
+#include "xepch.hpp"
 #include <xe/math/vec3.hpp>
+
 #include <xe/math/vec2.hpp>
 #include <xe/math/vec4.hpp>
 #include <xe/math/mathfunc.hpp>
@@ -125,11 +127,11 @@ namespace xe {
   }
 
   vec3 vec3::toDeg() const {
-    return vec3(data_ * Vector::load1f(XE_MATH_RAD_TO_DEG));
+    return vec3(data_ * Vector::load1f(math::RadToDeg));
   }
 
   vec3 vec3::toRad() const {
-    return vec3(data_ * Vector::load1f(XE_MATH_DEG_TO_RAD));
+    return vec3(data_ * Vector::load1f(math::DegToRad));
   }
 
   bool vec3::equals(const vec3 &other, float errorMargin) const {

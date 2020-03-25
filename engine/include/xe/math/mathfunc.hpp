@@ -7,22 +7,29 @@
 
 #include <cmath>
 
-#define XE_MATH_PI                3.1415926535897932f
-#define XE_MATH_TWO_PI            6.28318530717959f
-#define XE_MATH_HALF_PI           1.57079632679f
-#define XE_MATH_R_PI              0.31830988618f
-#define XE_MATH_R_TWO_PI          0.159154943091895f
-#define XE_MATH_R_HALF_PI         0.636619772367581f
-
-#define XE_MATH_E                 2.71828182845904523536f
-#define XE_MATH_R_LN_2            1.44269504088896f
-#define XE_MATH_RAD_TO_DEG        57.2957795130823f
-#define XE_MATH_DEG_TO_RAD        0.0174532925199433f
-
-#define TO_RAD(deg)               ((deg) * XE_MATH_PI / 180.0f)
-#define TO_DEG(rad)               ((rad) * 180.0f / XE_MATH_PI)
-
 namespace xe::math {
+
+  static constexpr const float Pi = 3.1415926535897932f;
+  static constexpr const float PiTwo = 6.28318530717959f;
+  static constexpr const float PiHalf = 1.57079632679f;
+  static constexpr const float RPi = 0.31830988618f;
+  static constexpr const float RPiTwo = 0.159154943091895f;
+  static constexpr const float RPiHalf = 0.636619772367581f;
+
+  static constexpr const float E = 2.71828182845904523536f;
+  static constexpr const float RLn2 = 1.44269504088896f;
+  static constexpr const float RadToDeg = 57.2957795130823f;
+  static constexpr const float DegToRad = 0.0174532925199433f;
+
+  template<typename T>
+  static constexpr T rad(T deg) {
+    return deg * static_cast<T>(Pi) / static_cast<T>(180.0);
+  }
+
+  template<typename T>
+  static constexpr T deg(T rad) {
+    return rad * static_cast<T>(180.0) / static_cast<T>(Pi);
+  }
 
   template<typename T>
   static constexpr T select(const T &cmp, const T &greaterOrEqualToZero, const T &lessZero) {
@@ -30,14 +37,14 @@ namespace xe::math {
   }
 
   static void sincos(float *outSin, float *outCos, float angle) {
-    if ((angle < 0.0f) || (angle >= XE_MATH_TWO_PI)) {
-      angle -= floorf(angle * XE_MATH_R_TWO_PI) * XE_MATH_TWO_PI;
+    if ((angle < 0.0f) || (angle >= PiTwo)) {
+      angle -= floorf(angle * RPiTwo) * PiTwo;
     }
 
-    angle = XE_MATH_PI - angle;
+    angle = Pi - angle;
     float sign = -1.0f;
-    if (fabsf(angle) >= XE_MATH_HALF_PI) {
-      angle = select(angle, XE_MATH_PI, -XE_MATH_PI) - angle;
+    if (fabsf(angle) >= PiHalf) {
+      angle = select(angle, Pi, -Pi) - angle;
       sign = 1.0f;
     }
 

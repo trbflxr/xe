@@ -2,6 +2,7 @@
 // Created by FLXR on 6/21/2019.
 //
 
+#include "xepch.hpp"
 #include <xe/math/mat4.hpp>
 
 namespace xe {
@@ -154,7 +155,7 @@ namespace xe {
   }
 
   mat4 mat4::perspective(float fovDeg, float aspect, float nearZ, float farZ) {
-    const float tanHalfFov = tanf(TO_RAD(fovDeg / 2.0f));
+    const float tanHalfFov = tanf(math::rad(fovDeg / 2.0f));
 
     return mat4(Vector::make(1.0f / (aspect * tanHalfFov), 0.0f, 0.0f, 0.0f),
                 Vector::make(0.0f, 1.0f / tanHalfFov, 0.0f, 0.0f),
@@ -173,7 +174,7 @@ namespace xe {
   mat4 mat4::rotation(float angleDeg, const vec3 &axis) {
     mat4 m = mat4::identity();
 
-    const float r = TO_RAD(angleDeg);
+    const float r = math::rad(angleDeg);
     const float c = cosf(r);
     const float s = sinf(r);
     const float omc = 1.0f - c;

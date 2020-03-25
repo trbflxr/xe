@@ -263,7 +263,7 @@ namespace xe {
     for (int32_t i = 0; i < instances_; ++i) {
       cube_.instancePositions[i] = {
           (i / 100.0f) * 2.0f,
-          750.0f * sin(i * XE_MATH_PI / 10.0f + v) * ts,
+          750.0f * sin(i * math::Pi / 10.0f + v) * ts,
           static_cast<float>(i % 100) * 1.2f,
           0.0f
       };

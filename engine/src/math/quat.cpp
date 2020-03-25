@@ -2,7 +2,9 @@
 // Created by FLXR on 6/21/2019.
 //
 
+#include "xepch.hpp"
 #include <xe/math/quat.hpp>
+
 #include <xe/math/vec3.hpp>
 
 namespace xe {
@@ -15,8 +17,8 @@ namespace xe {
     float c[3];
     float s[3];
     for (uint8_t i = 0; i < 3; ++i) {
-      c[i] = cosf(TO_RAD(eulerAngle[i]) * 0.5f);
-      s[i] = sinf(TO_RAD(eulerAngle[i]) * 0.5f);
+      c[i] = cosf(math::rad(eulerAngle[i]) * 0.5f);
+      s[i] = sinf(math::rad(eulerAngle[i]) * 0.5f);
     }
     data_ = Vector::make(-s[0] * c[1] * c[2] - c[0] * s[1] * s[2],
                          -c[0] * s[1] * c[2] + s[0] * c[1] * s[2],
@@ -28,7 +30,7 @@ namespace xe {
     float values[3];
     float sinAngle;
     float cosAngle;
-    math::sincos(&sinAngle, &cosAngle, -TO_RAD(angleDeg) * 0.5f);
+    math::sincos(&sinAngle, &cosAngle, -math::rad(angleDeg) * 0.5f);
     axis.toVector().store3f(values);
 
     data_ = Vector::make(values[0] * sinAngle, values[1] * sinAngle, values[2] * sinAngle, cosAngle);
@@ -101,7 +103,7 @@ namespace xe {
   }
 
   float quat::getAngle() const {
-    return TO_DEG(2.0f * acosf(data_[3]));
+    return math::deg(2.0f * acosf(data_[3]));
   }
 
   void quat::axisAndAngle(vec3 &axis, float &angleDeg) const {
@@ -163,7 +165,7 @@ namespace xe {
     float pitch = 0.0f;
     const float sinp = 2.0f * (data_[3] * data_[1] - data_[2] * data_[0]);
     if (fabs(sinp) >= 1.0f) {
-      pitch = copysign(XE_MATH_HALF_PI, sinp);
+      pitch = copysign(math::PiHalf, sinp);
     } else {
       pitch = asin(sinp);
     }
@@ -171,7 +173,7 @@ namespace xe {
     const float cosyCosp = 1.0f - 2.0f * (data_[1] * data_[1] + data_[2] * data_[2]);
     const float yaw = atan2(sinyCosp, cosyCosp);
 
-    return vec3(TO_DEG(-roll), TO_DEG(-pitch), TO_DEG(-yaw));
+    return vec3(math::deg(-roll), math::deg(-pitch), math::deg(-yaw));
   }
 
   quat quat::lookRotation(const vec3 &forward, const vec3 &up) {

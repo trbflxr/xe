@@ -2,7 +2,9 @@
 // Created by FLXR on 6/15/2019.
 //
 
+#include "xepch.hpp"
 #include <xe/math/vec4.hpp>
+
 #include <xe/math/vec3.hpp>
 #include <xe/math/vec2.hpp>
 

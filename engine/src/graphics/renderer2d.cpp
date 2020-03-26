@@ -96,7 +96,8 @@ namespace xe {
   }
 
   void Renderer2d::initUniforms() {
-    uniformBuffer_ = Engine::ref().gpu().createBuffer({BufferType::Uniform, Usage::Dynamic, sizeof(cameraData_), "Camera2DUniform", 0});
+    uniformBuffer_ = Engine::ref().gpu().createBuffer(
+        {BufferType::Uniform, Usage::Dynamic, sizeof(cameraData_), "Camera2DUniform", cCamera2dUboBinding});
     if (!uniformBuffer_) {
       XE_CORE_CRITICAL("[Renderer2d] Failed to create uniform buffer");
     }

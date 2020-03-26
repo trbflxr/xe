@@ -109,7 +109,8 @@ namespace xe {
   static constexpr uint32_t cMaxUniformBuffers = 16;
   static constexpr uint32_t cMaxShaderUniforms = 32;
 
-  static constexpr int32_t cCameraUboBinding = 0;
+  static constexpr int32_t cCamera2dUboBinding = 0;
+  static constexpr int32_t cCameraUboBinding = 1;
 
   template<typename T>
   struct is_optional : std::false_type { };

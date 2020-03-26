@@ -8,6 +8,8 @@
 #include <xe/core/vfs.hpp>
 #include <msdf-atlas-gen/msdf-atlas-gen.h>
 
+#include "embedded/embedded.hpp"
+
 namespace xe::detail {
 
   static constexpr const double DefaultEmSize = 32.0f;
@@ -110,13 +112,21 @@ namespace xe {
   bool Font::loadFromFile(std::string_view file, Charset charset) {
     auto fontData = VFS::readBytes(file);
     if (fontData.empty()) {
-      return false;
+      XE_CORE_CRITICAL("[Font] Failed to create font from file data == nullptr. Loading default.");
+
+      auto font = Embedded::defaultFount();
+      return loadFromMemory(font.data(), font.size(), charset);
     }
 
     return loadFromMemory(fontData.data(), fontData.size(), charset);
   }
 
   bool Font::loadFromMemory(const void *data, size_t size, Charset charset) {
+    if (!data || size == 0) {
+      XE_CORE_CRITICAL("[Font] Failed to create font data == nullptr or dataSize == 0");
+      return false;
+    }
+
     detail::FontConfig config{ };
 
     class FontHolder {

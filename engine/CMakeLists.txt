@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 #pch
 include(cmake/msvc_pch.cmake)
+include(cmake/cmakerc.cmake)
 
 #target
 set(ENGINE_NAME xe)
@@ -22,6 +23,13 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
+
+#embed resources
+cmrc_add_resource_library(
+    ${ENGINE_NAME}_rc
+    NAMESPACE ${ENGINE_NAME}
+    PREFIX ${ENGINE_NAME}
+    resources/Roboto-Regular.ttf)
 
 #some libs requires debug versions on msvc
 set(XE_DEBUG_SUFFIX "")
@@ -41,6 +49,8 @@ set(XE_DEFINES
 
 set(XE_EXT_LIBS
     spdlog
+    cmrc::base
+    ${ENGINE_NAME}_rc
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/glfw3${XE_DEBUG_SUFFIX}.lib
     ${CMAKE_CURRENT_SOURCE_DIR}/external/physfs/physfs${XE_DEBUG_SUFFIX}.lib
     ${CMAKE_CURRENT_SOURCE_DIR}/external/msdfgen/msdfgen${XE_DEBUG_SUFFIX}.lib

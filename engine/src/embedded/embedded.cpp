@@ -5,6 +5,9 @@
 #include "xepch.hpp"
 #include "embedded.hpp"
 
+#include <cmrc/cmrc.hpp>
+CMRC_DECLARE(xe);
+
 namespace xe {
 
   const gpu::Texture::Info &Embedded::defaultTextureInfo() {
@@ -34,6 +37,13 @@ namespace xe {
         0, 0, 0, 255, 0, 255, 0, 0, 0, 255, 0, 255,
     };
     return data;
+  }
+
+  std::vector<uint8_t> Embedded::defaultFount() {
+    auto fs = cmrc::xe::get_filesystem();
+    auto data = fs.open("xe/resources/Roboto-Regular.ttf");
+
+    return {data.begin(), data.end()};
   }
 
 }

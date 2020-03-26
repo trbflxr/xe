@@ -68,7 +68,7 @@ namespace xe {
 
     renderer_ = std::make_unique<Renderer2d>(*camera_);
 
-    font_.loadFromFile("assets/fonts/Roboto-Regular.ttf", Charset::Ascii);
+    font_.loadFromFile("assets/fonts/consolata.otf", Charset::Ascii);
 
     texture_ = font_.atlas();
 

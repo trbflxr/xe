@@ -15,6 +15,8 @@ namespace xe {
   public:
     static const gpu::Texture::Info &defaultTextureInfo();
     static const void *defaultTextureData();
+
+    static std::vector<uint8_t> defaultFount();
   };
 
 }

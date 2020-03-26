@@ -54,6 +54,11 @@ namespace xe {
     renderer2d->frag = makeShader({renderer2d_frag});
     addShader("renderer2d", renderer2d);
 
+    auto textRenderer = std::make_shared<gpu::Pipeline::Info::Shader>();
+    textRenderer->vert = makeShader({text_renderer_vert});
+    textRenderer->frag = makeShader({text_renderer_frag});
+    addShader("text_renderer", textRenderer);
+
     XE_TRACE_END("XE", "Default shaders init");
   }
 

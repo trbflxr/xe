@@ -19,6 +19,7 @@ namespace xe::string {
 
   std::string wideToUtf8(std::wstring_view wide);
   std::wstring utf8ToWide(std::string_view utf8);
+  uint32_t utf8ToUtf32(const char *c, uint32_t *outBytes = nullptr);
 
   std::vector<std::string> split(std::string_view str, char delimiter);
   std::vector<std::string> split(std::string_view str, std::string_view delimiters);

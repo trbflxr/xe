@@ -65,7 +65,7 @@ namespace xe {
           .set_framebuffer(Engine::ref().composer().framebuffer())
           .set_colorAttachment(0, true);
       frame.clearCommand()
-          .set_color(Color::Teal)
+          .set_color(clearColor_)
           .set_clearColor(true)
           .set_clearDepth(true);
       Engine::ref().executeOnGpu(std::move(frame));
@@ -90,6 +90,8 @@ namespace xe {
     }
 
     static void uiFunc(void *data) {
+      auto &&editor = static_cast<Editor *>(data);
+
       static const uint32_t flags = ImGuiWindowFlags_NoDocking |
                                     ImGuiWindowFlags_MenuBar |
                                     ImGuiWindowFlags_NoTitleBar |
@@ -142,8 +144,9 @@ namespace xe {
       ImGui::Text("used pipelines: %u / %u", Engine::ref().gpu().usedPipelines(), Engine::ref().gpu().maxPipelines());
       ImGui::Text("used framebuffers: %u / %u", Engine::ref().gpu().usedFramebuffers(), Engine::ref().gpu().maxFramebuffers());
 
+      ImGui::ColorEdit3("Clear color: ", reinterpret_cast<float *>(&editor->clearColor_));
+
       //layers ui
-      auto &&editor = static_cast<Editor *>(data);
       for (auto &&l = editor->layers_.rbegin(); l != editor->layers_.rend(); ++l) {
         ImGui::Separator();
         ImGui::Dummy({10.0f, 0.0f});
@@ -182,6 +185,7 @@ namespace xe {
     }
 
   private:
+    Color clearColor_ = Color::White;
     std::vector<std::shared_ptr<LayerBase>> layers_;
   };
 

@@ -9,6 +9,7 @@
 #include <xe/graphics/camera.hpp>
 #include <xe/font.hpp>
 #include <xe/graphics/renderer2d.hpp>
+#include <xe/graphics/text_renderer.hpp>
 
 #include "layer_base.hpp"
 
@@ -29,19 +30,19 @@ namespace xe {
     bool onUi() override;
 
   private:
-    Font font_;
+    bool renderAtlas_ = false;
+
+    float textSize_ = 0.0f;
+    float textScale_ = 0.0f;
+    float textOutline_ = 0.0f;
+    Color color_;
+    Color outlineColor_;
+
+    std::shared_ptr<Text> text_;
+    std::shared_ptr<Font> font_;
     std::unique_ptr<OrthographicCamera> camera_;
     std::unique_ptr<Renderer2d> renderer_;
-
-    std::shared_ptr<Texture> texture_;
-
-    float *text_quad_vertexData_;
-
-    struct {
-      std::shared_ptr<gpu::Pipeline> pipeline;
-      std::shared_ptr<gpu::Buffer> vertexBuff;
-      std::shared_ptr<gpu::Buffer> indexBuff;
-    } quad_;
+    std::unique_ptr<TextRenderer> textRenderer_;
   };
 
 }

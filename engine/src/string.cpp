@@ -131,6 +131,44 @@ namespace xe::string {
 #endif
   }
 
+  uint32_t utf8ToUtf32(const char *c, uint32_t *outBytes) {
+    uint32_t val = 0;
+
+    if ((c[0] & 0xF8) == 0xF0) {
+      // 4 byte
+      if (outBytes) {
+        *outBytes = 4;
+      }
+      val |= (c[3] & 0x3F);
+      val |= (c[2] & 0x3F) << 6;
+      val |= (c[1] & 0x3F) << 12;
+      val |= (c[0] & 0x07) << 18;
+    } else if ((c[0] & 0xF0) == 0xE0) {
+      // 3 byte
+      if (outBytes) {
+        *outBytes = 3;
+      }
+      val |= (c[2] & 0x3F);
+      val |= (c[1] & 0x3F) << 6;
+      val |= (c[0] & 0x0F) << 12;
+    } else if ((c[0] & 0xE0) == 0xC0) {
+      // 2 byte
+      if (outBytes) {
+        *outBytes = 2;
+      }
+      val |= (c[1] & 0x3F);
+      val |= (c[0] & 0x1F) << 6;
+    } else {
+      // 1 byte
+      if (outBytes) {
+        *outBytes = 1;
+      }
+      val = c[0];
+    }
+
+    return val;
+  }
+
   std::vector<std::string> split(std::string_view str, char delimiter) {
     std::vector<std::string> result;
 

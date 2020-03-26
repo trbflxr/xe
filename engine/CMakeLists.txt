@@ -42,7 +42,10 @@ set(XE_DEFINES
 set(XE_EXT_LIBS
     spdlog
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/glfw3${XE_DEBUG_SUFFIX}.lib
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/physfs/physfs${XE_DEBUG_SUFFIX}.lib)
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/physfs/physfs${XE_DEBUG_SUFFIX}.lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/msdfgen/msdfgen${XE_DEBUG_SUFFIX}.lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/msdfgen/msdfatlasgen${XE_DEBUG_SUFFIX}.lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/msdfgen/freetype.lib)
 
 if (XE_PLATFORM_WIN32)
   list(APPEND XE_DEFINES -DXE_PLATFORM_WINDOWS)
@@ -76,6 +79,7 @@ set(XE_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/physfs/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/msdfgen/include
 
     CACHE STRING "XE include dirs" FORCE)
 

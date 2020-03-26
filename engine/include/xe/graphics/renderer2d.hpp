@@ -15,20 +15,6 @@ namespace xe {
   class XE_API Renderer2d : public Object {
   XE_OBJECT(Renderer2d, Object);
   public:
-    struct VertexData {
-      vec2 position;
-      vec2 texCoords;
-      Color color;
-      vec2u texHandle;
-      int32_t useTexture = 0;
-    };
-
-    struct CameraData {
-      mat4 proj;
-      mat4 view;
-    };
-
-  public:
     explicit Renderer2d(Camera &camera, uint32_t maxInstances = 50'000);
 
     void destroy();
@@ -54,6 +40,20 @@ namespace xe {
     void initPipeline();
     void initBuffers();
     void initUniforms();
+
+  private:
+    struct VertexData {
+      vec2 position;
+      vec2 texCoords;
+      Color color;
+      vec2u texHandle;
+      int32_t useTexture = 0;
+    };
+
+    struct CameraData {
+      mat4 proj;
+      mat4 view;
+    };
 
   private:
     Camera &camera_;

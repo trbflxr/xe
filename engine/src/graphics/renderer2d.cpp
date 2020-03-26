@@ -12,6 +12,7 @@ namespace xe {
   Renderer2d::Renderer2d(Camera &camera, uint32_t maxInstances) :
       camera_(camera),
       maxInstances_(maxInstances) {
+    setName("Renderer2d");
     init();
   }
 

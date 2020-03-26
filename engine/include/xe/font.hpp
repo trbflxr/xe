@@ -31,11 +31,11 @@ namespace xe {
   };
 
   struct XE_API FontMetrics {
-    float lineHeight;
-    float ascender;
-    float descender;
-    float underlineY;
-    float underlineThickness;
+    float lineHeight = 0.0f;
+    float ascender = 0.0f;
+    float descender = 0.0f;
+    float underlineY = 0.0f;
+    float underlineThickness = 0.0f;
   };
 
   enum class Charset {
@@ -46,7 +46,9 @@ namespace xe {
   class XE_API Font : public Object {
   XE_OBJECT(Font, Object)
   public:
-    Font() = default;
+    Font();
+
+    void destroy();
 
     bool loadFromFile(std::string_view file, Charset charset = Charset::Ascii);
     bool loadFromMemory(const void *data, size_t size, Charset charset = Charset::Ascii);

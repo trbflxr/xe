@@ -109,6 +109,14 @@ namespace xe::detail {
 
 namespace xe {
 
+  Font::Font() {
+    setName("Font");
+  }
+
+  void Font::destroy() {
+    atlas_->destroy();
+  }
+
   bool Font::loadFromFile(std::string_view file, Charset charset) {
     auto fontData = VFS::readBytes(file);
     if (fontData.empty()) {
@@ -172,6 +180,8 @@ namespace xe {
 
     auto family = msdfgen::getFamilyName(font);
     auto style = msdfgen::getStyleName(font);
+
+    setName("Font-" + family + "-" + style);
 
     XE_CORE_INFO("[Font] Processing font '{}' ({})", family, style);
 

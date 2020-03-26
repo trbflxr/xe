@@ -137,6 +137,7 @@ namespace xe {
   }
 
   void TextLayer::onStop() {
+    font_->destroy();
     camera_->destroy();
     texture_->destroy();
     renderer_->destroy();

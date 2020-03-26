@@ -199,8 +199,6 @@ namespace xe {
     } else if (Engine::isKeyPressed(Keyboard::A)) {
       camera_->transform().translateX(speed * ts);
     }
-
-    camera_->update();
   }
 
   bool TextLayer::onKeyPressed(Event::Key e) {

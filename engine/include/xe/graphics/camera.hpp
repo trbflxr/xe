@@ -33,7 +33,7 @@ namespace xe {
   public:
     void destroy();
 
-    void updateUniforms();
+    void updateUniforms() const;
 
     Color getBackgroundColor() const { return backgroundColor_; }
     void setBackgroundColor(const Color &color);
@@ -56,8 +56,8 @@ namespace xe {
 
     DisplayList::ViewData::Viewport viewport() const { return {0, 0, resolution_.x, resolution_.y}; }
 
-    const mat4 &projection() const { return projection_; }
-    const mat4 &view() const { return view_; }
+    const mat4 &projection() const;
+    const mat4 &view() const;
     Transform &transform() { return transform_; }
 
     const gpu::Buffer &uniformBuffer() const { return *uniforms_; }
@@ -65,7 +65,7 @@ namespace xe {
     void markForUpdate() { dirty_ = true; }
     bool hasChanged() const { return dirty_; }
 
-    virtual void update() = 0;
+    virtual void update() const = 0;
 
   protected:
     void init();
@@ -76,16 +76,17 @@ namespace xe {
     bool clearDepth_ = true;
     bool clearStencil_ = true;
 
-    bool dirty_ = true;
     ClearFlags::Enum clearFlags_ = ClearFlags::SolidColor;
 
-    mat4 projection_;
-    mat4 view_;
+    mutable bool dirty_ = true;
+
+    mutable mat4 projection_;
+    mutable mat4 view_;
 
     vec2u resolution_;
     Transform transform_;
 
-    CommonData data_;
+    mutable CommonData data_;
     std::shared_ptr<gpu::Buffer> uniforms_;
   };
 
@@ -112,8 +113,6 @@ namespace xe {
     float farPlane() const { return farPlane_; }
     void setFarPlane(float farPlane);
 
-    void update() override;
-
     friend const Node &operator>>(const Node &node, OrthographicCamera &cam) {
       node["left"].get(cam.left_);
       node["right"].get(cam.right_);
@@ -133,6 +132,9 @@ namespace xe {
       node["far"].set(cam.farPlane_);
       return node;
     }
+
+  protected:
+    void update() const override;
 
   private:
     float left_;
@@ -160,8 +162,6 @@ namespace xe {
     float farPlane() const { return farPlane_; }
     void setFarPlane(float farPlane);
 
-    void update() override;
-
     friend const Node &operator>>(const Node &node, PerspectiveCamera &cam) {
       node["fov"].get(cam.fov_);
       node["aspect"].get(cam.aspect_);
@@ -177,6 +177,9 @@ namespace xe {
       node["far"].set(cam.farPlane_);
       return node;
     }
+
+  protected:
+    void update() const override;
 
   private:
     float fov_;

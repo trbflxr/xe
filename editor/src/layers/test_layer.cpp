@@ -79,7 +79,7 @@ namespace xe {
     quad_.indexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(quad::indexData)});
     stateUbo_ = Engine::ref().gpu().createBuffer(
-        {BufferType::Uniform, Usage::Dynamic, sizeof(uniforms_), "StateUniform", 1});
+        {BufferType::Uniform, Usage::Dynamic, sizeof(uniforms_), "StateUniform", 3});
 
     {
       gpu::Pipeline::Info matInfo;
@@ -256,8 +256,6 @@ namespace xe {
 
   void TestLayer::onUpdate() {
     auto ts = Engine::ref().delta();
-
-    camera_->update();
 
     static float v = 0;
     for (int32_t i = 0; i < instances_; ++i) {

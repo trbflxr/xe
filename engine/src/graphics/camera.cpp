@@ -15,6 +15,8 @@ namespace xe {
       XE_CORE_CRITICAL("[Camera] Unable to create uniform buffer. Max buffers reached.");
     }
 
+    update();
+
     DisplayList frame;
     frame.fillBufferCommand()
         .set_buffer(*uniforms_)
@@ -29,7 +31,9 @@ namespace xe {
     }
   }
 
-  void Camera::updateUniforms() {
+  void Camera::updateUniforms() const {
+    update();
+
     DisplayList frame;
     frame.fillBufferCommand()
         .set_buffer(*uniforms_)
@@ -57,6 +61,15 @@ namespace xe {
   void Camera::setClearStencil(bool clear) {
     clearStencil_ = clear;
     markForUpdate();
+  }
+  const mat4 &Camera::projection() const {
+    update();
+    return projection_;
+  }
+
+  const mat4 &Camera::view() const {
+    update();
+    return view_;
   }
 
   //ortho
@@ -104,7 +117,7 @@ namespace xe {
     markForUpdate();
   }
 
-  void OrthographicCamera::update() {
+  void OrthographicCamera::update() const {
     if (dirty_ || transform_.hasChanged()) {
       XE_TRACE_BEGIN("XE", "Compute OrthographicCamera transformations");
       projection_ = mat4::ortho(left_, right_, bottom_, top_, nearPlane_, farPlane_);
@@ -153,7 +166,7 @@ namespace xe {
     markForUpdate();
   }
 
-  void PerspectiveCamera::update() {
+  void PerspectiveCamera::update() const {
     if (dirty_ || transform_.hasChanged()) {
       XE_TRACE_BEGIN("XE", "Compute PerspectiveCamera transformations");
       projection_ = mat4::perspective(fov_, aspect_, nearPlane_, farPlane_);

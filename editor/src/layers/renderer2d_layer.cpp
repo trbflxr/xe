@@ -56,8 +56,6 @@ namespace xe {
     } else if (Engine::isKeyPressed(Keyboard::A)) {
       camera_->transform().translateX(speed * ts);
     }
-
-    camera_->update();
   }
 
   void Renderer2dLayer::onPreRender() {

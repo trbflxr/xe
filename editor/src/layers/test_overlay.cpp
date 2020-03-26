@@ -155,8 +155,6 @@ namespace xe {
   void TestOverlay::onUpdate() {
     auto ts = Engine::ref().delta();
 
-    camera_->update();
-
     Engine::ref().registry().view<Quad, Transform>().each([ts](auto &quad, auto &transform) {
       transform.rotateY(45.0f * ts);
       transform.setWorldScale(0.2f);

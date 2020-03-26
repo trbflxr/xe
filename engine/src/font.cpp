@@ -160,6 +160,11 @@ namespace xe {
       fontMetrics.emSize = detail::DefaultEmSize;
     }
 
+    auto family = msdfgen::getFamilyName(font);
+    auto style = msdfgen::getStyleName(font);
+
+    XE_CORE_INFO("[Font] Processing font '{}' ({})", family, style);
+
     fontMetrics_.lineHeight = static_cast<float>(fontMetrics.lineHeight);
     fontMetrics_.ascender = static_cast<float>(fontMetrics.ascenderY);
     fontMetrics_.descender = static_cast<float>(fontMetrics.descenderY);

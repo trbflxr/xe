@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <string>
 #include "../core/Shape.h"
 
 namespace msdfgen {
@@ -31,6 +32,9 @@ void deinitializeFreetype(FreetypeHandle *library);
 FontHandle * loadFont(FreetypeHandle *library, const char *filename);
 /// Loads a font from memory and returns its handle.
 FontHandle * loadFont(FreetypeHandle *library, const void *memory, size_t memorySize);
+/// Get family / style name
+std::string getFamilyName(FontHandle *font);
+std::string getStyleName(FontHandle *font);
 /// Unloads a font file.
 void destroyFont(FontHandle *font);
 /// Outputs the metrics of a font file.

@@ -9,6 +9,7 @@
 #include "layers/test_layer.hpp"
 #include "layers/test_overlay.hpp"
 #include "layers/renderer2d_layer.hpp"
+#include "layers/text_layer.hpp"
 
 namespace xe {
 
@@ -29,6 +30,7 @@ namespace xe {
       layers_.emplace_back(std::make_shared<Renderer2dLayer>());
       layers_.emplace_back(std::make_shared<TestLayer>());
       layers_.emplace_back(std::make_shared<TestOverlay>());
+      layers_.emplace_back(std::make_shared<TextLayer>());
     }
 
     void onStart() override {
@@ -78,6 +80,12 @@ namespace xe {
     void onKeyPressed(const Event::Key key) override {
       for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
         (*l)->onKeyPressed(key);
+      }
+    }
+
+    void onTextEntered(Event::Text text) override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onTextEntered(text);
       }
     }
 

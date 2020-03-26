@@ -41,6 +41,7 @@ namespace xe {
   enum class Charset {
     Ascii,
     Cyrillic
+    //todo: add more charsets
   };
 
   class XE_API Font : public Object {
@@ -50,8 +51,10 @@ namespace xe {
 
     void destroy();
 
-    bool loadFromFile(std::string_view file, Charset charset = Charset::Ascii);
-    bool loadFromMemory(const void *data, size_t size, Charset charset = Charset::Ascii);
+    bool loadFromFile(std::string_view file, Charset charset = Charset::Ascii,
+                      float emSize = 32.0f, float range = 2.0f, int32_t padding = 1);
+    bool loadFromMemory(const void *data, size_t size, Charset charset = Charset::Ascii,
+                        float emSize = 32.0f, float range = 2.0f, int32_t padding = 1);
 
     const Glyph &getGlyph(uint32_t codePoint) const;
 

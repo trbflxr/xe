@@ -12,7 +12,6 @@
 
 namespace xe::detail {
 
-  static constexpr const double DefaultEmSize = 32.0f;
   static constexpr const uint64_t McgMultiplier = 6364136223846793005;
 
   struct FontConfig {
@@ -23,8 +22,9 @@ namespace xe::detail {
     int32_t height = -1;
     double emSize = 32.0f;
     double pxRange = 2.0f;
-    double angleThreshold = math::rad(70.0f);
+    double angleThreshold = 3.0f;
     double miterLimit = 1.0f;
+    int32_t padding = 1;
     uint64_t coloringSeed = 0;
     uint32_t threadCount = std::max(std::thread::hardware_concurrency(), 1u);
   };
@@ -117,7 +117,7 @@ namespace xe {
     atlas_->destroy();
   }
 
-  bool Font::loadFromFile(std::string_view file, Charset charset) {
+  bool Font::loadFromFile(std::string_view file, Charset charset, float emSize, float range, int32_t padding) {
     auto fontData = VFS::readBytes(file);
     if (fontData.empty()) {
       XE_CORE_CRITICAL("[Font] Failed to create font from file data == nullptr. Loading default.");
@@ -126,16 +126,20 @@ namespace xe {
       return loadFromMemory(font.data(), font.size(), charset);
     }
 
-    return loadFromMemory(fontData.data(), fontData.size(), charset);
+    return loadFromMemory(fontData.data(), fontData.size(), charset, emSize, range, padding);
   }
 
-  bool Font::loadFromMemory(const void *data, size_t size, Charset charset) {
+  bool Font::loadFromMemory(const void *data, size_t size, Charset charset, float emSize, float range, int32_t padding) {
     if (!data || size == 0) {
       XE_CORE_CRITICAL("[Font] Failed to create font data == nullptr or dataSize == 0");
       return false;
     }
 
     detail::FontConfig config{ };
+
+    config.emSize = emSize;
+    config.pxRange = range;
+    config.padding = padding;
 
     class FontHolder {
     public:
@@ -175,7 +179,7 @@ namespace xe {
     msdfgen::FontMetrics fontMetrics = { };
     msdfgen::getFontMetrics(fontMetrics, font);
     if (fontMetrics.emSize <= 0) {
-      fontMetrics.emSize = detail::DefaultEmSize;
+      fontMetrics.emSize = config.emSize;
     }
 
     auto family = msdfgen::getFamilyName(font);
@@ -201,7 +205,7 @@ namespace xe {
     //pack glyps
     msdf_atlas::TightAtlasPacker atlasPacker;
     atlasPacker.setDimensionsConstraint(config.atlasSizeConstraint);
-    atlasPacker.setPadding(0);
+    atlasPacker.setPadding(config.padding);
     atlasPacker.setScale(config.emSize / fontMetrics.emSize);
     atlasPacker.setPixelRange(config.pxRange);
     atlasPacker.setUnitRange(0.0f);

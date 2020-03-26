@@ -8,7 +8,7 @@
 #include <xe/ui/ui.hpp>
 
 namespace xe {
-  
+
   void TextLayer::onStart() {
     camera_ = std::make_unique<OrthographicCamera>(vec2(1280, 720), 0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
     camera_->setBackgroundColor(Color::Purple);

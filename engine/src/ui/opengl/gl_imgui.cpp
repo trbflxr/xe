@@ -4,6 +4,9 @@
 
 #include "xepch.hpp"
 #include "gl_imgui.hpp"
+
+#include "embedded/embedded.hpp"
+
 #include <xe/core/engine.hpp>
 #include <xe/utils/logger.hpp>
 
@@ -105,6 +108,17 @@ namespace xe::ui::impl {
     io.SetClipboardTextFn = setClipboardText;
     io.GetClipboardTextFn = getClipboardText;
     io.ClipboardUserData = data->window;
+
+    //todo: get charset form config
+    ImFontConfig cfg = ImFontConfig();
+    cfg.GlyphRanges = io.Fonts->GetGlyphRangesCyrillic();
+    cfg.FontDataOwnedByAtlas = true;
+
+    auto f = Embedded::defaultFount();
+
+    uint8_t *fd = new uint8_t[f.size()];
+    std::memcpy(fd, f.data(), f.size());
+    io.Fonts->AddFontFromMemoryTTF(fd, static_cast<int32_t>(f.size()), 13.0f, &cfg);
 
     return true;
   }

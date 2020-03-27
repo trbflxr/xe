@@ -41,7 +41,7 @@ namespace xe {
 
   std::vector<uint8_t> Embedded::defaultFount() {
     auto fs = cmrc::xe::get_filesystem();
-    auto data = fs.open("xe/resources/Roboto-Regular.ttf");
+    auto data = fs.open("xe/resources/Hack-Regular.ttf");
 
     return {data.begin(), data.end()};
   }

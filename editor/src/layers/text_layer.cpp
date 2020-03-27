@@ -100,6 +100,13 @@ namespace xe {
     if (ImGui::ColorEdit3("Outline color: ", reinterpret_cast<float *>(&outlineColor_))) {
       text_->setOutlineColor(outlineColor_);
     }
+
+    char buff[256];
+    std::memset(buff, 0, 256);
+    std::memcpy(buff, text_->string().data(), text_->string().size());
+    if (ImGui::InputText("String: ", buff, 256)) {
+      text_->setString(buff);
+    }
     return false;
   }
 

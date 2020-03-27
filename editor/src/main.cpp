@@ -185,7 +185,7 @@ namespace xe {
     }
 
   private:
-    Color clearColor_ = Color::White;
+    Color clearColor_ = 0x182024;
     std::vector<std::shared_ptr<LayerBase>> layers_;
   };
 

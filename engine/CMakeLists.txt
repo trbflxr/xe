@@ -29,7 +29,7 @@ cmrc_add_resource_library(
     ${ENGINE_NAME}_rc
     NAMESPACE ${ENGINE_NAME}
     PREFIX ${ENGINE_NAME}
-    resources/Roboto-Regular.ttf)
+    resources/Hack-Regular.ttf)
 
 #some libs requires debug versions on msvc
 set(XE_DEBUG_SUFFIX "")

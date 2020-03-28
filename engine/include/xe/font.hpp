@@ -6,6 +6,7 @@
 #define XE_FONT_HPP
 
 #include <xe/common.hpp>
+#include <xe/params.hpp>
 #include <xe/graphics/texture.hpp>
 #include <xe/math/rect.hpp>
 
@@ -36,12 +37,6 @@ namespace xe {
     float descender = 0.0f;
     float underlineY = 0.0f;
     float underlineThickness = 0.0f;
-  };
-
-  enum class Charset {
-    Ascii,
-    Cyrillic
-    //todo: add more charsets
   };
 
   class XE_API Font : public Object {

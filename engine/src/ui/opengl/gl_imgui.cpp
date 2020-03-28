@@ -6,6 +6,7 @@
 #include "gl_imgui.hpp"
 
 #include "embedded/embedded.hpp"
+#include "global_config.hpp"
 
 #include <xe/core/engine.hpp>
 #include <xe/utils/logger.hpp>
@@ -109,10 +110,19 @@ namespace xe::ui::impl {
     io.GetClipboardTextFn = getClipboardText;
     io.ClipboardUserData = data->window;
 
-    //todo: get charset form config
     ImFontConfig cfg = ImFontConfig();
-    cfg.GlyphRanges = io.Fonts->GetGlyphRangesCyrillic();
     cfg.FontDataOwnedByAtlas = true;
+    switch (GlobalConfig::ref().getParams().charset) {
+      case Charset::Cyrillic: {
+        cfg.GlyphRanges = io.Fonts->GetGlyphRangesCyrillic();
+        break;
+      }
+      case Charset::Ascii:
+      default: {
+        cfg.GlyphRanges = io.Fonts->GetGlyphRangesDefault();
+        break;
+      }
+    }
 
     auto f = Embedded::defaultFount();
 

@@ -193,10 +193,11 @@ namespace xe {
 
 int32_t main(int32_t argc, char **argv) {
   static xe::Params defaultParams = {{1280, 720,
-                                                 "test / жопа",
-                                                     true, true,
-                                         0, 0, nullptr},
-                                     {128,  128, 64, 128}};
+                                      "test / жопа",
+                                      true, true,
+                                      0, 0, nullptr},
+                                     {128, 128, 64, 128},
+                                     xe::Charset::Cyrillic};
 
   //step #0 create engine
   xe::Engine engine(argc, argv);

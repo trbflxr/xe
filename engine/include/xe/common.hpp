@@ -100,17 +100,17 @@ namespace xe {
     uint8_t patch;
   };
 
-  static constexpr Version cEngineVersion = {0, 1, 0};
+  static constexpr const Version cEngineVersion = {0, 1, 0};
 
-  static constexpr uint32_t cMaxTextureUnits = 16;
-  static constexpr uint32_t cMaxVertexAttribs = 16;
-  static constexpr uint32_t cMaxFramebufferColorAttachments = 16;
+  static constexpr const uint32_t cMaxTextureUnits = 16;
+  static constexpr const uint32_t cMaxVertexAttribs = 16;
+  static constexpr const uint32_t cMaxFramebufferColorAttachments = 16;
 
-  static constexpr uint32_t cMaxUniformBuffers = 16;
-  static constexpr uint32_t cMaxShaderUniforms = 32;
+  static constexpr const uint32_t cMaxUniformBuffers = 16;
+  static constexpr const uint32_t cMaxShaderUniforms = 32;
 
-  static constexpr int32_t cCamera2dUboBinding = 0;
-  static constexpr int32_t cCameraUboBinding = 1;
+  static constexpr const uint32_t cCamera2dUboBinding = 0;
+  static constexpr const uint32_t cCameraUboBinding = 1;
 
   template<typename T>
   struct is_optional : std::false_type { };

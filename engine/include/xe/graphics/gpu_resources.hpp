@@ -6,6 +6,7 @@
 #define XE_GPU_RESOURCES_HPP
 
 #include <xe/math/math.hpp>
+#include <xe/graphics/color.hpp>
 #include <xe/graphics/types.hpp>
 
 namespace xe {
@@ -95,7 +96,7 @@ namespace xe {
           BlendFactor srcAlpha = BlendFactor::SrcAlpha;
           BlendFactor dstAlpha = BlendFactor::OneMinusSrcAlpha;
           BlendOp opAlpha = BlendOp::Add;
-          vec4 color = {0.0f, 0.0f, 0.0f, 0.0f};
+          Color color = Color::Clear;
           bool enabled = false;
         } blend;
         CompareFunc depthFunc = CompareFunc::Less;

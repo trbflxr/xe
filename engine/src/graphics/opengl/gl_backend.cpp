@@ -780,8 +780,8 @@ namespace xe::gpu {
 
       if (mat.first->info.blend.enabled) {
         GLCHECK(glEnable(GL_BLEND));
-        const vec4 &c = mat.first->info.blend.color;
-        GLCHECK(glBlendColor(c[0], c[1], c[2], c[3]));
+        const Color &c = mat.first->info.blend.color;
+        GLCHECK(glBlendColor(c.r, c.g, c.b, c.a));
         GLCHECK(glBlendEquationSeparate(toGL(mat.first->info.blend.opRgb),
                                         toGL(mat.first->info.blend.opAlpha)));
         GLCHECK(glBlendFuncSeparate(toGL(mat.first->info.blend.srcRgb),

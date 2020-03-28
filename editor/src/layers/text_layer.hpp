@@ -35,6 +35,7 @@ namespace xe {
     float textSize_ = 0.0f;
     float textScale_ = 0.0f;
     float textOutline_ = 0.0f;
+    float textOutlineEdge_ = 0.0f;
     Color color_;
     Color outlineColor_;
 

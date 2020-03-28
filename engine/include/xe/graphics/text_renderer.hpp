@@ -39,6 +39,10 @@ namespace xe {
       Color color;
       Color outlineColor;
       vec2u texHandle;
+      struct {
+        float outlineWidth = 0.0f;
+        float outlineEdge = 0.0f;
+      } data;
     };
 
     struct CameraData {

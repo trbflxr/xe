@@ -68,6 +68,7 @@ namespace xe {
     pipelineInfo.attribs[2] = {"a_color", VertexFormat::Float4};
     pipelineInfo.attribs[3] = {"a_outlineColor", VertexFormat::Float4};
     pipelineInfo.attribs[4] = {"a_texHandle", VertexFormat::Uint32_2};
+    pipelineInfo.attribs[5] = {"a_fontData", VertexFormat::Float2};
 
     pipelineInfo.blend.enabled = true;
     pipelineInfo.cull = Cull::Disabled;
@@ -131,6 +132,8 @@ namespace xe {
     const auto &str = text.string();
     const float scale = text.scale();
     const float fs = text.size() * scale;
+    const float outlineWidth = text.outlineWidth();
+    const float outlineEdge = text.outlineEdge();
 
     vec2 pos = text.position();
 
@@ -155,6 +158,7 @@ namespace xe {
       buffer_->color = text.color();
       buffer_->outlineColor = text.outlineColor();
       buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+      buffer_->data = {outlineWidth, outlineEdge};
       buffer_++;
 
       buffer_->position = {pos.x + g.planeBounds.right * fs, pos.y + g.planeBounds.bottom * fs};
@@ -162,6 +166,7 @@ namespace xe {
       buffer_->color = text.color();
       buffer_->outlineColor = text.outlineColor();
       buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+      buffer_->data = {outlineWidth, outlineEdge};
       buffer_++;
 
       buffer_->position = {pos.x + g.planeBounds.right * fs, pos.y + g.planeBounds.top * fs};
@@ -169,6 +174,7 @@ namespace xe {
       buffer_->color = text.color();
       buffer_->outlineColor = text.outlineColor();
       buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+      buffer_->data = {outlineWidth, outlineEdge};
       buffer_++;
 
       buffer_->position = {pos.x + g.planeBounds.left * fs, pos.y + g.planeBounds.top * fs};
@@ -176,6 +182,7 @@ namespace xe {
       buffer_->color = text.color();
       buffer_->outlineColor = text.outlineColor();
       buffer_->texHandle = *reinterpret_cast<const vec2u *>(&handle);
+      buffer_->data = {outlineWidth, outlineEdge};
       buffer_++;
 
       pos.x += g.advance * fs;
@@ -183,7 +190,6 @@ namespace xe {
       verticesCount_ += 4;
       indicesCount_ += 6;
     }
-
   }
 
   void TextRenderer::begin() {

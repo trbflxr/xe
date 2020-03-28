@@ -33,8 +33,11 @@ namespace xe {
     const Color &outlineColor() const { return outlineColor_; }
     void setOutlineColor(const Color &color) { outlineColor_ = color; }
 
-    float outlineThickness() const { return outlineThickness_; }
-    void setOutlineThickness(float size) { outlineThickness_ = size; }
+    float outlineWidth() const { return outlineWidth_; }
+    void setOutlineWidth(float width) { outlineWidth_ = width; }
+
+    float outlineEdge() const { return outlineEdge_; }
+    void setOutlineEdge(float edge) { outlineEdge_ = edge; }
 
     const vec2 &position() const { return position_; }
     void setPosition(const vec2 &position) { position_ = position; }
@@ -48,7 +51,8 @@ namespace xe {
     float scale_ = 1.0f;
     Color color_ = Color::White;
     Color outlineColor_ = Color::Clear;
-    float outlineThickness_ = 0.0f;
+    float outlineWidth_ = 0.0f;
+    float outlineEdge_ = 0.0f;
 
     vec2 position_;
   };

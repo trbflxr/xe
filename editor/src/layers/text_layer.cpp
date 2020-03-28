@@ -19,15 +19,14 @@ namespace xe {
     font_ = std::make_shared<Font>();
     font_->loadFromFile("assets/fonts/consolata.otf1", Charset::Cyrillic);
 
-    text_ = std::make_shared<Text>("test жопа", font_, vec2(400.0f, 250.0f), 32.0f);
+    text_ = std::make_shared<Text>("жопа test", font_, vec2(400.0f, 250.0f), 32.0f);
     text_->setColor(Color::Black);
     text_->setOutlineColor(Color::Red);
     text_->setSize(128.0f);
-    text_->setOutlineThickness(50.0f);
 
     textSize_ = text_->size();
     textScale_ = text_->scale();
-    textOutline_ = text_->outlineThickness();
+    textOutline_ = text_->outlineWidth();
     color_ = text_->color();
     outlineColor_ = text_->outlineColor();
   }
@@ -91,8 +90,11 @@ namespace xe {
     if (ImGui::SliderFloat("Text scale:", &textScale_, 1.0f, 10.0f)) {
       text_->setScale(textScale_);
     }
-    if (ImGui::SliderFloat("Text outline:", &textOutline_, 0.0f, 100.0f)) {
-      text_->setOutlineThickness(textOutline_);
+    if (ImGui::SliderFloat("Text outline width:", &textOutline_, 0.0f, 1.0f)) {
+      text_->setOutlineWidth(textOutline_);
+    }
+    if (ImGui::SliderFloat("Text outline edge:", &textOutlineEdge_, 0.0f, 1.0f)) {
+      text_->setOutlineEdge(textOutlineEdge_);
     }
     if (ImGui::ColorEdit3("Color: ", reinterpret_cast<float *>(&color_))) {
       text_->setColor(color_);

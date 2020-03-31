@@ -5,6 +5,8 @@
 #include <xe/ui/ui.hpp>
 #include "model_layer.hpp"
 
+#include <xe/utils/logger.hpp>
+
 namespace xe {
 
   static uint32_t vbSize = 0;
@@ -12,11 +14,11 @@ namespace xe {
 
   void ModelLayer::onStart() {
     model_ = std::make_shared<Model>("assets/models/Suzanne/Suzanne.gltf");
+//    model_ = std::make_shared<Model>("assets/models/Sponza/Sponza.gltf");
 //    model_ = std::make_shared<Model>("assets/models/monkey3.obj");
 
-    camera_ = std::make_unique<PerspectiveCamera>(vec2(1280, 720), 70.0f, 1280.0f / 720.0f, 1.0f, 1000.0f);
-    cameraPos_ = {0.0f, 0.0f, -1.0f};
-    camera_->transform().setLocalPosition(cameraPos_);
+    camera_ = std::make_unique<FreeCamera>(vec2(1280, 720), 70.0f, 1280.0f / 720.0f, 1.0f, 1000.0f);
+    camera_->cam().transform().setLocalPosition({0.0f, 0.0f, -1.0f});
 
     //some hardcode
     vbSize = (uint32_t) model_->meshes_[0].vertices.size() * (uint32_t) sizeof(model_->meshes_[0].vertices[0]);
@@ -74,16 +76,12 @@ namespace xe {
     Engine::ref().gpu().destroyResource(*modelData_.pipeline);
   }
 
-  void ModelLayer::onPreRender() {
-
-  }
-
   void ModelLayer::onRender() {
-    camera_->updateUniforms();
+    camera_->onRender();
 
     DisplayList frame;
     frame.setupViewCommand()
-        .set_viewport(camera_->viewport())
+        .set_viewport(camera_->cam().viewport())
         .set_framebuffer(Engine::ref().composer().framebuffer())
         .set_colorAttachment(0, true);
     frame.clearCommand()
@@ -92,7 +90,7 @@ namespace xe {
     frame.setupPipelineCommand()
         .set_pipeline(*modelData_.pipeline)
         .set_buffer(0, *modelData_.vertexBuffer)
-        .set_uniformBuffer(0, camera_->uniformBuffer())
+        .set_uniformBuffer(0, camera_->cam().uniformBuffer())
         .set_texture(0, modelData_.texture->raw());
     frame.renderCommand()
         .set_indexBuffer(*modelData_.indexBuffer)
@@ -102,18 +100,23 @@ namespace xe {
   }
 
   void ModelLayer::onUpdate() {
-
+    camera_->onUpdate();
   }
 
   bool ModelLayer::onKeyPressed(Event::Key key) {
-    return false;
+    return camera_->onKeyPressed(key);
+  }
+
+  bool ModelLayer::onMousePressed(Event::MouseButton button) {
+    return camera_->onMousePressed(button);
+  }
+
+  bool ModelLayer::onFocusLost() {
+    return camera_->onFocusLost();
   }
 
   bool ModelLayer::onUi() {
     ImGui::Text("ModelLayer:");
-    if (ImGui::SliderFloat3("Camera pos##ModelLayer", reinterpret_cast<float *>(&cameraPos_), -5.0f, 5.0f)) {
-      camera_->transform().setLocalPosition(cameraPos_);
-    }
     return false;
   }
 

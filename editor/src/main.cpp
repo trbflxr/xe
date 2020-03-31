@@ -85,9 +85,27 @@ namespace xe {
       }
     }
 
+    void onMouseMoved(Event::MouseMove move) override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onMouseMoved(move);
+      }
+    }
+
+    void onMousePressed(Event::MouseButton button) override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onMousePressed(button);
+      }
+    }
+
     void onTextEntered(Event::Text text) override {
       for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
         (*l)->onTextEntered(text);
+      }
+    }
+
+    void onFocusLost() override {
+      for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
+        (*l)->onFocusLost();
       }
     }
 

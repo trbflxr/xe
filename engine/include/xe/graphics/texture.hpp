@@ -22,7 +22,7 @@ namespace xe {
     bool setup();
     void destroy();
 
-    bool loadFromFile(std::string_view file);
+    bool loadFromFile(std::string_view file, bool flip = true);
 
     void setInfo(const gpu::Texture::Info &info);
     void setSize(uint32_t width = 1, uint32_t height = 1, uint32_t depth = 1);

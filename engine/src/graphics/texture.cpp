@@ -99,9 +99,9 @@ namespace xe {
     }
   }
 
-  bool Texture::loadFromFile(std::string_view file) {
+  bool Texture::loadFromFile(std::string_view file, bool flip) {
     file_ = file;
-    data_[0] = gpu::Texture::loadFromFile(file, gpu_.info);
+    data_[0] = gpu::Texture::loadFromFile(file, gpu_.info, flip);
     return data_[0];
   }
 

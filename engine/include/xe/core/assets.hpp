@@ -22,13 +22,18 @@ namespace xe {
     void addShader(const std::string &name, const std::shared_ptr<gpu::Pipeline::Info::Shader> &shader);
     const std::shared_ptr<gpu::Pipeline::Info::Shader> &getShader(const std::string &name);
 
+    void addShaderSource(const std::string &name, std::string &&source);
+    std::string_view getShaderSource(const std::string &name);
+
   private:
     AssetManager() = default;
 
+    void initDefaultShaderSource();
     void initDefaultShaders();
 
   private:
     std::unordered_map<std::string, std::shared_ptr<gpu::Pipeline::Info::Shader>> shaders_;
+    std::unordered_map<std::string, std::string> shaderSources_;
   };
 
 }

@@ -40,6 +40,47 @@ namespace cube {
       3, 2, 6,
       6, 7, 3
   };
+
+  static const char *vert = R"(
+    layout(location = 0) in vec3 a_position;
+    layout(location = 1) in vec2 a_texCoords;
+    layout(location = 2) in vec4 a_color;
+    layout(location = 3) in vec4 a_instancePosition;
+
+    out vec4 v_color;
+    out vec2 v_texCoords;
+
+    void main() {
+      gl_Position = state.cubeProj * state.cubeView * state.cubeModel * vec4(a_position + a_instancePosition.xyz, 1.0);
+      v_color = a_color;
+      v_texCoords = a_texCoords;
+    }
+  )";
+
+  static const char *frag = R"(
+    layout(location = 0) out vec4 color0;
+    layout(location = 1) out vec4 color1;
+
+    in vec4 v_color;
+    in vec2 v_texCoords;
+
+    uniform sampler2D u_tex2d0;
+
+    void main() {
+      color0 = texture(u_tex2d0, v_texCoords);
+      color1 = v_color * texture(u_tex2d0, v_texCoords);
+    //  color1 = texture(u_tex2d0, v_texCoords);
+    }
+  )";
+
+  static const char *ubo = R"(
+    layout(std140, row_major) uniform StateUniform {
+      mat4 cubeModel;
+      mat4 cubeView;
+      mat4 cubeProj;
+    } state;
+  )";
+
 }
 
 namespace quad {
@@ -50,6 +91,39 @@ namespace quad {
       -1.0, 1.0, 0.0, 0.0, 1.0
   };
   uint16_t indexData[] = {0, 2, 1, 0, 3, 2};
+
+  static const char *vert = R"(
+    layout(location = 0) in vec3 a_position;
+    layout(location = 1) in vec2 a_texCoords;
+
+    out vec2 v_texCoords;
+
+    layout(location = 0) uniform mat4 u_model;
+
+    void main() {
+      gl_Position = camera.proj * camera.view * u_model * vec4(a_position, 1.0);
+      v_texCoords = a_texCoords;
+    }
+  )";
+
+  static const char *frag = R"(
+    layout(location = 0) out vec4 color;
+
+    in vec2 v_texCoords;
+
+    uniform sampler2D u_tex2d0;
+    uniform sampler2D u_tex2d1;
+
+    layout(location = 1) uniform vec4 u_tint;
+
+    void main() {
+      if (v_texCoords.x <= 0.5) {
+        color = u_tint * texture(u_tex2d0, v_texCoords);
+      } else {
+        color = texture(u_tex2d1, v_texCoords);
+      }
+    }
+  )";
 }
 
 namespace xe {
@@ -82,8 +156,12 @@ namespace xe {
         {BufferType::Uniform, Usage::Dynamic, sizeof(uniforms_), "StateUniform", 3});
 
     {
+      gpu::Pipeline::Info::Shader cubeShader;
+      cubeShader.vert = gpu::Pipeline::makeShader({cube::ubo, cube::vert});
+      cubeShader.frag = gpu::Pipeline::makeShader({cube::frag});
+
       gpu::Pipeline::Info matInfo;
-      matInfo.shader = *Engine::ref().assetManager().getShader("test");
+      matInfo.shader = cubeShader;
 
       matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
       matInfo.attribs[1] = {"a_texCoords", VertexFormat::Float2};
@@ -130,8 +208,12 @@ namespace xe {
     }
 
     {
+      gpu::Pipeline::Info::Shader quadShader;
+      quadShader.vert = gpu::Pipeline::makeShader({Engine::ref().assetManager().getShaderSource("ubo_camera3d.glsl"), quad::vert});
+      quadShader.frag = gpu::Pipeline::makeShader({quad::frag});
+
       gpu::Pipeline::Info matInfo;
-      matInfo.shader = *Engine::ref().assetManager().getShader("fb_test");
+      matInfo.shader = quadShader;
 
       matInfo.attribs[0] = {"a_position", VertexFormat::Float3};
       matInfo.attribs[1] = {"a_texCoords", VertexFormat::Float2};

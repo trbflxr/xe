@@ -75,10 +75,12 @@ namespace xe {
   }
 
   void ModelLayer::onPreRender() {
-    camera_->updateUniforms();
+
   }
 
   void ModelLayer::onRender() {
+    camera_->updateUniforms();
+
     DisplayList frame;
     frame.setupViewCommand()
         .set_viewport(camera_->viewport())

@@ -59,6 +59,11 @@ namespace xe {
     textRenderer->frag = makeShader({text_renderer_frag});
     addShader("text_renderer", textRenderer);
 
+    auto model = std::make_shared<gpu::Pipeline::Info::Shader>();
+    model->vert = makeShader({ubo_camera3d_glsl, model_vert});
+    model->frag = makeShader({model_frag});
+    addShader("model", model);
+
     XE_TRACE_END("XE", "Default shaders init");
   }
 

@@ -10,6 +10,7 @@
 #include "layers/test_overlay.hpp"
 #include "layers/renderer2d_layer.hpp"
 #include "layers/text_layer.hpp"
+#include "layers/model_layer.hpp"
 
 namespace xe {
 
@@ -27,10 +28,11 @@ namespace xe {
       Engine::ref().vfs().mount(".");
       Engine::ref().vfs().mount("assets");
 
-      layers_.emplace_back(std::make_shared<Renderer2dLayer>());
-      layers_.emplace_back(std::make_shared<TestLayer>());
-      layers_.emplace_back(std::make_shared<TestOverlay>());
-      layers_.emplace_back(std::make_shared<TextLayer>());
+//      layers_.emplace_back(std::make_shared<Renderer2dLayer>());
+//      layers_.emplace_back(std::make_shared<TestLayer>());
+//      layers_.emplace_back(std::make_shared<TestOverlay>());
+//      layers_.emplace_back(std::make_shared<TextLayer>());
+      layers_.emplace_back(std::make_shared<ModelLayer>());
     }
 
     void onStart() override {

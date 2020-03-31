@@ -7,6 +7,6 @@ layout(location = 4) in vec2 a_texCoords;
 out vec2 v_texCoords;
 
 void main() {
-  gl_Position = camera.proj * camera.view * camera.model * vec4(a_position, 1.0);
+  gl_Position = camera.proj * camera.view * vec4(a_position, 1.0);
   v_texCoords = a_texCoords;
 }

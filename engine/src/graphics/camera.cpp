@@ -121,11 +121,10 @@ namespace xe {
     if (dirty_ || transform_.hasChanged()) {
       XE_TRACE_BEGIN("XE", "Compute OrthographicCamera transformations");
       projection_ = mat4::ortho(left_, right_, bottom_, top_, nearPlane_, farPlane_);
-      view_ = mat4::transformation(transform_.worldPosition(), transform_.worldRotation(), transform_.worldScale());
+      view_ = mat4::rotation(transform_.localRotation().conjugate()) * mat4::translation(transform_.localPosition());
 
       data_.view = view_;
       data_.proj = projection_;
-      data_.model = transform_.worldTransform();
       data_.resolution = vec4(resolution_);
 
       dirty_ = false;
@@ -170,11 +169,10 @@ namespace xe {
     if (dirty_ || transform_.hasChanged()) {
       XE_TRACE_BEGIN("XE", "Compute PerspectiveCamera transformations");
       projection_ = mat4::perspective(fov_, aspect_, nearPlane_, farPlane_);
-      view_ = mat4::transformation(transform_.worldPosition(), transform_.worldRotation(), transform_.worldScale());
+      view_ = mat4::rotation(transform_.localRotation().conjugate()) * mat4::translation(transform_.localPosition());
 
       data_.view = view_;
       data_.proj = projection_;
-      data_.model = transform_.worldTransform();
       data_.resolution = vec4(resolution_);
 
       dirty_ = false;

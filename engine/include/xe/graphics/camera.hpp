@@ -24,7 +24,6 @@ namespace xe {
     };
 
     struct CommonData {
-      mat4 model;
       mat4 view;
       mat4 proj;
       vec4 resolution;

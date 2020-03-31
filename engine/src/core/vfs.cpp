@@ -9,56 +9,6 @@
 #include <xe/utils/logger.hpp>
 #include <xe/core/engine.hpp>
 
-namespace xe::detail {
-
-  enum class OpenMode {
-    Read,
-    Write,
-    Append
-  };
-
-  bool closeFileHandle(PHYSFS_File *handle, std::string_view file) {
-    if (!PHYSFS_close(handle)) {
-      XE_CORE_ERROR("[VFS] Failed to close file '{}'. Code: {}", file,
-                    PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-      return false;
-    }
-    return true;
-  }
-
-  PHYSFS_File *openFileHandle(std::string_view file, OpenMode mode) {
-    PHYSFS_File *handle = nullptr;
-    const char *log = "error";
-
-    switch (mode) {
-      case OpenMode::Read: {
-        handle = PHYSFS_openRead(file.data());
-        log = "read";
-        break;
-      }
-      case OpenMode::Write: {
-        handle = PHYSFS_openWrite(file.data());
-        log = "write";
-        break;
-      }
-      case OpenMode::Append: {
-        handle = PHYSFS_openAppend(file.data());
-        log = "append";
-        break;
-      }
-      default: break;
-    }
-
-    if (!handle) {
-      XE_CORE_ERROR("[VFS] Failed to open ({}) file '{}'. Code: {}", log, file,
-                    PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-    }
-
-    return handle;
-  }
-
-}
-
 namespace xe {
 
   VFS::VFS() {
@@ -165,6 +115,30 @@ namespace xe {
     return stat.filetype == PHYSFS_FILETYPE_REGULAR;
   }
 
+  bool VFS::read(VFS::File &file, void *buffer, size_t size) {
+#if XE_DEBUG_TRACING
+    const std::string name = std::string("VFS Read file ") + file.path;
+#else
+    static const std::string name("VFS Read file");
+#endif
+
+    XE_TRACE_BEGIN("XE", name.c_str());
+
+    auto rb = PHYSFS_readBytes(reinterpret_cast<PHYSFS_File *>(file.handle), buffer, size);
+    if (rb == -1 || !rb) {
+      return false;
+    }
+
+    if (static_cast<size_t>(rb) == size) {
+      XE_CORE_INFO("[VFS] Read file '{}', ({} / {} bytes)", file.path, rb, size);
+    } else {
+      XE_CORE_WARN("[VFS] Read file '{}', ({} / {} bytes)", file.path, rb, size);
+    }
+
+    XE_TRACE_END("XE", name.c_str());
+    return true;
+  }
+
   std::optional<std::string> VFS::readText(std::string_view file) {
     std::vector<uint8_t> bytes = readBytes(file);
     if (bytes.empty()) {
@@ -174,28 +148,22 @@ namespace xe {
   }
 
   std::vector<uint8_t> VFS::readBytes(std::string_view file) {
-#if XE_DEBUG_TRACING
-    const std::string name = std::string("VFS Read file ") + file.data();
-#else
-    static const std::string name("VFS Read file");
-#endif
-
-    XE_TRACE_BEGIN("XE", name.c_str());
-    auto fsFile = detail::openFileHandle(file, detail::OpenMode::Read);
-    if (!fsFile) {
-      XE_TRACE_END("XE", name.c_str());
+    File fsFile = open(file, OpenMode::Read);
+    if (!fsFile.handle) {
+      return { };
+    }
+    auto size = length(fsFile);
+    if (!size) {
       return { };
     }
 
-    auto size = PHYSFS_fileLength(fsFile);
     std::vector<uint8_t> data(size);
-    PHYSFS_readBytes(fsFile, data.data(), static_cast<PHYSFS_uint64>(size));
+    if (!read(fsFile, data.data(), size)) {
+      close(fsFile);
+      return { };
+    }
 
-    detail::closeFileHandle(fsFile, file);
-
-    XE_CORE_INFO("[VFS] File '{}' successfully read", file);
-
-    XE_TRACE_END("XE", (std::string("VFS Read file ") + file.data()).c_str());
+    close(fsFile);
     return data;
   }
 
@@ -219,36 +187,42 @@ namespace xe {
     return true;
   }
 
-  bool VFS::write(std::string_view file, void *data, size_t size, bool append) {
+  bool VFS::write(VFS::File &file, const void *data, size_t size) {
 #if XE_DEBUG_TRACING
-    const std::string name = std::string("VFS Write file ") + file.data();
+    const std::string name = std::string("VFS Write file ") + file.path;
 #else
     static const std::string name("VFS Write file");
 #endif
 
     XE_TRACE_BEGIN("XE", name.c_str());
-    auto fsFile = detail::openFileHandle(file, append ? detail::OpenMode::Append : detail::OpenMode::Write);
-    if (!fsFile) {
-      XE_TRACE_END("XE", name.c_str());
-      return false;
-    }
 
-    auto written = PHYSFS_writeBytes(fsFile, data, static_cast<PHYSFS_uint64>(size));
+    auto written = PHYSFS_writeBytes(reinterpret_cast<PHYSFS_File *>(file.handle), data, static_cast<PHYSFS_uint64>(size));
     if (written == -1 || static_cast<size_t>(written) != size) {
-      XE_CORE_ERROR("[VFS] Failed to {} file '{}', bytes written {}. Code: {}", append ? "append" : "write", file,
+      XE_CORE_ERROR("[VFS] Failed to write / append file '{}', bytes written {}. Code: {}", file.path,
                     written, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 
-      detail::closeFileHandle(fsFile, file);
+      close(file);
       XE_TRACE_END("XE", name.c_str());
       return false;
     }
-
-    detail::closeFileHandle(fsFile, file);
-
-    XE_CORE_INFO("[VFS] File '{}' successfully write", file);
 
     XE_TRACE_END("XE", name.c_str());
     return true;
+  }
+
+  bool VFS::write(std::string_view file, const void *data, size_t size, bool append) {
+    File fsFile = open(file, append ? OpenMode::Append : OpenMode::Write);
+    if (!fsFile.handle) {
+      return false;
+    }
+
+    bool result = write(fsFile, data, size);
+    if (result) {
+      XE_CORE_INFO("[VFS] File '{}' successfully write", file);
+    }
+
+    close(fsFile);
+    return result;
   }
 
   bool VFS::mkdir(std::string_view dir) {
@@ -291,6 +265,115 @@ namespace xe {
 
     PHYSFS_freeList(fsFiles);
     return files;
+  }
+
+  bool VFS::close(VFS::File &file) {
+    if (!PHYSFS_close(reinterpret_cast<PHYSFS_File *>(file.handle))) {
+      XE_CORE_ERROR("[VFS] Failed to close file '{}'. Code: {}", file.path,
+                    PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+      return false;
+    }
+    file.handle = nullptr;
+    return true;
+  }
+
+  VFS::File VFS::open(std::string_view file, OpenMode mode) {
+    PHYSFS_File *handle = nullptr;
+    const char *log = "error";
+
+    switch (mode) {
+      case OpenMode::Read: {
+        handle = PHYSFS_openRead(file.data());
+        log = "read";
+        break;
+      }
+      case OpenMode::Write: {
+        handle = PHYSFS_openWrite(file.data());
+        log = "write";
+        break;
+      }
+      case OpenMode::Append: {
+        handle = PHYSFS_openAppend(file.data());
+        log = "append";
+        break;
+      }
+      default: break;
+    }
+
+    if (!handle) {
+      XE_CORE_ERROR("[VFS] Failed to open ({}) file '{}'. Code: {}", log, file,
+                    PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+    }
+
+    return {handle, file.data()};
+  }
+
+  bool VFS::seek(VFS::File &file, Seek origin, int64_t offset) {
+    XE_ASSERT(file.handle, "Unable to seek nullptr file");
+
+    size_t len = length(file);
+    XE_ASSERT(static_cast<size_t>(offset) <= len, "Unable to seek file, offset: {}, file length: {}", offset, len);
+
+    auto *pfsFile = reinterpret_cast<PHYSFS_File *>(file.handle);
+
+    int32_t res = 0;
+    switch (origin) {
+      case Seek::Cur: {
+        res = PHYSFS_seek(pfsFile, PHYSFS_tell(pfsFile) + offset);
+        break;
+      }
+      case Seek::End: {
+        res = PHYSFS_seek(pfsFile, len + offset);
+        break;
+      }
+      default:
+      case Seek::Set: {
+        res = PHYSFS_seek(pfsFile, offset);
+        break;
+      }
+    }
+
+    if (!res) {
+      XE_CORE_ERROR("[VFS] Failed to seek file '{}'. Code: {}", file.path,
+                    PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+      return false;
+    }
+    return true;
+
+  }
+
+  size_t VFS::tell(VFS::File &file) {
+    XE_ASSERT(file.handle, "Unable to tell nullptr file");
+
+    const int64_t r = PHYSFS_tell(reinterpret_cast<PHYSFS_File *>(file.handle));
+    if (r == -1) {
+      XE_CORE_ERROR("[VFS] Failed to tell file '{}'. Code: {}", file.path,
+                    PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+      return 0;
+    }
+    return static_cast<size_t>(r);
+  }
+
+  size_t VFS::length(VFS::File &file) {
+    XE_ASSERT(file.handle, "Unable to get size from nullptr file");
+
+    auto size = PHYSFS_fileLength(reinterpret_cast<PHYSFS_File *>(file.handle));
+    if (size == -1) {
+      XE_CORE_ERROR("[VFS] Failed to determinate size for '{}'", file.path);
+      return 0;
+    }
+    return static_cast<size_t>(size);
+  }
+
+  bool VFS::flush(VFS::File &file) {
+    XE_ASSERT(file.handle, "Unable to flush nullptr file");
+
+    if (!PHYSFS_flush(reinterpret_cast<PHYSFS_File *>(file.handle))) {
+      XE_CORE_ERROR("[VFS] Failed to flush file '{}'. Code: {}", file.path,
+                    PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+      return false;
+    }
+    return true;
   }
 
 }

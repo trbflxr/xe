@@ -7,7 +7,6 @@ cmake-build-release
 #xe
 xetrace.json
 config.json
-engine/src/graphics/shaders.hpp
 
 #imgui
 imgui.ini

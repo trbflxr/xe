@@ -9,7 +9,6 @@
 #include <xe/core/vfs.hpp>
 
 #include "embedded/embedded.hpp"
-//#include "graphics/shaders.hpp"
 
 namespace xe {
 

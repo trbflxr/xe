@@ -24,11 +24,23 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${XE_DEBUG_FLAGS}")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${XE_RELEASE_FLAGS}")
 
+#embed shaders
+if (XE_PLATFORM_GL)
+  file(GLOB XE_ENGINE_SHADERS
+      src/graphics/opengl/shaders/*.glsl
+      src/graphics/opengl/shaders/*.vert
+      src/graphics/opengl/shaders/*.frag
+      src/graphics/opengl/shaders/*.geom
+      src/graphics/opengl/shaders/*.tesc
+      src/graphics/opengl/shaders/*.tese)
+endif ()
+
 #embed resources
 cmrc_add_resource_library(
     ${ENGINE_NAME}_rc
     NAMESPACE ${ENGINE_NAME}
     PREFIX ${ENGINE_NAME}
+    ${XE_ENGINE_SHADERS}
     resources/Hack-Regular.ttf)
 
 #some libs requires debug versions on msvc
@@ -160,9 +172,3 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${XE_WARNINGS}")
   endif ()
 endif ()
-
-#pack shaders
-execute_process(COMMAND ${CMAKE_COMMAND}
-    "-DSHADERS_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/opengl/shaders"
-    "-DOUT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/graphics"
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/shader_packer.cmake")

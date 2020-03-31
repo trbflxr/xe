@@ -17,6 +17,8 @@ namespace xe {
     static const void *defaultTextureData();
 
     static std::vector<uint8_t> defaultFount();
+
+    static std::string shaderSource(const std::string &name);
   };
 
 }

@@ -103,6 +103,8 @@ namespace xe {
         bool rgbaWrite = true;
         bool depthWrite = true;
       };
+
+      static std::string makeShader(const std::initializer_list<std::string_view> &sources);
     };
 
     struct XE_API Framebuffer : public Resource {

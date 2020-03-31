@@ -108,6 +108,18 @@ namespace xe::gpu {
     return std::vector<void *>();
   }
 
+  std::string Pipeline::makeShader(const std::initializer_list<std::string_view> &sources) {
+    //todo: get version from somewhere
+    static const char *version = "#version 460 core\n";
+    std::string shader = version;
+
+    for (const auto &s : sources) {
+      shader += s;
+    }
+
+    return shader;
+  }
+
   Texture Framebuffer::colorAttachment(uint32_t index) const {
     if (!ctx) {
       return Texture();

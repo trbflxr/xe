@@ -46,4 +46,17 @@ namespace xe {
     return {data.begin(), data.end()};
   }
 
+  std::string Embedded::shaderSource(const std::string &name) {
+#ifdef XE_PLATFORM_GL
+    const std::string path = "xe/src/graphics/opengl/shaders/" + name;
+#else
+  #error only gl currently supported
+#endif
+
+    auto fs = cmrc::xe::get_filesystem();
+    auto data = fs.open(path);
+
+    return {data.begin(), data.end()};
+  }
+
 }

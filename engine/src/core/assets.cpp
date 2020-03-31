@@ -4,28 +4,14 @@
 
 #include "xepch.hpp"
 #include <xe/core/assets.hpp>
+
 #include <xe/utils/debug_trace.hpp>
 #include <xe/core/vfs.hpp>
-#include "graphics/shaders.hpp"
 
+#include "embedded/embedded.hpp"
+//#include "graphics/shaders.hpp"
 
 namespace xe {
-
-  static std::string makeShader(const std::initializer_list<const char *> &sources) {
-    //todo: get version from somewhere
-    static const char *version = "#version 460 core\n";
-    std::string shader = version;
-
-    for (const auto &s : sources) {
-      shader += s;
-    }
-
-    return shader;
-  }
-
-  AssetManager::AssetManager() {
-
-  }
 
   void AssetManager::init() {
     initDefaultShaders();
@@ -34,34 +20,24 @@ namespace xe {
   void AssetManager::initDefaultShaders() {
     XE_TRACE_BEGIN("XE", "Default shaders init");
 
-    auto test = std::make_shared<gpu::Pipeline::Info::Shader>();
-    test->vert = makeShader({ubo_camera3d_glsl, ubo_test_state_glsl, test_vert});
-    test->frag = makeShader({test_frag});
-    addShader("test", test);
-
-    auto fb_test = std::make_shared<gpu::Pipeline::Info::Shader>();
-    fb_test->vert = makeShader({ubo_camera3d_glsl, ubo_test_state_glsl, fb_test_vert});
-    fb_test->frag = makeShader({fb_test_frag});
-    addShader("fb_test", fb_test);
-
     auto final = std::make_shared<gpu::Pipeline::Info::Shader>();
-    final->vert = makeShader({final_vert});
-    final->frag = makeShader({final_frag});
+    final->vert = gpu::Pipeline::makeShader({Embedded::shaderSource("final.vert")});
+    final->frag = gpu::Pipeline::makeShader({Embedded::shaderSource("final.frag")});
     addShader("final", final);
 
     auto renderer2d = std::make_shared<gpu::Pipeline::Info::Shader>();
-    renderer2d->vert = makeShader({renderer2d_vert});
-    renderer2d->frag = makeShader({renderer2d_frag});
+    renderer2d->vert = gpu::Pipeline::makeShader({Embedded::shaderSource("renderer2d.vert")});
+    renderer2d->frag = gpu::Pipeline::makeShader({Embedded::shaderSource("renderer2d.frag")});
     addShader("renderer2d", renderer2d);
 
     auto textRenderer = std::make_shared<gpu::Pipeline::Info::Shader>();
-    textRenderer->vert = makeShader({text_renderer_vert});
-    textRenderer->frag = makeShader({text_renderer_frag});
+    textRenderer->vert = gpu::Pipeline::makeShader({Embedded::shaderSource("text_renderer.vert")});
+    textRenderer->frag = gpu::Pipeline::makeShader({Embedded::shaderSource("text_renderer.frag")});
     addShader("text_renderer", textRenderer);
 
     auto model = std::make_shared<gpu::Pipeline::Info::Shader>();
-    model->vert = makeShader({ubo_camera3d_glsl, model_vert});
-    model->frag = makeShader({model_frag});
+    model->vert = gpu::Pipeline::makeShader({Embedded::shaderSource("ubo_camera3d.glsl"), Embedded::shaderSource("model.vert")});
+    model->frag = gpu::Pipeline::makeShader({Embedded::shaderSource("model.frag")});
     addShader("model", model);
 
     XE_TRACE_END("XE", "Default shaders init");

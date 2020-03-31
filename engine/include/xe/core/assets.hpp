@@ -23,7 +23,7 @@ namespace xe {
     const std::shared_ptr<gpu::Pipeline::Info::Shader> &getShader(const std::string &name);
 
   private:
-    AssetManager();
+    AssetManager() = default;
 
     void initDefaultShaders();
 

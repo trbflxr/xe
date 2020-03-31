@@ -35,12 +35,12 @@ namespace xe {
     XE_TRACE_BEGIN("XE", "Default shaders init");
 
     auto test = std::make_shared<gpu::Pipeline::Info::Shader>();
-    test->vert = makeShader({ubo_test_state_glsl, test_vert});
+    test->vert = makeShader({ubo_camera3d_glsl, ubo_test_state_glsl, test_vert});
     test->frag = makeShader({test_frag});
     addShader("test", test);
 
     auto fb_test = std::make_shared<gpu::Pipeline::Info::Shader>();
-    fb_test->vert = makeShader({ubo_test_state_glsl, fb_test_vert});
+    fb_test->vert = makeShader({ubo_camera3d_glsl, ubo_test_state_glsl, fb_test_vert});
     fb_test->frag = makeShader({fb_test_frag});
     addShader("fb_test", fb_test);
 

@@ -34,6 +34,8 @@ namespace xe {
       Invalid
     };
 
+    typedef std::function<void()> Job;
+
   public:
     ~GPU() override;
 
@@ -70,6 +72,9 @@ namespace xe {
 
     void submitCommands(DisplayList &&dl);
 
+    void executeInRenderThread(const Job &job);
+    void executeDeferred();
+
     bool shouldStop() const { return shouldStop_; }
 
   private:
@@ -92,6 +97,9 @@ namespace xe {
       bool initialized;
       bool exit;
     } threadSync_;
+
+    std::mutex jobMutex_;
+    std::vector<Job> jobs_;
 
     RenderContext *ctx_ = nullptr;
 

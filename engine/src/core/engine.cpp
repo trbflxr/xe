@@ -298,6 +298,10 @@ namespace xe {
     }
   }
 
+  void Engine::executeInRenderThread(const std::function<void()> &job) {
+    ref().gpu().executeInRenderThread(job);
+  }
+
   bool Engine::isKeyPressed(Keyboard::Key key) {
     return ref().window().isKeyPressed(key);
   }

@@ -21,6 +21,7 @@ namespace xe {
 
   class XE_API Engine : public Object {
   XE_OBJECT(Engine, Object);
+    friend class GPU;
   public:
     explicit Engine(int32_t argc, char **argv);
     ~Engine() override;
@@ -59,7 +60,7 @@ namespace xe {
 
     const std::vector<std::string> &getArgs() const { return args_; }
 
-    void pushEvents(const std::vector<Event> &events);
+    static void executeInRenderThread(const std::function<void()> &job);
 
     static bool isKeyPressed(Keyboard::Key key);
     static bool isMouseButtonPressed(Mouse::Button button);
@@ -78,6 +79,7 @@ namespace xe {
     void renderPostUpdate();
     void stop();
 
+    void pushEvents(const std::vector<Event> &events);
     void processEvents();
 
     void startSystems();

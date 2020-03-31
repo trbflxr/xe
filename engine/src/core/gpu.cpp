@@ -108,6 +108,10 @@ namespace xe {
         events.push_back(e);
       }
       Engine::ref().pushEvents(events);
+
+      XE_TRACE_BEGIN("XE", "GPU Execute deferred jobs");
+      executeDeferred();
+      XE_TRACE_END("XE", "GPU Execute deferred jobs");
     }
     XE_CORE_INFO("[GPU] Render loop end");
 
@@ -320,6 +324,30 @@ namespace xe {
 
   uint32_t GPU::gpuCommands() {
     return gpuCommands_;
+  }
+
+  void GPU::executeInRenderThread(const GPU::Job &job) {
+    if (job) {
+      std::lock_guard<std::mutex> lock(jobMutex_);
+      jobs_.push_back(job);
+    }
+  }
+
+  void GPU::executeDeferred() {
+    for (size_t i = 0;; ++i) {
+      Job job;
+      {
+        std::lock_guard<std::mutex> lock(jobMutex_);
+        if (i >= jobs_.size()) {
+          jobs_.clear();
+          break;
+        }
+        job = std::exchange(jobs_[i], { });
+      }
+      if (job) {
+        job();
+      }
+    }
   }
 
 }

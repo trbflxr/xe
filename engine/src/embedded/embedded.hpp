@@ -9,6 +9,10 @@
 #include <xe/utils/noncopyable.hpp>
 #include <xe/graphics/gpu_resources.hpp>
 
+namespace cmrc {
+  class embedded_filesystem;
+}
+
 namespace xe {
 
   class Embedded : NonCopyable {
@@ -19,6 +23,9 @@ namespace xe {
     static std::vector<uint8_t> defaultFount();
 
     static std::string shaderSource(const std::string &name);
+
+  private:
+    static cmrc::embedded_filesystem *fs();
   };
 
 }

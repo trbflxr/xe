@@ -10,6 +10,11 @@ CMRC_DECLARE(xe);
 
 namespace xe {
 
+  cmrc::embedded_filesystem *Embedded::fs() {
+    static auto filesystem = cmrc::xe::get_filesystem();
+    return &filesystem;
+  }
+
   const gpu::Texture::Info &Embedded::defaultTextureInfo() {
     static constexpr const uint8_t size = 4;
     static gpu::Texture::Info info;
@@ -40,8 +45,7 @@ namespace xe {
   }
 
   std::vector<uint8_t> Embedded::defaultFount() {
-    auto fs = cmrc::xe::get_filesystem();
-    auto data = fs.open("xe/resources/Hack-Regular.ttf");
+    auto data = fs()->open("xe/resources/Hack-Regular.ttf");
 
     return {data.begin(), data.end()};
   }
@@ -53,8 +57,7 @@ namespace xe {
   #error only gl currently supported
 #endif
 
-    auto fs = cmrc::xe::get_filesystem();
-    auto data = fs.open(path);
+    auto data = fs()->open(path);
 
     return {data.begin(), data.end()};
   }

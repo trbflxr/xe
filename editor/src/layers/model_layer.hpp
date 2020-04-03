@@ -32,12 +32,6 @@ namespace xe {
     std::unique_ptr<FreeCamera> camera_;
 
     std::shared_ptr<Model> model_;
-    struct {
-      std::shared_ptr<gpu::Pipeline> pipeline;
-      std::shared_ptr<gpu::Buffer> vertexBuffer;
-      std::shared_ptr<gpu::Buffer> indexBuffer;
-      std::shared_ptr<Texture> texture;
-    } modelData_;
   };
 
 }

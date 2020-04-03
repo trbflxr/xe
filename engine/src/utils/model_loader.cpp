@@ -57,7 +57,7 @@ namespace xe {
     processNode(model, scene->mRootNode, scene);
 
     XE_TRACE_END("XE", name.c_str());
-    XE_CORE_TRACE("[ModelLoader/ End] Loading '{}'", file);
+    XE_CORE_TRACE("[ModelLoader/ End] Loading '{}'. {} meshes processed", file, model->meshes_.size());
     return true;
   }
 
@@ -101,7 +101,10 @@ namespace xe {
       }
     }
 
-    model->meshes_.emplace_back(std::move(vertices), std::move(indices));
+    //todo: usage
+    Mesh m = Mesh(std::move(vertices), std::move(indices), Usage::Static);
+
+    model->meshes_.emplace_back(m);
 
     //material
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];

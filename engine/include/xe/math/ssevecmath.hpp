@@ -163,9 +163,8 @@ namespace xe::detail {
       rmVec[3] = SSEVector_Shuffle(Z_, W_, 2, 0, 2, 0);
     }
 
-    static inline void
-    createTransformMatrix(void *dest, const SSEVector &translation, const SSEVector &rot, const SSEVector &scale) {
-
+    //todo: fix. have call .inverse()...
+    static inline void createTransformMatrix(void *dest, const SSEVector &translation, const SSEVector &rot, const SSEVector &scale) {
       static const SSEVector MASK_W(SSEVector::make((uint32_t) 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0));
 
       const SSEVector rot2 = rot + rot;

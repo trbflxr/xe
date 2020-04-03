@@ -121,7 +121,7 @@ namespace xe {
     if (dirty_ || transform_.hasChanged()) {
       XE_TRACE_BEGIN("XE", "Compute OrthographicCamera transformations");
       projection_ = mat4::ortho(left_, right_, bottom_, top_, nearPlane_, farPlane_);
-      view_ = mat4::rotation(transform_.localRotation().conjugate()) * mat4::translation(transform_.localPosition());
+      view_ = transform_.localTransform();
 
       data_.view = view_;
       data_.proj = projection_;
@@ -169,7 +169,7 @@ namespace xe {
     if (dirty_ || transform_.hasChanged()) {
       XE_TRACE_BEGIN("XE", "Compute PerspectiveCamera transformations");
       projection_ = mat4::perspective(fov_, aspect_, nearPlane_, farPlane_);
-      view_ = mat4::rotation(transform_.localRotation().conjugate()) * mat4::translation(transform_.localPosition());
+      view_ = transform_.localTransform();
 
       data_.view = view_;
       data_.proj = projection_;

@@ -7,6 +7,8 @@
 
 #include <xe/utils/logger.hpp>
 
+#include <xe/utils/debug_trace.hpp>
+
 namespace xe {
 
   static uint32_t vbSize = 0;
@@ -18,7 +20,7 @@ namespace xe {
 //    model_ = std::make_shared<Model>("assets/models/monkey3.obj");
 
     camera_ = std::make_unique<FreeCamera>(vec2(1280, 720), 70.0f, 1280.0f / 720.0f, 1.0f, 1000.0f);
-    camera_->cam().transform().setLocalPosition({0.0f, 0.0f, -1.0f});
+    camera_->cam().transform().setLocalPosition({0.0f, 0.0f, 2.0f});
 
     //some hardcode
     vbSize = (uint32_t) model_->meshes_[0].vertices.size() * (uint32_t) sizeof(model_->meshes_[0].vertices[0]);

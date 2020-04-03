@@ -47,24 +47,24 @@ namespace xe {
       //move
       float speed = Engine::isKeyPressed(Keyboard::LControl) ? sprintSpeed_ : moveSpeed_;
       if (Engine::isKeyPressed(Keyboard::W)) {
-        camera_.transform().translate(-camera_.transform().localForward() * speed * ts, Transform::Space::Parent);
+        camera_.transform().translate(camera_.transform().localForward() * speed * ts, Transform::Space::Parent);
       }
       if (Engine::isKeyPressed(Keyboard::S)) {
-        camera_.transform().translate(camera_.transform().localForward() * speed * ts, Transform::Space::Parent);
+        camera_.transform().translate(-camera_.transform().localForward() * speed * ts, Transform::Space::Parent);
       }
 
       if (Engine::isKeyPressed(Keyboard::A)) {
-        camera_.transform().translate(camera_.transform().localRight() * speed * ts, Transform::Space::Parent);
+        camera_.transform().translate(-camera_.transform().localRight() * speed * ts, Transform::Space::Parent);
       }
       if (Engine::isKeyPressed(Keyboard::D)) {
-        camera_.transform().translate(-camera_.transform().localRight() * speed * ts, Transform::Space::Parent);
+        camera_.transform().translate(camera_.transform().localRight() * speed * ts, Transform::Space::Parent);
       }
 
       if (Engine::isKeyPressed(Keyboard::Space)) {
-        camera_.transform().translate(vec3::unitYN() * speed * ts, Transform::Space::Parent);
+        camera_.transform().translate(vec3::unitY() * speed * ts, Transform::Space::Parent);
       }
       if (Engine::isKeyPressed(Keyboard::LShift)) {
-        camera_.transform().translate(vec3::unitY() * speed * ts, Transform::Space::Parent);
+        camera_.transform().translate(vec3::unitYN() * speed * ts, Transform::Space::Parent);
       }
     }
   }

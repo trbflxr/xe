@@ -231,7 +231,7 @@ namespace xe {
   mat4 mat4::transformation(const vec3 &translation, const quat &rotation, const vec3 &scale) {
     mat4 result;
     Vector::createTransformMatrix(&result, translation.toVector(), rotation.toVector(), scale.toVector());
-    return result;
+    return result.inverse();
   }
 
 }

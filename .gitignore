@@ -7,6 +7,7 @@ cmake-build-release
 #xe
 xetrace.json
 config.json
+camera.json
 
 #imgui
 imgui.ini

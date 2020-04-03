@@ -24,8 +24,28 @@ namespace xe {
     bool onMousePressed(Event::MouseButton mb);
     bool onFocusLost();
 
+    float getMoveSpeed() const { return moveSpeed_; }
+    void setMoveSpeed(float speed) { moveSpeed_ = speed; }
+
+    float getSprintSpeed() const { return sprintSpeed_; }
+    void setSprintSpeed(float speed) { sprintSpeed_ = speed; }
+
     PerspectiveCamera &cam() { return camera_; }
     const PerspectiveCamera &cam() const { return camera_; }
+
+    friend const Node &operator>>(const Node &node, FreeCamera &c) {
+      node["moveSpeed"].get(c.moveSpeed_);
+      node["sprintSpeed"].get(c.sprintSpeed_);
+      node["mouseSensitivity"].get(c.mouseSensitivity_);
+      return node;
+    }
+
+    friend Node &operator<<(Node &node, const FreeCamera &c) {
+      node["moveSpeed"].set(c.moveSpeed_);
+      node["sprintSpeed"].set(c.sprintSpeed_);
+      node["mouseSensitivity"].set(c.mouseSensitivity_);
+      return node;
+    }
 
   private:
     float moveSpeed_ = 0.0f;

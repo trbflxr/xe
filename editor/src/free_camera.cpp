@@ -12,7 +12,7 @@ namespace xe {
                          float moveSpeed, float sprintSpeed, float mouseSensitivity) :
       camera_(resolution, fovDeg, aspect, nearZ, farZ),
       moveSpeed_(moveSpeed),
-      sprintSpeed_(moveSpeed * sprintSpeed),
+      sprintSpeed_(sprintSpeed),
       mouseSensitivity_(mouseSensitivity) {
 
     windowSize_ = Engine::ref().window().size();
@@ -45,7 +45,7 @@ namespace xe {
       });
 
       //move
-      float speed = Engine::isKeyPressed(Keyboard::LControl) ? sprintSpeed_ : moveSpeed_;
+      float speed = Engine::isKeyPressed(Keyboard::LControl) ? moveSpeed_ * sprintSpeed_ : moveSpeed_;
       if (Engine::isKeyPressed(Keyboard::W)) {
         camera_.transform().translate(camera_.transform().localForward() * speed * ts, Transform::Space::Parent);
       }

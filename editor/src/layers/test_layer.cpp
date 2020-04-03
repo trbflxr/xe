@@ -132,14 +132,14 @@ namespace xe {
       size_(Engine::ref().getParams().window.width, Engine::ref().getParams().window.height) {
 
     camera_ = std::make_unique<PerspectiveCamera>(size_, 70.0f, static_cast<float>(size_.x) / size_.y, 1.0f, 1000.0f);
+    cameraPos_ = {0.0f, 0.0f, 3.5f};
+    camera_->transform().setLocalPosition(cameraPos_);
   }
 
   void TestLayer::onStart() {
     uniforms_.cubeProj = mat4::perspective(60.0f, static_cast<float>(size_.x) / size_.y, 1.0f, 1000.0f);
-    uniforms_.cubeView = mat4::transformation({-10, 25, 60},
-                                              quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f)).inverse();
-
-    quad_.transform.setLocalPositionZ(2.0f);
+    uniforms_.cubeView = mat4::transformation({10, 25, 60},
+                                              quat(vec3::unitY(), 90.0f) * quat(vec3::unitX(), 30.0f));
 
     cube_.vertexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Vertex, Usage::Static, sizeof(cube::vertexData)});
@@ -153,7 +153,7 @@ namespace xe {
     quad_.indexBuff = Engine::ref().gpu().createBuffer(
         {BufferType::Index, Usage::Static, sizeof(quad::indexData)});
     stateUbo_ = Engine::ref().gpu().createBuffer(
-        {BufferType::Uniform, Usage::Dynamic, sizeof(uniforms_), "StateUniform", 3});
+        {BufferType::Uniform, Usage::Dynamic, sizeof(uniforms_), "StateUniform", 10});
 
     {
       gpu::Pipeline::Info::Shader cubeShader;
@@ -324,7 +324,7 @@ namespace xe {
         .set_pipeline(*quad_.material)
         .set_buffer(0, *quad_.vertexBuff)
         .set_uniformBuffer(0, camera_->uniformBuffer())
-        .set_uniform(0, {"u_model", &quad_.transform.worldTransform(), sizeof(mat4)})
+        .set_uniform(0, {"u_model", &quad_.transform.localTransform().transpose().inverse(), sizeof(mat4)})
         .set_uniform(1, {"u_tint", &tint, sizeof(Color)})
         .set_texture(0, fb_->colorAttachment(0))
         .set_texture(1, fb_->colorAttachment(1));
@@ -355,9 +355,9 @@ namespace xe {
 
     if (quadRotation_) {
       quad_.transform.rotateY(15.0f * ts);
+      quad_.transform.setLocalPositionZ(2.5f);
     }
 
-    quad_.transform.setLocalPositionZ(-2.5f);
   }
 
   bool TestLayer::onKeyPressed(Event::Key e) {
@@ -373,7 +373,7 @@ namespace xe {
     }
     ImGui::SameLine();
     ImGui::Checkbox("Quad rotation", &quadRotation_);
-    if (ImGui::SliderFloat3("Camera pos##TestLayer", reinterpret_cast<float *>(&cameraPos_), -5.0f, 5.0f)) {
+    if (ImGui::SliderFloat3("Camera pos##TestLayer", reinterpret_cast<float *>(&cameraPos_), 1.0f, 5.0f)) {
       camera_->transform().setLocalPositionX(cameraPos_[0]);
       camera_->transform().setLocalPositionY(cameraPos_[1]);
       camera_->transform().setLocalPositionZ(cameraPos_[2]);

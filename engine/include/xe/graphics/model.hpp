@@ -7,9 +7,7 @@
 
 #include <xe/graphics/mesh.hpp>
 #include <xe/graphics/camera.hpp>
-
-//todo: remove
-#include "texture.hpp"
+#include <xe/graphics/material.hpp>
 
 namespace xe {
 
@@ -27,8 +25,7 @@ namespace xe {
     //todo: materials
     std::vector<Mesh> meshes_;
 
-    std::shared_ptr<gpu::Pipeline> pipeline_;
-    std::shared_ptr<Texture> texture_;
+    std::shared_ptr<Material> mat_;
   };
 
 }

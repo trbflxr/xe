@@ -111,6 +111,7 @@ namespace xe {
 
   static constexpr const uint32_t cCamera2dUboBinding = 0;
   static constexpr const uint32_t cCameraUboBinding = 1;
+  static constexpr const uint32_t cPBRUboBinding = 2;
 
   template<typename T>
   struct is_optional : std::false_type { };

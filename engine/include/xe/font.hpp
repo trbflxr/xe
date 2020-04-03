@@ -39,12 +39,12 @@ namespace xe {
     float underlineThickness = 0.0f;
   };
 
-  class XE_API Font : public Object {
+  class XE_API Font : public Object, GPUResource {
   XE_OBJECT(Font, Object)
   public:
     Font();
 
-    void destroy();
+    void destroy() override;
 
     bool loadFromFile(std::string_view file, Charset charset = Charset::Ascii,
                       float emSize = 32.0f, float range = 2.0f, int32_t padding = 1);

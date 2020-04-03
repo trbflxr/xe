@@ -7,11 +7,12 @@
 
 #include <xe/core/object.hpp>
 #include <xe/graphics/color.hpp>
+#include <xe/graphics/gpu_resource.hpp>
 #include <xe/graphics/gpu_resources.hpp>
 
 namespace xe {
 
-  class XE_API Texture : public Object {
+  class XE_API Texture : public Object, GPUResource {
   XE_OBJECT(Texture, Object);
   public:
     Texture();
@@ -20,7 +21,7 @@ namespace xe {
     ~Texture() override;
 
     bool setup();
-    void destroy();
+    void destroy() override;
 
     bool loadFromFile(std::string_view file, bool flip = true);
 

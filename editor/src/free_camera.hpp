@@ -10,12 +10,12 @@
 
 namespace xe {
 
-  class FreeCamera {
+  class FreeCamera : GPUResource {
   public:
     FreeCamera(const vec2u &resolution, float fovDeg, float aspect, float nearZ, float farZ,
                float moveSpeed = 4.0f, float sprintSpeed = 4.0f, float mouseSensitivity = 0.15f);
 
-    void destroy();
+    void destroy() override;
 
     void onRender();
     void onUpdate();

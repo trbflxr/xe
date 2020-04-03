@@ -12,12 +12,12 @@
 
 namespace xe {
 
-  class XE_API Renderer2d : public Object {
+  class XE_API Renderer2d : public Object, GPUResource {
   XE_OBJECT(Renderer2d, Object);
   public:
     explicit Renderer2d(Camera &camera, uint32_t maxInstances = 50'000);
 
-    void destroy();
+    void destroy() override;
 
     void submit(const vec2 &pos, const vec2 &size, Color color,
                 const std::shared_ptr<Texture> &texture,

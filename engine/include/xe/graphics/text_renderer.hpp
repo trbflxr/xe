@@ -10,12 +10,12 @@
 
 namespace xe {
 
-  class XE_API TextRenderer : public Object {
+  class XE_API TextRenderer : public Object, GPUResource {
   XE_OBJECT(TextRenderer, Object);
   public:
     explicit TextRenderer(uint32_t screenWidth, uint32_t screenHeight, uint32_t maxInstances = 50'000);
 
-    void destroy();
+    void destroy() override;
 
     void submit(const Text &text);
 

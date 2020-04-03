@@ -6,18 +6,19 @@
 #define XE_COMPOSER_HPP
 
 #include <xe/core/object.hpp>
+#include <xe/graphics/gpu_resource.hpp>
 #include <xe/graphics/gpu_resources.hpp>
 
 namespace xe {
 
-  class XE_API Composer : public Object {
+  class XE_API Composer : public Object, GPUResource {
   XE_OBJECT(Composer, Object);
   public:
     explicit Composer();
 
     void init(const vec2u &size, TexelsFormat format = TexelsFormat::Rgba16f);
 
-    void destroy();
+    void destroy() override;
 
     void present() const;
 

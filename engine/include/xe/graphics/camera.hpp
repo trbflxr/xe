@@ -9,11 +9,12 @@
 #include <xe/graphics/color.hpp>
 #include <xe/graphics/composer.hpp>
 #include <xe/graphics/display_list.hpp>
+#include <xe/graphics/gpu_resource.hpp>
 #include <xe/math/transform.hpp>
 
 namespace xe {
 
-  class XE_API Camera : public Object {
+  class XE_API Camera : public Object, GPUResource {
   XE_OBJECT(Camera, Object);
   public:
     struct ClearFlags {
@@ -30,7 +31,7 @@ namespace xe {
     };
 
   public:
-    void destroy();
+    void destroy() override;
 
     void updateUniforms() const;
 

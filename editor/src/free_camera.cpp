@@ -45,7 +45,7 @@ namespace xe {
       });
 
       //move
-      float speed = Engine::isKeyPressed(Keyboard::LControl) ? moveSpeed_ * sprintSpeed_ : moveSpeed_;
+      float speed = Engine::isKeyPressed(Keyboard::LShift) ? moveSpeed_ * sprintSpeed_ : moveSpeed_;
       if (Engine::isKeyPressed(Keyboard::W)) {
         camera_.transform().translate(camera_.transform().localForward() * speed * ts, Transform::Space::Parent);
       }
@@ -63,7 +63,7 @@ namespace xe {
       if (Engine::isKeyPressed(Keyboard::Space)) {
         camera_.transform().translate(vec3::unitY() * speed * ts, Transform::Space::Parent);
       }
-      if (Engine::isKeyPressed(Keyboard::LShift)) {
+      if (Engine::isKeyPressed(Keyboard::LControl)) {
         camera_.transform().translate(vec3::unitYN() * speed * ts, Transform::Space::Parent);
       }
     }

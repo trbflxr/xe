@@ -22,10 +22,9 @@ namespace xe {
     void render(DisplayList &dl, const Camera &camera);
 
   private:
-    //todo: materials
     std::vector<Mesh> meshes_;
-
-    std::shared_ptr<Material> mat_;
+    std::vector<std::shared_ptr<Material>> materials_;
+    std::shared_ptr<gpu::Pipeline> pipeline_;
   };
 
 }

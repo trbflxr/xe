@@ -29,13 +29,12 @@ namespace xe {
 
   private:
     struct {
-      std::shared_ptr<gpu::Pipeline> pipeline;
       std::shared_ptr<Texture> diffuse;
       std::shared_ptr<Texture> normals;
-      std::shared_ptr<gpu::Buffer> buffer;
       MaterialData data;
     } gpu_;
     bool updated_ = false;
+    int32_t id_ = -1;
   };
 
 }

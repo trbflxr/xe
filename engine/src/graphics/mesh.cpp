@@ -9,7 +9,8 @@
 
 namespace xe {
 
-  Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices, Usage usage) {
+  Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices, uint32_t matIndex, Usage usage) :
+      matIndex_(matIndex) {
     gpu_.vertices.data = std::move(vertices);
     gpu_.indices.data = std::move(indices);
     gpu_.usage = usage;

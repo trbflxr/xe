@@ -41,7 +41,7 @@ namespace xe {
     friend class Model;
   public:
     Mesh() = default;
-    Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices, Usage usage);
+    Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices, uint32_t matIndex, Usage usage);
 
     void destroy() override;
 
@@ -60,6 +60,7 @@ namespace xe {
       } indices;
       Usage usage;
     } gpu_;
+    int32_t matIndex_ = -1;
   };
 
 }

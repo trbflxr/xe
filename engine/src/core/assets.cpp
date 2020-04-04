@@ -21,7 +21,7 @@ namespace xe {
     XE_TRACE_BEGIN("XE", "Default shaders source init");
 
     addShaderSource("ubo_camera3d.glsl", Embedded::shaderSource("ubo_camera3d.glsl"));
-    addShaderSource("ubo_pbr.glsl", Embedded::shaderSource("ubo_pbr.glsl"));
+    addShaderSource("uni_pbr.glsl", Embedded::shaderSource("uni_pbr.glsl"));
 
     addShaderSource("final.vert", Embedded::shaderSource("final.vert"));
     addShaderSource("final.frag", Embedded::shaderSource("final.frag"));
@@ -58,7 +58,7 @@ namespace xe {
 
     auto model = std::make_shared<gpu::Pipeline::Info::Shader>();
     model->vert = gpu::Pipeline::makeShader({getShaderSource("ubo_camera3d.glsl"), getShaderSource("model.vert")});
-    model->frag = gpu::Pipeline::makeShader({getShaderSource("ubo_pbr.glsl"), getShaderSource("model.frag")});
+    model->frag = gpu::Pipeline::makeShader({getShaderSource("uni_pbr.glsl"), getShaderSource("model.frag")});
     addShader("model", model);
 
     XE_TRACE_END("XE", "Default shaders init");

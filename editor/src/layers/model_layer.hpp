@@ -19,7 +19,7 @@ namespace xe {
     void onStop() override;
 
     void onRender() override;
-    
+
     void onUpdate() override;
 
     bool onKeyPressed(Event::Key key) override;

@@ -27,9 +27,11 @@ namespace xe {
     static Assimp::Importer *importer();
     static Assimp::XEAI_IOSystem *ioSystem();
 
-    static void processNode(Model *model, aiNode *node, const aiScene *scene);
-    static void processMesh(Model *model, aiMesh *mesh, const aiScene *scene);
-    static void processMaterial(Model *model, const aiMaterial *material);
+    static void processNode(Model *model, aiNode *node, const aiScene *scene, const std::string &dir);
+    static void processMesh(Model *model, aiMesh *mesh, const aiScene *scene, const std::string &dir);
+    static int32_t processMaterial(Model *model, const aiMaterial *material, const std::string &dir, uint32_t id);
+
+    static void setTexture(Material &material, uint32_t type, std::string_view texture);
   };
 
 }

@@ -12,10 +12,12 @@ namespace xe {
 
   void ModelLayer::onStart() {
 //    model_ = std::make_shared<Model>("assets/models/Suzanne/Suzanne.gltf");
-    model_ = std::make_shared<Model>("assets/models/Sponza/Sponza.gltf");
-//    model_ = std::make_shared<Model>("assets/models/monkey3.obj");
+//    model_ = std::make_shared<Model>("assets/models/Sponza/Sponza.gltf");
+    model_ = std::make_shared<Model>("assets/models/SponzaDAE/Sponza.dae");
+//    model_ = std::make_shared<Model>("assets/models/FlightHelmet/FlightHelmet.gltf");
+//    model_ = std::make_shared<Model>("assets/models/DamagedHelmet/DamagedHelmet.gltf");
 
-    camera_ = std::make_unique<FreeCamera>(vec2(1280, 720), 70.0f, 1280.0f / 720.0f, 1.0f, 1000.0f);
+    camera_ = std::make_unique<FreeCamera>(vec2(1280, 720), 70.0f, 1280.0f / 720.0f, 0.5f, 1000.0f);
     camera_->cam().transform().setLocalPosition({0.0f, 0.0f, 2.0f});
 
     File camFile("camera.json");

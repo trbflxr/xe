@@ -46,15 +46,15 @@ namespace xe {
     auto ts = Engine::ref().delta();
 
     if (Engine::isKeyPressed(Keyboard::S)) {
-      camera_->transform().translateY(speed * ts);
-    } else if (Engine::isKeyPressed(Keyboard::W)) {
       camera_->transform().translateY(-speed * ts);
+    } else if (Engine::isKeyPressed(Keyboard::W)) {
+      camera_->transform().translateY(speed * ts);
     }
 
     if (Engine::isKeyPressed(Keyboard::D)) {
-      camera_->transform().translateX(-speed * ts);
-    } else if (Engine::isKeyPressed(Keyboard::A)) {
       camera_->transform().translateX(speed * ts);
+    } else if (Engine::isKeyPressed(Keyboard::A)) {
+      camera_->transform().translateX(-speed * ts);
     }
   }
 

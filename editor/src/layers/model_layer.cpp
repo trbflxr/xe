@@ -13,7 +13,7 @@ namespace xe {
   void ModelLayer::onStart() {
 //    model_ = std::make_shared<Model>("assets/models/Suzanne/Suzanne.gltf");
 //    model_ = std::make_shared<Model>("assets/models/Sponza/Sponza.gltf");
-    model_ = std::make_shared<Model>("assets/models/SponzaDAE/Sponza.dae");
+//    model_ = std::make_shared<Model>("assets/models/SponzaDAE/Sponza.dae");
 //    model_ = std::make_shared<Model>("assets/models/FlightHelmet/FlightHelmet.gltf");
 //    model_ = std::make_shared<Model>("assets/models/DamagedHelmet/DamagedHelmet.gltf");
 

@@ -18,7 +18,7 @@ namespace xe {
   XE_OBJECT(Editor, Application);
   public:
     Editor() {
-      xe::Logger::setLogLevel(LogLevel::Trace, LogLevel::Trace);
+      Logger::setLogLevel(LogLevel::Info, LogLevel::Trace);
 
       Engine::ref().setUiFunction(Editor::uiFunc, this);
     }
@@ -28,11 +28,11 @@ namespace xe {
       Engine::ref().vfs().mount(".");
       Engine::ref().vfs().mount("assets");
 
-//      layers_.emplace_back(std::make_shared<Renderer2dLayer>());
+      layers_.emplace_back(std::make_shared<Renderer2dLayer>());
 //      layers_.emplace_back(std::make_shared<TestLayer>());
 //      layers_.emplace_back(std::make_shared<TestOverlay>());
 //      layers_.emplace_back(std::make_shared<TextLayer>());
-      layers_.emplace_back(std::make_shared<ModelLayer>());
+//      layers_.emplace_back(std::make_shared<ModelLayer>());
     }
 
     void onStart() override {

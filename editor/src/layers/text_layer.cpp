@@ -17,7 +17,7 @@ namespace xe {
     textRenderer_ = std::make_unique<TextRenderer>(1280, 720);
 
     font_ = std::make_shared<Font>();
-    font_->loadFromFile("assets/fonts/consolata.otf1", Charset::Cyrillic);
+    font_->loadFromFile("assets/fonts/consolata.otf", Charset::Cyrillic);
 
     text_ = std::make_shared<Text>("жопа test", font_, vec2(400.0f, 250.0f), 32.0f);
     text_->setColor(Color::Black);

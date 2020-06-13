@@ -5,10 +5,9 @@
 #ifndef XE_RENDERER2D_LAYER_HPP
 #define XE_RENDERER2D_LAYER_HPP
 
+#include <xe/core/layer_base.hpp>
 #include <xe/graphics/texture.hpp>
 #include <xe/graphics/renderer2d.hpp>
-
-#include "layer_base.hpp"
 
 namespace xe {
 

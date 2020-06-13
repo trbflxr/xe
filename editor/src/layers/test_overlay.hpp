@@ -7,7 +7,6 @@
 
 #include <xe/core/engine.hpp>
 #include <xe/graphics/camera.hpp>
-#include "layer_base.hpp"
 
 namespace xe {
 

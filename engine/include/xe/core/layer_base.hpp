@@ -9,7 +9,7 @@
 
 namespace xe {
 
-  class LayerBase {
+  class XE_API LayerBase {
   public:
     virtual void onInit() { }
     virtual void onStart() { }

@@ -8,7 +8,6 @@
 #include <xe/core/engine.hpp>
 #include <xe/graphics/texture.hpp>
 #include <xe/graphics/model.hpp>
-#include "layer_base.hpp"
 #include "free_camera.hpp"
 
 namespace xe {

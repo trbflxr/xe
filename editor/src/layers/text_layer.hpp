@@ -11,8 +11,6 @@
 #include <xe/graphics/renderer2d.hpp>
 #include <xe/graphics/text_renderer.hpp>
 
-#include "layer_base.hpp"
-
 namespace xe {
 
   class TextLayer : public LayerBase {

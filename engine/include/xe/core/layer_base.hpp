@@ -9,8 +9,15 @@
 
 namespace xe {
 
+  class Application;
+
   class XE_API LayerBase {
   public:
+    explicit LayerBase(Application *app) :
+        application_(app),
+        active_(true),
+        visible_(true) { }
+
     virtual void onInit() { }
     virtual void onStart() { }
     virtual void onPreUpdate() { }
@@ -40,6 +47,18 @@ namespace xe {
     virtual bool onFocusLost() { return false; }
 
     virtual bool onUi() { return false; }
+
+    bool isVisible() { return visible_; }
+    bool setVisible(bool visible) { visible_ = visible; }
+
+    bool isActive() { return active_; }
+    bool setActive(bool active) { active_ = active; }
+
+  protected:
+    Application *application_;
+
+    bool visible_;
+    bool active_;
   };
 
 }

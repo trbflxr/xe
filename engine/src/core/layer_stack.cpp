@@ -54,121 +54,161 @@ namespace xe {
 
   void LayerStack::onPreUpdate() {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onPreUpdate();
+      if ((*l)->isActive()) {
+        (*l)->onPreUpdate();
+      }
     }
   }
 
   void LayerStack::onUpdate() {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onUpdate();
+      if ((*l)->isActive()) {
+        (*l)->onUpdate();
+      }
     }
   }
 
   void LayerStack::onPostUpdate() {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onPostUpdate();
+      if ((*l)->isActive()) {
+        (*l)->onPostUpdate();
+      }
     }
   }
 
   void LayerStack::onPreRender() {
     for (auto &&l : layers_) {
-      l->onPreRender();
+      if (l->isVisible()) {
+        l->onPreRender();
+      }
     }
   }
 
   void LayerStack::onRender() {
     for (auto &&l : layers_) {
-      l->onRender();
+      if (l->isVisible()) {
+        l->onRender();
+      }
     }
   }
 
   void LayerStack::onPostRender() {
     for (auto &&l : layers_) {
-      l->onPostRender();
+      if (l->isVisible()) {
+        l->onPostRender();
+      }
     }
   }
 
   void LayerStack::onKeyPressed(Event::Key e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onKeyPressed(e);
+      if ((*l)->isActive()) {
+        (*l)->onKeyPressed(e);
+      }
     }
   }
 
   void LayerStack::onKeyReleased(Event::Key e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onKeyReleased(e);
+      if ((*l)->isActive()) {
+        (*l)->onKeyReleased(e);
+      }
     }
   }
 
   void LayerStack::onKeyRepeated(Event::Key e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onKeyRepeated(e);
+      if ((*l)->isActive()) {
+        (*l)->onKeyRepeated(e);
+      }
     }
   }
 
   void LayerStack::onTextEntered(Event::Text e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onTextEntered(e);
+      if ((*l)->isActive()) {
+        (*l)->onTextEntered(e);
+      }
     }
   }
 
   void LayerStack::onMousePressed(Event::MouseButton e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onMousePressed(e);
+      if ((*l)->isActive()) {
+        (*l)->onMousePressed(e);
+      }
     }
   }
 
   void LayerStack::onMouseReleased(Event::MouseButton e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onMouseReleased(e);
+      if ((*l)->isActive()) {
+        (*l)->onMouseReleased(e);
+      }
     }
   }
 
   void LayerStack::onMouseScrolled(Event::MouseWheel e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onMouseScrolled(e);
+      if ((*l)->isActive()) {
+        (*l)->onMouseScrolled(e);
+      }
     }
   }
 
   void LayerStack::onMouseMoved(Event::MouseMove e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onMouseMoved(e);
+      if ((*l)->isActive()) {
+        (*l)->onMouseMoved(e);
+      }
     }
   }
 
   void LayerStack::onResize(Event::SizeEvent e) {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onResize(e);
+      if ((*l)->isActive()) {
+        (*l)->onResize(e);
+      }
     }
   }
 
   void LayerStack::onMouseEntered() {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onMouseEntered();
+      if ((*l)->isActive()) {
+        (*l)->onMouseEntered();
+      }
     }
   }
 
   void LayerStack::onMouseLeft() {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onMouseLeft();
+      if ((*l)->isActive()) {
+        (*l)->onMouseLeft();
+      }
     }
   }
 
   void LayerStack::onFocusGained() {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onFocusGained();
+      if ((*l)->isActive()) {
+        (*l)->onFocusGained();
+      }
     }
   }
 
   void LayerStack::onFocusLost() {
     for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onFocusLost();
+      if ((*l)->isActive()) {
+        (*l)->onFocusLost();
+      }
     }
   }
 
   void LayerStack::onUi() {
-    for (auto &&l = layers_.rbegin(); l != layers_.rend(); ++l) {
-      (*l)->onUi();
+    for (auto &&l : layers_) {
+      if (l->isVisible()) {
+        l->onUi();
+      }
     }
   }
 
